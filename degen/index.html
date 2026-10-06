@@ -138,6 +138,20 @@ pre.ascii{color:var(--green);font-size:11px;line-height:1.1;overflow-x:auto;marg
 .mpmine{border-color:#3f8a4b}
 .rn .oth{position:absolute;left:2px;bottom:0;font-size:9px;color:#6fc3ff}
 .chip[disabled]{opacity:.35;cursor:not-allowed}
+.f7tbl{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin:6px 0}
+@media(max-width:420px){.f7tbl{grid-template-columns:1fr}}
+.f7p{border:1px solid #444;border-radius:8px;padding:5px 7px;background:#16130f}
+.f7p.on{border-color:var(--amber);box-shadow:0 0 0 2px #ffc24a55}.f7p.me{background:#132016}
+.f7c{display:inline-block;min-width:24px;padding:5px 4px;margin:2px 2px 0 0;border-radius:5px;font:bold 13px monospace;text-align:center;background:#fbf7ec;color:#111;border:1px solid #000;box-shadow:1px 1px 0 #000}
+.f7c.sm{min-width:18px;padding:2px 3px;font-size:11px}
+.f7c.n0{background:#ddd}.f7c.n1,.f7c.n2,.f7c.n3{background:#d6f5d6}.f7c.n4,.f7c.n5,.f7c.n6{background:#d6ebff}.f7c.n7,.f7c.n8,.f7c.n9{background:#fff1c9}.f7c.n10,.f7c.n11,.f7c.n12{background:#ffd6d6}
+.f7c.mod{background:#ff9a3c;color:#111}.f7c.act{color:#fff;font-size:10px}.f7c.a-freeze{background:#2a7fc9}.f7c.a-flip3{background:#c0392b}.f7c.a-sc{background:#8e44ad}
+.knb{display:grid;grid-template-columns:repeat(10,1fr);gap:2px;margin:6px 0}
+.kn{min-height:30px;padding:0;border:1px solid #333;border-radius:4px;background:#1a1a22;color:#bbb;font:bold 12px monospace;cursor:pointer}
+.kn.pk{background:#1d3550;color:#9cf;border-color:#6fc3ff}.kn.dr{background:#6b1d1d;color:#fff}.kn.hit{background:#ffc24a;color:#111;border-color:#fff;box-shadow:0 0 6px #ffc24a}
+.wn{max-height:60vh;overflow-y:auto;padding-right:4px}.wn .wv{border-left:3px solid var(--amber);padding:2px 0 6px 8px;margin:6px 0}.wn .wv.new{border-color:#5dff8a;background:#5dff8a0d}
+.wn ul{margin:3px 0 0 16px;padding:0}.wn li{margin:2px 0}
+.wnpop{border-color:#5dff8a;animation:wnpop .45s cubic-bezier(.2,1.6,.4,1)}@keyframes wnpop{from{transform:scale(.7) rotate(-2deg);opacity:0}to{transform:none;opacity:1}}
 </style>
 </head>
 <body>
@@ -271,6 +285,9 @@ const ITEMS = {
 const SHOP_ITEMS = ['beer','energy','sushi','coney','pepto','tums','vape','airhorn','burner','rabbit','chain','brass','jersey'];
 
 const ACHS = {
+  flip7:{ n:'Flip Seven', ic:'7️⃣', d:'Flip 7 unique numbers in a round of Flip 7.' },
+  f7pot:{ n:'Pot Sweeper', ic:'🧹', d:'Win a Flip 7 pot in Tony\'s back room.' },
+  keno:{ n:'Keno Lounge Lizard', ic:'🎱', d:'Catch 7+ numbers on a single keno ticket.' },
   first:{ n:'First Blood', ic:'🩸', d:'Win your first bet.' },
   badbeat:{ n:'Bad Beat Survivor', ic:'💔', d:'Lose a bet by a half point.' },
   backdoor:{ n:'Backdoor Bandit', ic:'🚪', d:'Win a spread bet on a garbage-time score.' },
@@ -516,6 +533,28 @@ function bgDraw(c,bg,W,H,t){
     case 'mprl': {
       c.fillStyle=g(0,H,'#1d0b2a','#0d0514'); c.fillRect(0,0,W,H); c.fillStyle='#0f5e2e'; c.fillRect(0,H*.8,W,H*.2); c.fillStyle='#5a3a1a'; c.fillRect(0,H*.78,W,5);
       c.fillStyle='#ffc24a99'; c.font='bold 10px monospace'; c.fillText('~ ROULETTE ~ 0 · 00 ~',W/2,26);
+      break; }
+    case 'f7': {
+      c.fillStyle=g(0,floor,'#1f1a12','#0e0b07'); c.fillRect(0,0,W,floor); c.fillStyle='#2a1d10'; c.fillRect(0,floor,W,H-floor);
+      for(let x=0;x<W;x+=26){ c.fillStyle='#ffffff06'; c.fillRect(x,0,2,floor); }
+      c.fillStyle='#ffd27a18'; c.beginPath(); c.moveTo(W*.5-14,10); c.lineTo(W*.5+14,10); c.lineTo(W*.5+W*.32,floor); c.lineTo(W*.5-W*.32,floor); c.closePath(); c.fill();
+      c.fillStyle='#333'; c.fillRect(W*.5-1,0,2,8); c.fillStyle='#ffd27a'; c.beginPath(); c.arc(W*.5,12,6,Math.PI,0); c.fill();
+      for(let i=0;i<3;i++){ const sx=W*(.15+i*.3)+Math.sin(t*.7+i)*10; c.fillStyle='#ffffff09'; c.beginPath(); c.ellipse(sx,H*.22+i*8,40,10,0,0,7); c.fill(); }
+      c.fillStyle='#c8b27a'; c.font='bold 11px monospace'; c.fillText("TONY'S BACK ROOM · CASH ONLY · NO SNITCHES",W/2,H*.07+10);
+      break; }
+    case 'keno': {
+      c.fillStyle=g(0,floor,'#14102a','#0a0816'); c.fillRect(0,0,W,floor); c.fillStyle='#2a1838'; c.fillRect(0,floor,W,H-floor);
+      const on=Math.floor(t*2)%2; c.fillStyle=on?'#ff7ad9':'#6fc3ff'; c.shadowColor=c.fillStyle; c.shadowBlur=8; c.font='bold 11px monospace'; c.fillText('KENO LOUNGE · 2-FOR-1 WELL DRINKS',W*.6,12); c.shadowBlur=0;
+      const K=(SC.cur&&SC.cur.keno)||{drawn:[],picks:[]}, D=new Set(K.drawn||[]), P=new Set(K.picks||[]);
+      const bw=Math.min(W*.56,300), bx=W/2-bw/2, by=22, cw=bw/10, ch=Math.min(11,(floor*.55)/8); c.fillStyle='#000'; c.fillRect(bx-3,by-3,bw+6,ch*8+6);
+      for(let n=1;n<=80;n++){ const x=bx+((n-1)%10)*cw, y=by+Math.floor((n-1)/10)*ch, d=D.has(n), p=P.has(n);
+        c.fillStyle=d&&p?'#ffc24a':d?'#c0392b':p?'#234':'#111'; c.fillRect(x+1,y+1,cw-2,ch-2); c.fillStyle=d?'#fff':p?'#8cf':'#555'; c.font=`bold ${Math.max(6,Math.floor(ch*.75))}px monospace`; c.fillText(String(n),x+cw/2,y+ch/2+.5); }
+      // ball blower
+      const bx2=W*.08, by2=H*.42, r=Math.min(26,H*.13); c.strokeStyle='#9cf8'; c.lineWidth=2; c.beginPath(); c.arc(bx2+r,by2,r,0,7); c.stroke();
+      for(let i=0;i<9;i++){ const a=t*5+i*1.7, rr=r*.6*Math.abs(Math.sin(t*3+i)); c.fillStyle=['#fff','#ffc24a','#ff7ad9','#6fc3ff'][i%4]; c.beginPath(); c.arc(bx2+r+Math.cos(a)*rr,by2+Math.sin(a*1.3)*rr,3,0,7); c.fill(); }
+      const last=(K.drawn||[])[(K.drawn||[]).length-1]; if(last){ c.fillStyle='#fff'; c.beginPath(); c.arc(bx2+r,by2+r+14,10,0,7); c.fill(); c.fillStyle='#c0392b'; c.font='bold 10px monospace'; c.fillText(String(last),bx2+r,by2+r+14.5); }
+      c.fillStyle='#5b2a6a'; c.fillRect(W*.52,floor-18,W*.2,18); c.fillStyle='#6d3a7d'; c.fillRect(W*.51,floor-26,W*.22,9);
+      c.fillStyle='#ccc'; c.font='8px monospace'; c.fillText(`${(K.drawn||[]).length}/20`,bx2+r,by2-r-6);
       break; }
     case 'title': {
       c.fillStyle=g(0,H,'#140a1e','#2a0d10'); c.fillRect(0,0,W,H);
@@ -1169,7 +1208,7 @@ function cBet(a){ addCash(-a); if(U.cs) U.cs.net=r2(U.cs.net-a); }
 function cPay(a){ if(a>0){ addCash(a); if(U.cs) U.cs.net=r2(U.cs.net+a); } }
 function chips(vals, cur, fn){ return `<div class="row">${vals.map(v=>`<button class="chip ${cur===v?'on':''}" onclick="${fn}(${v})">$${v>=1000?(v/1000)+'k':v}</button>`).join('')}</div>`; }
 function enterCasino(){ if(!useEnergy(1)){ toast('Too tired. Sleep it off, degenerate.'); return; } U.cs={net:0}; S.dayPhase='night'; U.cgame=null; go('casino'); }
-function leaveCasino(){ if(U.busy) return; if(U.scr&&!U.scr.paid) scratchFinish(true); let msg=''; if(S.craps&&crapsTotalOnTable(S.craps)>0){ const t=crapsRefundAll(); msg+=` Craps chips returned: ${money(t)}.`; }
+function leaveCasino(){ if(U.busy) return; if(U.scr&&!U.scr.paid) scratchFinish(true); let msg=''; if(U.f7&&U.f7.G.phase!=='over'){ clearTimeout(U.f7.tm); msg+=` You walked out of Flip 7 (buy-in forfeited).`; addTilt(4); } U.f7=null; if(S.craps&&crapsTotalOnTable(S.craps)>0){ const t=crapsRefundAll(); msg+=` Craps chips returned: ${money(t)}.`; }
   if(has('comped')&&U.cs&&U.cs.net<0){ const rb=r2(-U.cs.net*.1); addCash(rb); addHp(10); msg=` 🍤 Comped: ${money(rb)} loss rebate + free shrimp cocktail.`; }
   if(U.cs){ const n=U.cs.net; toast(`🎰 Session: ${n>=0?'+':''}${money(n)}.${msg}`); if(n<-100) addTilt(8); news(`Casino session: ${n>=0?'+':''}${money(n)}`); }
   U.cs=null; U.cgame=null; U.bj=null; U.scr=null; save(); go('hub'); }
@@ -1179,14 +1218,16 @@ function renderCasino(){
     setMain(`<h2>🎰 QUEEN CITY CASH PALACE</h2><div class="small dim">Smells like menthols and broken dreams. Table max: ${money(casinoMax())}. Session: <b class="${U.cs.net>=0?'g':'r'}">${U.cs.net>=0?'+':''}${money(U.cs.net)}</b></div>${tiltNote()}
       <div class="grid2"><button class="btn" onclick="cgo('bj')">🂡 Blackjack<small>6-deck, 3:2, dealer stands soft 17</small></button><button class="btn" onclick="cgo('craps')">🎲 Craps<small>Full table: line, come, odds, place, props</small></button>
       <button class="btn" onclick="cgo('slots')">🎰 Slots<small>"Turd Jackpot" edition</small></button><button class="btn" onclick="cgo('roul')">🎡 Roulette<small>American wheel. 0 and 00, baby.</small></button>
+      <button class="btn" onclick="cgo('f7')">7️⃣ Flip 7<small>Back-room card game vs. degenerates. Winner takes the pot.</small></button><button class="btn" onclick="cgo('keno')">🎱 Keno<small>80 balls, pick 1–10, multi-race. Lounge vibes.</small></button>
       <button class="btn" onclick="cgo('scr')">🎫 Scratch-offs<small>From the gift shop. Sad but legal.</small></button><button class="btn" onclick="casinoDrink()">🍸 Free Drink<small>Tip the waitress $2. +buzz, −tilt</small></button></div>
       <button class="btn gold c" data-nomk="1" onclick="mpOpen('casino')">🌐 Multiplayer tables (play with friends)</button>
       <button class="btn c" onclick="leaveCasino()">🚪 Leave the casino</button>`); return; }
-  if(g==='bj') return renderBJ(); if(g==='slots') return renderSlots(); if(g==='roul') return renderRoul(); if(g==='craps') return renderCraps(); if(g==='scr') return renderScratch();
+  if(g==='bj') return renderBJ(); if(g==='slots') return renderSlots(); if(g==='roul') return renderRoul(); if(g==='craps') return renderCraps(); if(g==='scr') return renderScratch(); if(g==='f7') return renderF7(); if(g==='keno') return renderKeno();
 }
 function cgo(g){ sfx.click(); U.cgame=g; if(g==='craps'&&!S.craps) S.craps=newCraps(); if(g==='craps') crapsScene(); if(g==='bj') scene('casino',[youActor({x:.25,pose:'idle',held:null}),{id:'d',x:.72,hat:'visor',label:'DEALER DEB',pose:'deal',color:'#ffd9a0'}],{caption:'BLACKJACK'});
   if(g==='slots') scene('casino',[youActor({x:.5,pose:'idle',held:'beer'})],{caption:'SLOTS'}); if(g==='roul') scene('casino',[youActor({x:.3,pose:'idle'}),{id:'d',x:.72,hat:'visor',label:'CROUPIER CLAUDE',pose:'deal',color:'#c8e0ff'}],{caption:'ROULETTE'}); if(g==='scr') scene('casino',[youActor({x:.5,pose:'phone',held:'slip'})],{caption:'SCRATCHERS'});
-  renderCasino(); }
+  if(g==='f7') f7Scene(); if(g==='keno') kenoScene();
+  renderCasino(); if(g==='f7'&&U.f7) f7Loop(); }
 function casinoDrink(){ if(S.cash<2){ toast('You can\'t even tip $2. The waitress pities you.'); return; } cBet(2); addBuzz(18); addTilt(-6); pose('you','drink',1500); toast(pick(['🍸 Free vodka cran. Tastes like regret and Ocean Spray.','🍸 A comped Bud Light. It\'s basically water with a press agent.','🍸 Long Island. Your liver files a restraining order.'])); renderCasino(); }
 const backBtn = `<button class="btn c" onclick="if(U.busy)return;if(U.scr&&!U.scr.paid)scratchFinish(true);U.cgame=null;renderCasino()">⬅ Casino floor</button>`;
 // ---------- Blackjack UI ----------
@@ -1345,6 +1386,240 @@ function crResolve(d1,d2){ const C=S.craps; const pt=C.point; const res=crapsRol
   else if(res.event==='point'){ crowd('point',900); }
   if(res.event==='sevenout'){ crLog(`📢 Stickman: "New shooter!" ...it's still you. Nobody else wants to play with you. (Last hand: ${C.lastShooter} rolls)`,'dim'); }
   save(); if(U.screen==='casino'&&U.cgame==='craps') renderCraps(); }
+// ===================== FLIP 7 (engine) =====================
+// Rules per The Op Games' Flip 7 (rules ed. 3.1): 94 cards = number cards 0-12 (one 0, one 1, two 2s ... twelve 12s = 79),
+// 6 modifiers (+2 +4 +6 +8 +10, x2) and 9 actions (3x Freeze, 3x Flip Three, 3x Second Chance).
+// Dealer deals one card to each player (dealer last); action cards resolve immediately. Then in turn order each active
+// player Hits or Stays (Stay only with a card in front of you). Duplicate number = bust (0 for the round) unless you hold
+// Second Chance (discard both). 7 unique numbers ends the round for everyone, +15. Score: numbers (x2 doubles them only)
+// + modifiers. Game ends after a round where someone has >= target (200); highest wins. Tie at the top -> another round.
+// The engine is a step machine: f7Advance() performs ONE atomic step (deal a card, an NPC decision, one Flip Three card...)
+// so the UI can animate, and returns 'wait' when a human must decide (G.await), 'over' when the game is done.
+const F7_TARGET=200, F7_MAXROUNDS=60, F7_RAKE=.05;
+const F7_NPCS={
+  ricky:{n:'RISKY RICKY',ic:'🤪',hat:'cap',color:'#ff9a3c',d:'Has never stayed on anything. Chases the 7 like rent money.'},
+  ned:{n:'NERVOUS NED',ic:'😰',hat:'beanie',color:'#6fc3ff',d:'Stays on 14. Sweats through his hoodie. Somehow still here.'},
+  carl:{n:'CARD-COUNTIN\' CARL',ic:'🤓',hat:'visor',color:'#5dff8a',d:'Counts every card. Banned from 3 Applebee\'s trivia nights.'},
+  tina:{n:'TILTED TINA',ic:'😤',hat:'bald',color:'#ff7ad9',d:'Plays worse the further behind she gets. So, badly.'}
+};
+const F7_BUST_TALK=["BUSTED. Absolutely cooked. {n} just donated a whole round.","{n} drew the dupe. Somewhere a bookie smiles.","Two {v}s?! {n} is DOWN BAD.","{n} pressed their luck and luck pressed charges.","{n} busts! That's a zero, champ. Like your credit score.","RIP {n}'s round. Cause of death: greed.","{n} flipped a {v} and their soul left their body.","{n} busted harder than a 2011 dubstep drop."];
+const F7_F7_TALK=["FLIP SEVEN!!! {n} hits 7 unique and ends the round. +15, sicko mode.","SEVEN DIFFERENT NUMBERS. {n} is HIM. Round over, everybody stop.","{n} just Flipped 7. Somebody call the Newgrounds front page."];
+function f7Deck(){ const d=[{t:'n',v:0}]; for(let v=1;v<=12;v++) for(let i=0;i<v;i++) d.push({t:'n',v}); for(const v of [2,4,6,8,10]) d.push({t:'m',v}); d.push({t:'x2'}); for(const a of ['freeze','flip3','sc']) for(let i=0;i<3;i++) d.push({t:'a',a}); return d; }
+function f7CardLabel(c){ if(!c) return '?'; if(c.t==='n') return String(c.v); if(c.t==='m') return '+'+c.v; if(c.t==='x2') return 'x2'; return {freeze:'FREEZE',flip3:'FLIP 3',sc:'2ND CHANCE'}[c.a]||'?'; }
+function f7Nums(p){ return p.cards.filter(c=>c.t==='n').map(c=>c.v); }
+function f7HasSC(p){ return p.cards.some(c=>c.t==='a'&&c.a==='sc'); }
+function f7Pts(p){ if(p.st==='busted') return 0; let n=0,m=0,x2=false; for(const c of p.cards){ if(c.t==='n') n+=c.v; else if(c.t==='m') m+=c.v; else if(c.t==='x2') x2=true; } return (x2?n*2:n)+m+(f7Nums(p).length>=7?15:0); }
+function f7CanStay(p){ return p.st==='active'&&p.cards.length>0; }
+function f7Active(G){ return G.players.filter(p=>p.st==='active'); }
+function f7New(players,opts){ opts=opts||{}; const n=players.length;
+  const G={ players:players.map((p,i)=>({id:p.id||('p'+i),name:p.name||'Player',npc:p.npc||null,human:!p.npc,auto:false,color:p.color||'#f2efe4',score:0,cards:[],st:'active',last:0,f7:false,busts:0,f7s:0})),
+    deck:shuffle(f7Deck()), discard:[], dealer:opts.dealer!=null?opts.dealer:Math.floor(rnd()*n), round:0, target:opts.target||F7_TARGET, q:[{k:'start'}], ev:[], await:null, phase:'idle', winners:null, rig:opts.rig||null };
+  return G; }
+function f7Draw(G){ if(G.rig&&G.rig.length) return G.rig.shift(); if(!G.deck.length){ if(!G.discard.length) return null; G.deck=shuffle(G.discard); G.discard=[]; G.ev.push({k:'reshuffle'}); } return G.deck.pop(); }
+function f7Next(G,i){ return (i+1)%G.players.length; }
+function f7StartRound(G){ G.round++; for(const p of G.players){ p.cards=[]; p.st='active'; p.f7=false; p.last=0; }
+  G.phase='deal'; G.q=[]; const n=G.players.length; for(let k=1;k<=n;k++) G.q.push({k:'deal',i:(G.dealer+k)%n}); G.q.push({k:'turn',i:f7Next(G,G.dealer)}); G.ev.push({k:'round',n:G.round,dealer:G.dealer}); }
+// a card arrives in front of player i (ctx.f3 = the Flip Three task in progress)
+function f7Flush(G){ for(const t of G.q){ if(t.card) G.discard.push(t.card); if(t.queued) G.discard.push(...t.queued); } G.q=[{k:'end'}]; }
+function f7Give(G,i,c,ctx){ const p=G.players[i]; if(!c){ f7Flush(G); return; } G.ev.push({k:'card',p:i,card:c});
+  if(c.t==='n'){ const nums=f7Nums(p);
+    if(nums.includes(c.v)){ if(f7HasSC(p)){ const j=p.cards.findIndex(x=>x.t==='a'&&x.a==='sc'); G.discard.push(p.cards.splice(j,1)[0],c); G.ev.push({k:'saved',p:i,v:c.v}); return; }
+      p.cards.push(c); p.st='busted'; p.busts++; G.ev.push({k:'bust',p:i,v:c.v}); return; }
+    p.cards.push(c); if(nums.length+1>=7){ p.f7=true; p.f7s++; G.ev.push({k:'flip7',p:i}); f7Flush(G); } return; }
+  if(c.t==='m'||c.t==='x2'){ p.cards.push(c); return; }
+  if(c.a==='sc'&&!f7HasSC(p)){ p.cards.push(c); G.ev.push({k:'sc',p:i}); return; }
+  if(ctx&&ctx.f3&&c.a!=='sc'){ ctx.f3.queued.push(c); return; } // Freeze/Flip Three during Flip Three: resolved after the 3 cards
+  G.q.unshift({k:'choose',a:c.a,from:i,card:c}); }
+function f7Cands(G,a,from){ const act=G.players.map((p,i)=>i).filter(i=>G.players[i].st==='active'); if(a==='sc') return act.filter(i=>i!==from&&!f7HasSC(G.players[i])); return act; }
+function f7Apply(G,a,from,to,card){ const T=G.players[to]; G.ev.push({k:'action',a,from,to});
+  if(a==='freeze'){ T.st='frozen'; G.discard.push(card); return; }
+  if(a==='flip3'){ G.discard.push(card); G.q.unshift({k:'f3',p:to,left:3,queued:[]}); return; }
+  if(a==='sc'){ T.cards.push(card); return; } }
+// ---- AI ----
+function f7Remaining(G){ const r=Array(13).fill(0); for(const c of G.deck) if(c.t==='n') r[c.v]++; return {r,n:G.deck.length}; }
+function f7BustP(G,p){ if(f7HasSC(p)) return 0; const {r,n}=f7Remaining(G); if(!n) return .5; let b=0; for(const v of f7Nums(p)) b+=r[v]; return b/n; }
+function f7Decide(G,i){ const p=G.players[i]; if(!f7CanStay(p)) return 'hit'; const style=p.npc||'carl', pts=f7Pts(p), bp=f7BustP(G,p), uniq=f7Nums(p).length;
+  const others=G.players.filter((q,j)=>j!==i), best=Math.max(0,...others.map(q=>q.score+(q.st==='busted'?0:f7Pts(q))));
+  if(p.score+pts>=G.target&&p.score+pts>best+5) return 'stay'; // lock the win
+  const chase=others.some(q=>q.score>=G.target-25)&&p.score+pts<best; // someone's about to win: gamble
+  if(bp===0) return pts>=70?'stay':'hit';
+  if(style==='ricky') return (bp<.5&&pts<50)||(uniq===6&&bp<.62)||chase?'hit':'stay';
+  if(style==='ned') return (bp<.2&&pts<22)||(chase&&bp<.35)?'hit':'stay';
+  if(style==='tina'){ const behind=Math.max(0,best-p.score); const lim=.14+rnd()*.18+Math.min(.22,behind/450); return bp<lim||chase?'hit':'stay'; }
+  const {r,n}=f7Remaining(G); let ev=0; for(let v=0;v<=12;v++) if(r[v]&&!f7Nums(p).includes(v)) ev+=r[v]*v*(p.cards.some(c=>c.t==='x2')?2:1); ev=n?ev/n:0; // carl: EV of one more card
+  const gain=ev+(uniq===6?(1-bp)*15:0)+n*0, loss=bp*pts; return gain*(1-bp)>loss*(chase?.5:1)?'hit':'stay'; }
+function f7Choose(G,from,a,cands){ const me=G.players[from]; const others=cands.filter(j=>j!==from); const tot=j=>G.players[j].score+f7Pts(G.players[j]);
+  if(!others.length) return cands[0];
+  if(a==='freeze'){ if(cands.includes(from)&&f7Pts(me)>=24&&f7BustP(G,me)>.25) return from; return others.slice().sort((x,y)=>(G.players[y].score-f7Pts(G.players[y])*.6)-(G.players[x].score-f7Pts(G.players[x])*.6))[0]; }
+  if(a==='flip3') return others.slice().sort((x,y)=>(f7BustP(G,G.players[y])*f7Pts(G.players[y])+tot(y)*.01)-(f7BustP(G,G.players[x])*f7Pts(G.players[x])+tot(x)*.01))[0];
+  return others.slice().sort((x,y)=>tot(x)-tot(y))[0]; } // sc: give to whoever's least scary
+// ---- step machine ----
+function f7Advance(G){ if(G.phase==='over') return 'over'; if(G.await) return 'wait'; const t=G.q.shift(); if(!t){ G.q.push({k:'start'}); return 'ok'; }
+  switch(t.k){
+    case 'start': f7StartRound(G); return 'ok';
+    case 'deal': { const p=G.players[t.i]; if(p.st!=='active') return 'ok'; f7Give(G,t.i,f7Draw(G),null); return 'ok'; }
+    case 'turn': { G.phase='turns'; if(!f7Active(G).length){ G.q.unshift({k:'end'}); return 'ok'; } let i=t.i, k=0; while(G.players[i].st!=='active'&&k++<G.players.length) i=f7Next(G,i);
+      const p=G.players[i]; if(p.npc||p.auto){ f7Do(G,i,f7Decide(G,i)); return 'ok'; } G.await={k:'decide',i}; G.ev.push({k:'yourturn',p:i}); return 'wait'; }
+    case 'choose': { const c=f7Cands(G,t.a,t.from); if(!c.length){ G.discard.push(t.card); return 'ok'; } const p=G.players[t.from];
+      if(c.length===1||p.npc||p.auto){ f7Apply(G,t.a,t.from,c.length===1?c[0]:f7Choose(G,t.from,t.a,c),t.card); return 'ok'; }
+      G.await={k:'choose',i:t.from,a:t.a,card:t.card,cands:c}; return 'wait'; }
+    case 'f3': { const p=G.players[t.p];
+      if(p.st!=='active'||t.left<=0){ if(p.st==='active') for(let j=t.queued.length-1;j>=0;j--) G.q.unshift({k:'choose',a:t.queued[j].a,from:t.p,card:t.queued[j]}); else G.discard.push(...t.queued); return 'ok'; }
+      t.left--; G.q.unshift(t); f7Give(G,t.p,f7Draw(G),{f3:t}); return 'ok'; }
+    case 'end': return f7EndRound(G);
+  } return 'ok'; }
+function f7Do(G,i,a){ const p=G.players[i]; if(a==='stay'&&!f7CanStay(p)) a='hit'; G.ev.push({k:a,p:i}); G.q.unshift({k:'turn',i:f7Next(G,i)});
+  if(a==='stay'){ p.st='stayed'; return; } f7Give(G,i,f7Draw(G),null); }
+// human input. Returns error string or null.
+function f7Act(G,i,a,to){ const W=G.await; if(!W||W.i!==i) return 'Not your move.';
+  if(W.k==='decide'){ if(a!=='hit'&&a!=='stay') return 'Hit or stay.'; if(a==='stay'&&!f7CanStay(G.players[i])) return 'You need a card in front of you to stay.'; G.await=null; f7Do(G,i,a); return null; }
+  if(W.k==='choose'){ if(a!=='target'||!W.cands.includes(to)) return 'Pick a valid target.'; G.await=null; f7Apply(G,W.a,i,to,W.card); return null; }
+  return 'Nope.'; }
+function f7AutoAct(G){ const W=G.await; if(!W) return; if(W.k==='decide') f7Act(G,W.i,f7CanStay(G.players[W.i])?'stay':'hit'); else f7Act(G,W.i,'target',f7Choose(G,W.i,W.a,W.cands)); }
+function f7EndRound(G){ if(G.await&&G.await.card) G.discard.push(G.await.card); G.await=null; f7Flush(G); G.q=[]; const res=G.players.map(p=>{ const pts=f7Pts(p); p.last=pts; p.score+=pts; return pts; });
+  for(const p of G.players){ G.discard.push(...p.cards); p.cards.splice(0); if(p.st==='active') p.st='stayed'; }
+  G.ev.push({k:'roundEnd',res}); const top=Math.max(...G.players.map(p=>p.score)), lead=G.players.map((p,i)=>i).filter(i=>G.players[i].score===top);
+  if((top>=G.target&&lead.length===1)||G.round>=F7_MAXROUNDS){ G.phase='over'; G.winners=lead; G.ev.push({k:'over',winners:lead}); return 'over'; }
+  G.phase='between'; G.dealer=f7Next(G,G.dealer); G.q=[{k:'start'}]; return 'ok'; }
+function f7Run(G,maxSteps){ maxSteps=maxSteps||100000; for(let s=0;s<maxSteps;s++){ const r=f7Advance(G); if(r==='over') return 'over'; if(r==='wait') f7AutoAct(G); } return 'stuck'; }
+// card conservation check (tests): every card is in exactly one place
+function f7CardCount(G){ let n=G.deck.length+G.discard.length; for(const p of G.players) n+=p.cards.length; for(const t of G.q){ if(t.card) n++; if(t.queued) n+=t.queued.length; } if(G.await&&G.await.card) n++; return n; }
+// ---- side bets (per round). Payouts priced from 200k simulated rounds (see tests/flip7.js); always-hit max strategy hits 8.5% -> 10:1 keeps a 6% edge; bust bets ~12%.
+const F7_SIDE={ f7:{n:'Flip 7 bonus',d:'You Flip 7 this round',pay:10}, bust:{ricky:.35,ned:3.2,carl:2.9,tina:1.1} };
+// ===================== FLIP 7 (single-player gambling UI) =====================
+// Buy in against 2-3 NPC degenerates; every NPC buys in too. Winner takes the pot minus a 5% house rake.
+// Optional side bets each round: Flip 7 bonus (you Flip 7, pays 10:1) and "bust bets" on a specific NPC.
+function f7Card(c,small){ if(!c) return ''; const k=c.t==='n'?'n'+Math.min(12,c.v):c.t==='m'||c.t==='x2'?'mod':'act a-'+c.a; return `<span class="f7c ${k}${small?' sm':''}">${esc(f7CardLabel(c))}</span>`; }
+function f7Over(c,W,H,t){ const ty=H*.74; c.fillStyle='#3b2412'; c.beginPath(); c.ellipse(W/2,ty+H*.2,W*.52,H*.24,0,Math.PI,0); c.fill(); c.fillStyle='#1d5a33'; c.beginPath(); c.ellipse(W/2,ty+H*.21,W*.49,H*.2,0,Math.PI,0); c.fill();
+  c.fillStyle='#e9e4d255'; c.font='bold 9px monospace'; c.textAlign='center'; c.textBaseline='middle'; c.fillText('FLIP 7 · NO CRYING AT THE TABLE',W/2,ty+H*.12);
+  const P=SC.cur.f7p||[]; P.forEach(p=>{ const x=p.x*W; const n=p.n||0; for(let k=0;k<Math.min(n,9);k++){ c.fillStyle=p.bust?'#a33':'#fbf7ec'; c.strokeStyle='#333'; c.fillRect(x-22+k*5,ty+4-k*.4,9,13); c.strokeRect(x-22+k*5,ty+4-k*.4,9,13); }
+    c.font='bold 10px monospace'; c.fillStyle=p.bust?'#ff5d5d':p.f7?'#ffc24a':'#fff'; c.fillText(p.tag||'',x,ty-6); }); }
+function f7Actors(G,meIdx){ const n=G.players.length; return G.players.map((p,i)=>{ const x=n<=3?[.2,.5,.8][i]:[.14,.38,.62,.86,.5,.5][i]; if(i===meIdx) return youActor({x,pose:'idle',held:null,id:'f7_'+i});
+  const N=F7_NPCS[p.npc]||{}; return {id:'f7_'+i,x,label:(N.n||p.name).split(' ').slice(-1)[0].slice(0,9),hat:N.hat||'cap',hatc:N.color,color:N.color||p.color,pose:'idle',ph:i*.9}; }); }
+function f7Scene(){ const F=U.f7; if(F&&F.G){ scene('f7',f7Actors(F.G,0),{caption:'7️⃣ FLIP 7 · BACK ROOM',over:f7Over}); f7SyncScene(); } else scene('f7',[youActor({x:.2,pose:'idle',held:'beer'}),{id:'f7d',x:.5,hat:'fedora',label:'TONY',color:'#ddd',pose:'deal'},{id:'f7n',x:.8,hat:'beanie',hatc:'#6fc3ff',label:'NED',color:'#6fc3ff',pose:'sweat'}],{caption:'7️⃣ FLIP 7 · BACK ROOM',over:f7Over}); }
+function f7SyncScene(){ const F=U.f7; if(!F||!F.G||!SC.cur||SC.cur.bg!=='f7') return; const G=F.G, n=G.players.length;
+  SC.cur.f7p=G.players.map((p,i)=>({x:n<=3?[.2,.5,.8][i]:[.14,.38,.62,.86][i],n:p.cards.length,bust:p.st==='busted',f7:p.f7,tag:p.st==='busted'?'BUST':p.st==='frozen'?'❄ '+f7Pts(p):p.st==='stayed'&&G.phase!=='between'?'✋ '+f7Pts(p):(p.cards.length?String(f7Pts(p)):'')})); }
+function f7Name(G,i){ return i===0&&!G.players[0].npc?'You':G.players[i].name; }
+function f7Log(t){ const F=U.f7; if(!F) return; F.log.push(t); if(F.log.length>40) F.log.shift(); }
+function renderF7(){ const F=U.f7; if(!F) return renderF7Setup(); const G=F.G, me=G.players[0], W=G.await;
+  let h=`<h2>7️⃣ FLIP 7 <span class="small dim">race to ${G.target} · pot <b class="a">${money(F.pot)}</b> (5% rake)</span></h2>`;
+  h+=`<div class="small dim">Round ${G.round||1}${G.round?` · dealer: ${esc(f7Name(G,G.dealer))}`:''} · deck ${G.deck.length} · buy-in ${money(F.buy)}</div>`;
+  h+=`<div class="f7tbl">${G.players.map((p,i)=>{ const N=F7_NPCS[p.npc]; const turn=W&&W.i===i; const st=p.st==='busted'?'<b class="r">BUSTED</b>':p.st==='frozen'?'<b class="b">❄ FROZEN</b>':p.st==='stayed'&&G.phase!=='between'&&G.phase!=='idle'?'<b class="g">✋ STAYED</b>':p.f7?'<b class="a">FLIP 7!</b>':'';
+    return `<div class="f7p ${turn?'on':''} ${i===0?'me':''}"><div class="row" style="justify-content:space-between"><b>${i===0?'🫵 You':(N?N.ic+' ':'')+esc(p.name)}</b><span><b class="a">${p.score}</b>${p.cards.length?` <span class="small">+${f7Pts(p)}</span>`:''} ${st}</span></div><div>${p.cards.map(c=>f7Card(c)).join('')||'<span class="small dim">—</span>'}</div>${F.sb&&F.sb.bust&&F.sb.bust[i]?`<div class="small a">💸 You bet ${money(F.sb.bust[i])} on this clown busting</div>`:''}</div>`; }).join('')}</div>`;
+  if(G.phase==='over'){ const w=G.winners; const youWon=w.includes(0); h+=`<div class="panel ${youWon?'g':'r'}"><b>${youWon?`🏆 YOU WIN THE POT! +${money(F.won)}`:`💀 ${esc(w.map(i=>f7Name(G,i)).join(' & '))} takes the pot.`}</b> ${youWon?pick(['Tony slides the cash over like it hurts him physically.','Ned is crying. Carl is recalculating his life.','Rake taken, dignity intact. Barely.']):pick(['You donated '+money(F.buy)+' to a man named Ricky.','The pot leaves with someone who smells like Axe body spray.','That buy-in was rent money, wasn\'t it.'])}</div>
+    <div class="grid2"><button class="btn go" onclick="U.f7=null;f7Scene();renderF7()">🔁 Run it back</button><button class="btn c" onclick="U.f7=null;U.cgame=null;renderCasino()">⬅ Casino floor</button></div>`; }
+  else if(W&&W.i===0&&W.k==='decide'){ const bp=f7BustP(G,me); h+=`<div class="panel small">🎯 <b>Your move.</b> Showing <b>${f7Pts(me)}</b> this round · ${f7Nums(me).length}/7 unique · bust risk on the next card ≈ <b class="${bp>.35?'r':bp>.2?'a':'g'}">${Math.round(bp*100)}%</b>${f7HasSC(me)?' (Second Chance covers you)':''}</div><div class="grid2"><button class="btn c big" onclick="f7Me('hit')">👆 HIT</button><button class="btn c big" ${f7CanStay(me)?'':'disabled'} onclick="f7Me('stay')">✋ STAY (bank ${f7Pts(me)})</button></div>`; }
+  else if(W&&W.i===0&&W.k==='choose'){ h+=`<div class="panel small">🃏 You drew <b>${f7CardLabel(W.card)}</b>. ${W.a==='freeze'?'Freeze someone (they bank their points and are out).':W.a==='flip3'?'Make someone flip three cards. Cruelty encouraged.':'You already hold one; hand this Second Chance to someone.'}</div><div class="grid2">${W.cands.map(j=>`<button class="btn c" onclick="f7Me('target',${j})">${j===0?'🫵 Myself':esc(G.players[j].name)}<small>${G.players[j].score} pts · showing ${f7Pts(G.players[j])}</small></button>`).join('')}</div>`; }
+  else if(f7WaitDeal(G)) h+=f7SideBetHtml();
+  else h+=`<div class="panel small dim">🃏 ${G.phase==='deal'?'Dealing…':'The degenerates are thinking…'}</div>`;
+  h+=`<div class="log mplog" style="max-height:150px">${F.log.slice(-10).map(x=>`<div>${x}</div>`).join('')}</div>`;
+  if(G.phase!=='over') h+=`<div class="grid2"><button class="btn c" onclick="U.f7.fast=!U.f7.fast;renderF7()">${F.fast?'⏩ Fast: ON':'▶️ Fast: OFF'}</button><button class="btn c bad" onclick="f7Fold()">${F.foldArm?'⚠️ Tap again: forfeit '+money(F.buy):'🏳️ Fold & walk'}</button></div>`;
+  setMain(h); f7SyncScene(); }
+function f7SideBetHtml(){ const F=U.f7, G=F.G, nx=F.sbNext; const tot=nx.f7+Object.values(nx.bust).reduce((a,b)=>a+b,0);
+  let h=`<div class="panel"><b>${G.round?`Round ${G.round} done.`:'Shuffle up.'}</b> <span class="small dim">Side bets for round ${G.round+1} (optional):</span>`;
+  h+=`<div class="small">7️⃣ <b>Flip 7 bonus</b> — you Flip 7 this round, pays <b>${F7_SIDE.f7.pay}:1</b> · ${money(nx.f7)}</div><div class="row">${[0,5,10,25,50].map(v=>`<button class="chip ${nx.f7===v?'on':''}" onclick="f7SB('f7',0,${v})">${v?'$'+v:'none'}</button>`).join('')}</div>`;
+  G.players.forEach((p,i)=>{ if(!p.npc) return; const o=F7_SIDE.bust[p.npc]; h+=`<div class="small">💥 <b>${esc(p.name)} busts</b> this round — pays <b>${o}:1</b> · ${money(nx.bust[i]||0)}</div><div class="row">${[0,5,10,25,50].map(v=>`<button class="chip ${(nx.bust[i]||0)===v?'on':''}" onclick="f7SB('bust',${i},${v})">${v?'$'+v:'none'}</button>`).join('')}</div>`; });
+  h+=`</div><button class="btn big go" onclick="f7Deal()">🃏 DEAL ROUND ${G.round+1}${tot?` (side bets ${money(tot)})`:''}</button>`; return h; }
+function f7SB(k,i,v){ const F=U.f7; if(!F) return; if(k==='f7') F.sbNext.f7=v; else F.sbNext.bust[i]=v; sfx.click(); renderF7(); }
+function renderF7Setup(){ const st=U.f7s=U.f7s||{buy:25,n:3,target:200}; const tiers=[25,100,500,2500].filter(v=>v<=casinoMax()*(S.whaleMode?1:1)); if(!tiers.includes(st.buy)) st.buy=tiers[0];
+  let h=`<h2>7️⃣ FLIP 7 <span class="small dim">back-room card game · winner takes the pot</span></h2>`;
+  h+=`<div class="panel small">94-card deck: number cards 0–12 (twelve 12s … one 1, one 0), modifiers +2/+4/+6/+8/+10 & x2, and action cards (3× Freeze, 3× Flip Three, 3× Second Chance). Each round: <b>hit or stay</b>. Draw a number you already have = <b class="r">BUST</b> (0 for the round) unless you hold a Second Chance. Get <b>7 unique numbers</b> = round ends, +15. Numbers ×2 (if you have it) + modifiers. First to <b>${st.target}</b> after a round wins.</div>`;
+  h+=`<div class="small dim">Buy-in (every degenerate antes the same; 5% rake)</div>${chips(tiers,st.buy,'f7SetBuy')}<div class="small dim">Opponents</div><div class="row">${[2,3].map(n=>`<button class="chip ${st.n===n?'on':''}" onclick="U.f7s.n=${n};renderF7()">${n} degenerates</button>`).join('')}</div>`;
+  h+=`<div class="small dim">Game length</div><div class="row"><button class="chip ${st.target===200?'on':''}" onclick="U.f7s.target=200;renderF7()">Race to 200 (official)</button><button class="chip ${st.target===100?'on':''}" onclick="U.f7s.target=100;renderF7()">Race to 100 (quick)</button></div>`;
+  h+=`<div class="panel small">${Object.values(F7_NPCS).map(N=>`${N.ic} <b>${N.n}</b> — ${N.d}`).join('<br>')}</div>`;
+  h+=`<button class="btn big go" ${st.buy<=S.cash?'':'disabled'} onclick="f7Start()">🃏 BUY IN ${money(st.buy)} · POT ${money(st.buy*(st.n+1))}</button>${backBtn}`; setMain(h); }
+function f7SetBuy(v){ U.f7s.buy=v; renderF7(); }
+function f7Start(){ const st=U.f7s; if(st.buy>S.cash) return toast('You can\'t cover the buy-in. Tony doesn\'t do IOUs.'); const keys=shuffle(Object.keys(F7_NPCS)).slice(0,st.n);
+  cBet(st.buy); const G=f7New([{id:'you',name:S.name||'You'},...keys.map(k=>({id:k,npc:k,name:F7_NPCS[k].n}))],{target:st.target,rig:U.f7Rig||null});
+  U.f7={G,buy:st.buy,pot:st.buy*(st.n+1),log:[`🃏 ${keys.map(k=>F7_NPCS[k].n).join(', ')} buy in. Pot: ${money(st.buy*(st.n+1))}.`],fast:false,sb:null,sbNext:{f7:0,bust:{}},won:0,paid:false};
+  S.stats2.f7=(S.stats2.f7||0)+1; sfx.coin(); f7Scene(); renderF7(); }
+function f7Deal(){ const F=U.f7; if(!F) return; const G=F.G; if(!(G.q[0]&&G.q[0].k==='start')||G.await) return; const nx=F.sbNext, tot=nx.f7+Object.values(nx.bust).reduce((a,b)=>a+b,0);
+  if(tot>S.cash) return toast('Side bets cost more than you have. Classic.'); if(tot) cBet(tot); F.sb={f7:nx.f7,bust:Object.assign({},nx.bust)}; if(tot) f7Log(`💸 Side bets: ${money(tot)}.`); F.dealGo=true; f7Loop(); }
+function f7Me(a,to){ const F=U.f7; if(!F) return; const err=f7Act(F.G,0,a,to); if(err) return toast(err); sfx.click(); f7Loop(); }
+function f7Fold(){ const F=U.f7; if(!F) return; if(!F.foldArm){ F.foldArm=true; setTimeout(()=>{ if(U.f7===F){ F.foldArm=false; if(U.cgame==='f7') renderF7(); } },4000); return renderF7(); }
+  clearTimeout(F.tm); toast(`🏳️ You walked. ${money(F.buy)} stays in the pot. Ricky thanks you.`); addTilt(4); U.f7=null; U.busy=false; f7Scene(); renderF7(); }
+function f7WaitDeal(G){ return (G.phase==='between'||G.phase==='idle')&&G.q[0]&&G.q[0].k==='start'; }
+function f7Loop(){ const F=U.f7; if(!F) return; clearTimeout(F.tm); if(U.cgame!=='f7'||U.screen!=='casino'){ U.busy=false; return; } const G=F.G;
+  if(G.phase==='over'||G.await||(f7WaitDeal(G)&&!F.dealGo)){ U.busy=false; return renderF7(); }
+  F.dealGo=false; U.busy=true; const r=f7Advance(G); let delay=F.fast?120:430; while(G.ev.length) delay=Math.max(delay,f7Ev(G.ev.shift())*(F.fast?.3:1));
+  renderF7(); if(r==='over'||G.await||f7WaitDeal(G)){ U.busy=false; if(r!=='over'&&!G.await) renderF7(); return; } F.tm=setTimeout(f7Loop,delay); }
+function f7Ev(e){ const F=U.f7, G=F.G, nm=i=>esc(f7Name(G,i)), aid=i=>'f7_'+i;
+  switch(e.k){
+    case 'round': f7Log(`<b class="b">— Round ${e.n} —</b> ${nm(e.dealer)} deals.`); return 500;
+    case 'card': sfx.tick(); if(e.card.t==='a') { f7Log(`🃏 ${nm(e.p)} flips <b>${f7CardLabel(e.card)}</b>.`); return 650; } return 380;
+    case 'bust': { const line=pick(F7_BUST_TALK).replace('{n}',nm(e.p)).replace('{v}',e.v); f7Log(`💥 ${line}`); pose(aid(e.p),e.p===0?'facepalm':'cry',1800,'idle'); say(aid(e.p),pick(['NOOOO','I hate it here','RIGGED','bro…','I need an adult']),1600); if(e.p===0){ sfx.lose(); fx.text('BUST','#ff5d5d'); addTilt(2); } else if(chance(.25)) sfx.fart(); if(chance(.3)) fx.shake(); return 900; }
+    case 'flip7': f7Log(`⭐ ${pick(F7_F7_TALK).replace('{n}',nm(e.p))}`); pose(aid(e.p),'celebrate',2200,'idle'); if(e.p===0){ unlock('flip7'); sfx.big(); fx.money(25); } else sfx.win(); return 1100;
+    case 'saved': f7Log(`🛟 Second Chance saves ${nm(e.p)}! The dupe ${e.v} goes in the trash.`); return 700;
+    case 'sc': f7Log(`🛟 ${nm(e.p)} pockets a Second Chance.`); return 400;
+    case 'action': { const t={freeze:`❄️ ${nm(e.from)} FREEZES ${e.from===e.to?'themself (banking it)':nm(e.to)}. Cold.`,flip3:`🔥 ${nm(e.from)} makes ${e.from===e.to?'themself':nm(e.to)} FLIP THREE. Pray.`,sc:`🛟 ${nm(e.from)} hands ${nm(e.to)} a Second Chance. Charity.`}[e.a]; f7Log(t); pose(aid(e.from),'point',900,'idle'); return 750; }
+    case 'stay': f7Log(`✋ ${nm(e.p)} stays on ${f7Pts(G.players[e.p])}.`); if(e.p) say(aid(e.p),pick(['I\'m good. I\'m GOOD.','Banking it, nerds.','Not today, Satan.','Mama didn\'t raise a buster.']),1300); return 520;
+    case 'hit': if(e.p) say(aid(e.p),pick(['Hit me.','Again.','Daddy needs a 7.','YOLO','one more…']),900); return 250;
+    case 'yourturn': return 0;
+    case 'reshuffle': f7Log('♻️ Deck\'s dry. Reshuffling the discards.'); return 500;
+    case 'roundEnd': { f7Log(`📊 Round ${G.round}: ${e.res.map((p,i)=>`${nm(i)} +${p}`).join(' · ')}`); f7SettleSide(); return 600; }
+    case 'over': f7PayPot(e.winners); return 0;
+  } return 300; }
+function f7SettleSide(){ const F=U.f7, G=F.G, S7=F.sb; if(!S7) return; let ret=0, stake=S7.f7;
+  if(S7.f7&&G.players[0].f7){ ret+=S7.f7*(1+F7_SIDE.f7.pay); f7Log(`💰 Flip 7 bonus hits: ${money(S7.f7*(1+F7_SIDE.f7.pay))}!`); }
+  for(const i in S7.bust){ const a=S7.bust[i]; if(!a) continue; stake+=a; const p=G.players[i]; if(p.st==='busted'){ const w=r2(a*(1+F7_SIDE.bust[p.npc])); ret+=w; f7Log(`💰 ${esc(p.name)} busted like you prayed: ${money(w)}.`); } }
+  if(ret) cPay(r2(ret)); else if(stake) f7Log(`🧾 Side bets lost (${money(stake)}). Tony pockets it.`); F.sb=null; }
+function f7PayPot(winners){ const F=U.f7; if(!F||F.paid) return; F.paid=true; const share=r2(F.pot*(1-F7_RAKE)/winners.length);
+  if(winners.includes(0)){ cPay(share); F.won=r2(share-F.buy); unlock('f7pot'); sfx.big(); fx.money(30); pose('f7_0','celebrate',3000,'idle'); addTilt(-8); gainXp(15+F.buy/10); news(`Won a ${money(F.pot)} Flip 7 pot in the back room.`); }
+  else { sfx.lose(); addTilt(Math.min(12,3+F.buy/Math.max(20,S.cash)*20)); gainXp(5); }
+  f7Log(`🏁 Game over. ${winners.map(i=>esc(f7Name(F.G,i))).join(' & ')} win${winners.length>1?'':'s'} ${money(share)} (pot ${money(F.pot)} minus ${money(r2(F.pot*F7_RAKE))} rake).`); save(); }
+// ===================== KENO =====================
+// 80-ball keno: pick 1-10 spots, the house draws 20. Paytable = "pays X for 1" (total return, stake included).
+// Vegas-style video-keno-ish table; exact RTP per spot count is computed from the hypergeometric distribution
+// (kenoRTP) and sits between 75% (1-spot) and ~87%, i.e. between live keno (~70-75%) and video keno (~90%).
+const KENO_PAY={1:{1:3},2:{2:14},3:{2:2,3:40},4:{2:1,3:5,4:140},5:{3:2,4:25,5:600},6:{3:1,4:8,5:90,6:1800},7:{3:1,4:3,5:20,6:250,7:7000},8:{4:1,5:10,6:90,7:1500,8:25000},9:{4:1,5:5,6:40,7:300,8:4000,9:30000},10:{0:3,5:2,6:20,7:130,8:1000,9:5000,10:100000}};
+const KENO_CAP=250000, KENO_RACES=[1,2,5,10,20];
+function kenoC(n,k){ if(k<0||k>n) return 0; let r=1; for(let i=1;i<=k;i++) r=r*(n-k+i)/i; return r; }
+function kenoP(spots,hits){ return kenoC(20,hits)*kenoC(60,spots-hits)/kenoC(80,spots); }
+function kenoRTP(spots){ let r=0; for(const h in KENO_PAY[spots]) r+=kenoP(spots,+h)*KENO_PAY[spots][h]; return r; }
+function kenoDraw(rig){ if(rig&&rig.length===20) return rig.slice(); const a=[]; for(let i=1;i<=80;i++) a.push(i); shuffle(a); return a.slice(0,20); }
+function kenoValid(spots){ return Array.isArray(spots)&&spots.length>=1&&spots.length<=10&&spots.every(n=>Number.isInteger(n)&&n>=1&&n<=80)&&new Set(spots).size===spots.length; }
+function kenoSettle(spots,drawn,bet){ const d=new Set(drawn); const hits=spots.filter(n=>d.has(n)).length; const mult=(KENO_PAY[spots.length]||{})[hits]||0; return {hits,mult,ret:r2(Math.min(KENO_CAP,bet*mult))}; }
+function kenoQuick(n){ const a=[]; for(let i=1;i<=80;i++) a.push(i); return shuffle(a).slice(0,clamp(n,1,10)).sort((x,y)=>x-y); }
+const KENO_TALK={big:['KENO! The lounge goes feral. Somebody spilled a White Claw.','Karen the keno runner sprints your ticket like it\'s a kidney transplant.','You hit! The old guy in the Bengals jacket nods slowly. Respect.'],small:['Small hit. Enough for a Coors Light and some shame.','Ticket paid. Barely. Karen sighs on your behalf.'],none:['Nothing. Your numbers are in witness protection.','Zero catches. Karen pats your shoulder. "Next one, hun."','You picked your ex\'s birthday again, didn\'t you.','Brick. The balls hate you personally.']};
+// ---------- single-player UI ----------
+function kenoMaxBet(){ return S.whaleMode?250:S.cash>10000?50:25; }
+function kenoScene(){ scene('keno',[youActor({x:.18,pose:'idle',held:'slip'}),{id:'kr',x:.82,flip:true,hat:'visor',label:'KENO KAREN',color:'#ffd9a0',pose:'idle',held:'slip'},{id:'oldguy',x:.62,hat:'cap',hatc:'#f60',label:'BENGALS BOB',color:'#ccc',pose:'sit',s:.85}],{caption:'🎱 KENO LOUNGE',keno:{drawn:[],picks:[]}}); }
+function renderKeno(){ const K=U.kn=U.kn||{picks:[],bet:1,races:1,drawn:[],shown:0,hist:[],fast:false,run:null,msg:''}; const s=K.picks.length, mx=kenoMaxBet(); if(K.bet>mx) K.bet=mx;
+  const busy=!!K.run; let h=`<h2>🎱 KENO LOUNGE <span class="small dim">80 balls · pick 1–10 · 20 drawn</span></h2>${tiltNote()}`;
+  h+=`<div class="small">${busy?`🎱 Race <b>${K.run.total-K.run.left}</b> of ${K.run.total} · won ${money(K.run.won)} so far`:`Picked <b>${s}</b>/10 · Bet ${money(K.bet)} × ${K.races} race${K.races>1?'s':''} = <b>${money(K.bet*K.races)}</b>`}</div>`;
+  h+=`<div class="knb" id="knb">${kenoBoardCells(K.picks,K.drawn.slice(0,K.shown),!busy)}</div><div class="c small" id="knmsg" style="min-height:18px;text-align:center">${K.msg||''}</div>`;
+  if(!busy){ h+=`<div class="row"><span class="small dim">Quick pick:</span>${[1,2,3,4,5,6,7,8,9,10].map(n=>`<button class="chip" onclick="kenoQP(${n})">${n}</button>`).join('')}<button class="chip" onclick="kenoClear()">✖</button></div>`;
+    h+=`<div class="small dim">Bet per race</div>${chips([1,2,5,10,25,50,100,250].filter(v=>v<=mx),K.bet,'kenoBet')}<div class="small dim">Races (same ticket, back-to-back)</div><div class="row">${KENO_RACES.map(n=>`<button class="chip ${K.races===n?'on':''}" onclick="kenoRaces(${n})">${n}×</button>`).join('')}</div>`;
+    h+=`<div class="grid2"><button class="btn big go" onclick="kenoPlay()" ${s&&K.bet*K.races<=S.cash?'':'disabled'}>🎱 PLAY ${money(K.bet*K.races)}</button><button class="btn c" onclick="U.kn.fast=!U.kn.fast;renderKeno()">${K.fast?'⏩ Fast draw: ON':'▶️ Fast draw: OFF'}</button></div>`; }
+  else h+=`<button class="btn c" onclick="kenoStop()" ${K.run.left>0?'':'disabled'}>✋ Stop after this race (refund ${money(K.run.left*K.bet)})</button>`;
+  h+=kenoPaytableHtml(s||K.lastSpots||5,K.lastHits);
+  if(K.hist.length) h+=`<div class="panel small"><b>Recent tickets</b><br>${K.hist.slice(-6).reverse().map(x=>`${x.s}-spot · caught ${x.h} · ${x.ret>0?`<b class="g">+${money(x.ret)}</b>`:'<span class="dim">$0</span>'}`).join('<br>')}</div>`;
+  h+=busy?'':backBtn; setMain(h); kenoSyncScene(); }
+function kenoBoardCells(picks,drawn,clickable,fn){ fn=fn||'kenoTog'; const P=new Set(picks), D=new Set(drawn); let h=''; for(let n=1;n<=80;n++){ const cls=(P.has(n)?' pk':'')+(D.has(n)?' dr':'')+(P.has(n)&&D.has(n)?' hit':''); h+=`<button class="kn${cls}" id="kn${n}" ${clickable?`onclick="${fn}(${n})"`:'tabindex="-1"'}>${n}</button>`; } return h; }
+function kenoPaytableHtml(spots,hit){ const T=KENO_PAY[spots]; return `<div class="panel small"><b>${spots}-spot paytable</b> <span class="dim">(pays X for 1 · RTP ${(kenoRTP(spots)*100).toFixed(1)}% · max ${money(KENO_CAP)}/race)</span><br>${Object.keys(T).sort((a,b)=>b-a).map(k=>`<span class="${+k===hit?'a':''}">catch ${k}: <b>${T[k].toLocaleString()}×</b></span>`).join(' · ')}</div>`; }
+function kenoSyncScene(){ if(SC.cur&&SC.cur.bg==='keno'&&U.kn){ SC.cur.keno={drawn:U.kn.drawn.slice(0,U.kn.shown),picks:U.kn.picks}; } }
+function kenoTog(n){ const K=U.kn; if(K.run) return; const i=K.picks.indexOf(n); if(i>=0) K.picks.splice(i,1); else if(K.picks.length<10) K.picks.push(n); else return toast('Ten spots max. This isn\'t the Powerball, Grandma.'); K.drawn=[]; K.shown=0; K.msg=''; sfx.click(); renderKeno(); }
+function kenoQP(n){ const K=U.kn; if(K.run) return; K.picks=kenoQuick(n); K.drawn=[]; K.shown=0; K.msg=`🎲 Quick pick: ${n} spot${n>1?'s':''}. Karen picked them. Blame Karen.`; sfx.click(); renderKeno(); }
+function kenoClear(){ const K=U.kn; if(K.run) return; K.picks=[]; K.drawn=[]; K.shown=0; K.msg=''; renderKeno(); }
+function kenoBet(v){ U.kn.bet=v; renderKeno(); }
+function kenoRaces(n){ U.kn.races=n; renderKeno(); }
+function kenoPlay(){ const K=U.kn; if(K.run||!K.picks.length) return; const cost=K.bet*K.races; if(cost>S.cash) return toast('Can\'t afford that ticket. Karen\'s judging you.'); if(K.bet>kenoMaxBet()) return;
+  cBet(cost); K.run={left:K.races,total:K.races,won:0}; U.busy=true; K.lastSpots=K.picks.length; say('kr',pick(['Good luck, hun!','Ooh, birthdays? Bold.','Ticket\'s in!']),1400); kenoRace(); }
+function kenoStop(){ const K=U.kn; if(!K.run||K.run.left<=0) return; const ref=K.run.left*K.bet; cPay(ref); K.run.total-=K.run.left; K.run.left=0; toast(`✋ Remaining races refunded: ${money(ref)}.`); renderKeno(); }
+function kenoRace(){ const K=U.kn; if(!K||!K.run) return; K.run.left--; K.drawn=kenoDraw(U.knRig); K.shown=0; K.msg='🎱 Drawing…'; K.lastHits=null; renderKeno(); pose('kr','point'); 
+  const step=()=>{ if(U.kn!==K||!K.run) return; K.shown++; const n=K.drawn[K.shown-1], el=document.getElementById('kn'+n); if(el){ el.classList.add('dr'); if(K.picks.includes(n)){ el.classList.add('hit'); sfx.coin(); } else sfx.tick(); }
+    const m=document.getElementById('knmsg'); const hits=K.picks.filter(x=>K.drawn.slice(0,K.shown).includes(x)).length; if(m) m.innerHTML=`Ball ${K.shown}/20: <b>${n}</b> · caught <b class="${hits?'g':''}">${hits}</b>`; kenoSyncScene();
+    if(K.shown<20) setTimeout(step,K.fast?45:170); else setTimeout(kenoRaceDone,K.fast?150:500); };
+  setTimeout(step,K.fast?60:350); }
+function kenoRaceDone(){ const K=U.kn; if(!K||!K.run) return; const r=kenoSettle(K.picks,K.drawn,K.bet); cPay(r.ret); K.run.won=r2(K.run.won+r.ret); K.lastHits=r.hits; S.stats2.keno=(S.stats2.keno||0)+1; gainXp(1+K.bet/40);
+  K.hist.push({s:K.picks.length,h:r.hits,ret:r.ret}); if(K.hist.length>30) K.hist.shift(); const net=r.ret-K.bet;
+  if(r.hits>=7) unlock('keno');
+  if(r.mult>=10){ K.msg=`<b class="a">🎱 CAUGHT ${r.hits}! ${r.mult}× → ${money(r.ret)}</b> ${pick(KENO_TALK.big)}`; sfx.big(); fx.money(Math.min(40,10+r.mult/10)); pose('you','celebrate',2000,'idle'); say('oldguy','HELL YEAH',1500); }
+  else if(r.ret>0){ K.msg=`<span class="g">Caught ${r.hits}: ${money(r.ret)} back.</span> ${pick(KENO_TALK.small)}`; sfx.win(); }
+  else { K.msg=`<span class="r">Caught ${r.hits}. $0.</span> ${pick(KENO_TALK.none)}`; addTilt(.4); if(chance(.4)) say('oldguy',pick(['Rigged.','Play 7-14-21, kid.','My wife left me for a keno runner.']),1600); }
+  if(net<0&&K.bet>=25) addTilt(1);
+  if(K.run.left>0){ renderKeno(); setTimeout(()=>{ if(U.kn===K&&K.run) kenoRace(); },K.fast?500:1400); return; }
+  const tot=K.run; K.run=null; U.busy=false; if(tot.total>1) K.msg+=`<br>🧾 ${tot.total} races: returned ${money(tot.won)} on ${money(tot.total*K.bet)}.`; save(); renderKeno(); }
 // ===================== MULTIPLAYER: HOST-AUTHORITATIVE ROOM LOGIC =====================
 // Transport-agnostic. The host's browser runs this; clients only send intents ("I bet $25 on red").
 // Everything a client sends is validated here. Money moves via a per-player LEDGER of numbered
@@ -1352,13 +1627,15 @@ function crResolve(d1,d2){ const C=S.craps; const pt=C.point; const res=crapsRol
 // client applies to its OWN single-player save (the bankroll lives in the save, the host tracks a mirror).
 const MPC = { VER:1, MAXP:5, SEATS:5, BJ_MIN:5, BJ_MAX:1000, TMAX:500, SB_MAXBETS:12,
   BET_MS:15000, TURN_MS:20000, DEAL_MS:650, DONE_MS:5000, RL_MS:20000, RL_SPIN_MS:3200, RL_DONE_MS:4500,
-  CR_MS:25000, CR_ROLL_MS:700, SB_MS:90000, SB_LIVE_MS:45000, SB_FINAL_MS:25000, DC_MS:60000, MAXCASH:1e8, CHATLEN:120, LOANS:[250,500,1000,2500], LOAN_GAP:2000 };
+  CR_MS:25000, CR_ROLL_MS:700, SB_MS:90000, SB_LIVE_MS:45000, SB_FINAL_MS:25000, DC_MS:60000, MAXCASH:1e8, CHATLEN:120, LOANS:[250,500,1000,2500], LOAN_GAP:2000,
+  F7_BUYS:[25,100,500], F7_LOBBY_MS:20000, F7_SB_MS:12000, F7_DONE_MS:10000, F7_SBV:[0,5,10,25,50], F7_TURN_MS:20000,
+  KN_MAX:25, KN_BETS:[1,2,5,10,25], KN_RACES:[1,2,5,10], KN_MS:15000, KN_NEXT_MS:6000, KN_BALL_MS:180, KN_DONE_MS:4000 };
 const MP_COLORS=['#f2efe4','#ff6b6b','#6fc3ff','#5dff8a','#ffc24a','#ff7ad9','#b78bff','#ff9a3c','#3ee6d0'];
 const MP_TALK=["Hit on 16, you coward","Dealer's rigged","Sal is gonna kill me","LET IT RIDE","That was MY card","Bro is down BAD","Easy money 💰","I'm calling my mom","Nice hit, nerd","Who touched the dice?!","Seven out? GET OUT.","Drinks on me (lie)","Pray for me 🙏","gg go next","Sir, this is a Wendy's"];
 // in-session loans: same menu/terms as Big Sal's deli (borrow()/loanCap() in 30_core.js); announced in chat
 const MP_LOAN_TALK=["🥪 {n} just borrowed {a} from Big Sal's cousin at the deli.","🦈 {n} took {a} from Big Sal. Kneecaps are the collateral.","💸 {n} re-upped {a} on Sal's tab. Mom's gonna hear about this.","🥪 {n} went for a pastrami on rye and came back with {a} and a pinky-finger clause.","📞 {n} called Sal for {a}. Sal said \"last time\" for the 9th time.","🧾 {n} signed for {a} on a deli napkin. Legally binding in Big Sal's courtroom."];
 const MP_EMOJI=['😂','💀','🤡','🔥','🐋','💩','🍺','😭'];
-const MP_TABLES=['lobby','bj','cr','rl','sb'];
+const MP_TABLES=['lobby','bj','cr','rl','sb','f7','kn'];
 const RL_KEYS=new Set(['red','black','odd','even','low','high','d1','d2','d3','c1','c2','c3']);
 function mpCleanText(s,n){ return String(s==null?'':s).replace(/[\u0000-\u001f\u007f\u200b-\u200f\u2028-\u202e\u2066-\u2069\ufeff]/g,'').replace(/\s+/g,' ').trim().slice(0,n); }
 function mpInt(v,lo,hi){ if(typeof v==='string'&&v.trim()!=='') v=Number(v); if(typeof v!=='number'||!Number.isFinite(v)) return null; v=Math.floor(v); return (v<lo||v>hi)?null:v; }
@@ -1404,6 +1681,10 @@ function mpHostCreate(io){ // io: {send(cid,msg), now(), room, sess}
     bjLeave(p,true); crRefundAll(p,'Left the craps table: chips returned'); if(cr.shooter===cid) cr.shooter=null;
     if(rl.phase==='bet'&&rl.bets[cid]){ const t=sumObj(rl.bets[cid]); delete rl.bets[cid]; delete rl.ready[cid]; led(p,'rl'+(rl.spinNo+1),t,0,'Roulette bets returned'); }
     if(voluntary) for(const b of sb.bets) if(b.cid===cid&&b.status==='open'){ b.status='void'; led(p,b.id,b.stake,0,'Sportsbook bet voided (you left)'); }
+    if(f7.phase==='lobby') f7Out(p,'Left: Flip 7 buy-in returned');
+    else if(f7.phase==='play'){ const i=f7.cids.indexOf(cid); if(i>=0){ if(voluntary) f7Fold(cid,'left the room'); else f7.G.players[i].auto=true; }
+      if(f7.sbNext[cid]){ const B=f7.sbNext[cid]; delete f7.sbNext[cid]; led(p,f7SbW(),f7SbTot(B),0,'Flip 7 side bets returned (you left)'); } }
+    if(kn.tickets[cid]){ if(kn.phase==='draw'&&kn.inRace.includes(cid)) kn.tickets[cid].gone=true; else knCancel(p,'Left: keno ticket refunded'); }
     H.order=H.order.filter(c=>c!==cid); delete H.P[cid]; p.conn=false; H.ghost[cid]=p; sys(`🚪 ${p.name} ${why}.`); }
   // ---------------- messages ----------------
   H.msg=function(cid,m){ const p=H.P[cid]; if(!p||!m||typeof m!=='object'||H.closed) return; try{ switch(m.t){
@@ -1425,8 +1706,18 @@ function mpHostCreate(io){ // io: {send(cid,msg), now(), room, sess}
     case 'sb.ready': if(sb.phase==='bet'){ sb.ready[cid]=1; dirty(); } return;
     case 'sb.start': if(!p.isHost) return rej(p,'Only the host can start the games.'); if(sb.phase==='bet'&&sb.bets.some(b=>b.status==='open')) sbStart(); else rej(p,'Nobody has bet yet.'); return;
     case 'sb.next': if(!p.isHost) return rej(p,'Only the host can roll the slate.'); if(sb.phase==='final') sbNewSlate(); return;
+    case 'f7.buy': return f7Buy(p,mpInt(m.amt,1,1e6),mpInt(m.target,1,1000));
+    case 'f7.out': if(f7.phase!=='lobby') return rej(p,'Game already dealt. You\'re in it now.'); return f7Out(p);
+    case 'f7.ready': if((f7.phase==='lobby'&&f7.seats.includes(cid))||(f7.phase==='play'&&f7.sbOpen)){ f7.ready[cid]=1; dirty(); } return;
+    case 'f7.sb': return f7Sb(p,String(m.k||''),m.i==null?null:mpInt(m.i,0,9),mpInt(m.v,0,1000));
+    case 'f7.act': return f7ActMsg(p,String(m.a||''),m.to==null?null:mpInt(m.to,0,9));
+    case 'kn.ticket': return knTicket(p,m.spots,mpInt(m.bet,1,1e6),mpInt(m.races,1,1000));
+    case 'kn.cancel': if(kn.phase==='draw'&&kn.inRace.includes(cid)) return rej(p,'Balls are flying. Cancel after this race.'); return knCancel(p);
+    case 'kn.ready': if(kn.phase!=='draw'&&kn.tickets[cid]){ kn.ready[cid]=1; dirty(); } return;
     default: return; } }catch(e){ console.warn('mp host msg error',e); } };
-  function go(p,tb){ if(!MP_TABLES.includes(tb)||p.table===tb) return; const old=p.table; p.table=tb; if(old==='bj') bjLeave(p,false); if(tb==='bj') bjSit(p); if(tb==='sb'&&!sb.day) sbNewSlate(); dirty(); }
+  function go(p,tb){ if(!MP_TABLES.includes(tb)||p.table===tb) return; const old=p.table; p.table=tb; if(old==='bj') bjLeave(p,false);
+    if(old==='f7'&&f7.phase==='lobby'&&f7.seats.includes(p.cid)) f7Out(p,'Left the Flip 7 table: buy-in returned');
+    if(tb==='f7'&&f7.phase==='play'){ const i=f7.cids.indexOf(p.cid); if(i>=0&&!f7.folded[p.cid]) f7.G.players[i].auto=false; } if(tb==='bj') bjSit(p); if(tb==='sb'&&!sb.day) sbNewSlate(); dirty(); }
   function chat(p,m){ const t=now(); if(t-p.lastChat<700){ if(++p.chatBurst>4) return rej(p,'Easy on the trash talk. (rate limit)'); } else p.chatBurst=0; p.lastChat=t;
     let txt, em=false; if(m.em!=null){ const i=mpInt(m.em,0,200); if(i==null) return; txt=i>=100?MP_EMOJI[i-100]:MP_TALK[i]; if(!txt) return; em=true; } else { txt=mpCleanText(m.txt,MPC.CHATLEN); if(!txt) return; }
     H.chat.push({i:++H.chatN,id:p.id,name:p.name,color:p.color,txt,em}); if(H.chat.length>60) H.chat.splice(0,H.chat.length-60); dirty(); }
@@ -1434,7 +1725,7 @@ function mpHostCreate(io){ // io: {send(cid,msg), now(), room, sess}
   // The client reports its save's lvl/debt; the host re-runs Sal's loanCap() rule on them, and never lets the
   // effective debt go below what this session already lent (debt can't be paid down while online), so a
   // client can't lie its way past the single-player credit limit. No loans while your own money is mid-hand.
-  function loanBusy(c){ return (bj.hands[c]&&(bj.phase==='play'||bj.phase==='dealer'))||(rl.phase==='spin'&&!!rl.bets[c]); }
+  function loanBusy(c){ return (bj.hands[c]&&(bj.phase==='play'||bj.phase==='dealer'))||(rl.phase==='spin'&&!!rl.bets[c])||f7Busy(c)||(kn.phase==='draw'&&kn.inRace.includes(c)); }
   function loan(p,m){ const amt=mpInt(m.amt,1,1e6); if(amt==null||!MPC.LOANS.includes(amt)) return rej(p,'Sal only does $250, $500, $1k or $2.5k.');
     if(m.whale) return rej(p,"Sal doesn't lend to his business partners.");
     if(loanBusy(p.cid)) return rej(p,'✋ No re-upping mid-hand. Finish the hand first.');
@@ -1555,8 +1846,113 @@ function mpHostCreate(io){ // io: {send(cid,msg), now(), room, sess}
     if(best&&best.net>0) sb.ticker.push({txt:`🏆 Bet of the night: ${nm(best.cid)} +${money(best.net)}`,cls:'big'}); if(worst&&worst.net<0) sb.ticker.push({txt:`🤡 Worst beat: ${nm(worst.cid)} ${money(worst.net)}. Thoughts and prayers.`,cls:'roast'}); dirty(); }
   function sbTick(t){ if(sb.phase==='bet'&&sb.deadline){ const here=atTable('sb').filter(c=>H.P[c].conn); if(here.length&&here.every(c=>sb.ready[c])) sb.deadline=Math.min(sb.deadline,t+2000); if(t>=sb.deadline){ if(sb.bets.some(b=>b.status==='open')) sbStart(); else sb.deadline=0; } }
     else if(sb.phase==='live') sbLive(t); else if(sb.phase==='final'&&t>=sb.finalAt) sbNewSlate(); }
+
+  // ---------------- FLIP 7 (buy in vs each other + house degenerates; winner takes the pot minus 5% rake) ----------------
+  // Humans buy in at the lobby (first buyer sets the stakes), house bots fill the game to 3 players and their buy-ins are
+  // staked by the house. The shared engine (53_flip7.js) runs here; one atomic step per tick so everyone sees the cards land.
+  // Side bets (Flip 7 bonus on yourself, "X busts" on a house bot) open between rounds. Turn timer -> autopilot.
+  const f7=H.f7={ phase:'lobby', buy:0, target:100, seats:[], ready:{}, deadline:0, gameNo:0, G:null, cids:[], folded:{}, pot:0, stepAt:0, turnAt:0, sbOpen:false, sbDeadline:0, sbNext:{}, sbLive:{}, log:[], doneAt:0, res:null, dealGo:false };
+  const f7SbTot=B=>r2((B.f7||0)+sumObj(B.bust||{}));
+  const f7SbW=()=>'f7s'+f7.gameNo+'.'+((f7.G?f7.G.round:0)+1);
+  function f7L(t){ f7.log.push(String(t).slice(0,220)); if(f7.log.length>40) f7.log.splice(0,f7.log.length-40); }
+  function f7Busy(c){ if(f7.phase!=='play'||!f7.G||!(f7.G.phase==='deal'||f7.G.phase==='turns')) return false; return (f7.cids.includes(c)&&!f7.folded[c])||!!f7.sbLive[c]; }
+  function f7Buy(p,amt,target){ if(f7.phase!=='lobby') return rej(p,'Game in progress. Next one starts after this.'); if(p.table!=='f7') return rej(p,'Walk over to the Flip 7 table first.');
+    if(f7.seats.includes(p.cid)) return rej(p,"You're already in."); if(f7.seats.length>=MPC.MAXP) return rej(p,'Flip 7 table is full.');
+    if(!f7.seats.length){ if(amt==null||!MPC.F7_BUYS.includes(amt)) return rej(p,'Buy-ins are $25, $100 or $500.'); f7.buy=amt; f7.target=target===200?200:100; }
+    if(f7.buy>p.bal+1e-9) return rej(p,`Can't cover the ${money(f7.buy)} buy-in. Sal's cousin is at the deli…`);
+    f7.seats.push(p.cid); led(p,'f7g'+(f7.gameNo+1),-f7.buy,f7.buy,'Flip 7 buy-in'); if(!f7.deadline) f7.deadline=now()+MPC.F7_LOBBY_MS; sys(`🃏 ${p.name} buys into Flip 7 for ${money(f7.buy)}.`); dirty(); }
+  function f7Out(p,why){ const i=f7.seats.indexOf(p.cid); if(f7.phase!=='lobby'||i<0) return; f7.seats.splice(i,1); delete f7.ready[p.cid]; led(p,'f7g'+(f7.gameNo+1),f7.buy,0,why||'Flip 7 buy-in returned'); if(!f7.seats.length){ f7.deadline=0; f7.buy=0; } dirty(); }
+  function f7Reset(){ Object.assign(f7,{phase:'lobby',seats:[],ready:{},deadline:0,buy:0,G:null,cids:[],folded:{},sbOpen:false,sbNext:{},sbLive:{},dealGo:false,res:null}); dirty(); }
+  function f7Start(){ const humans=f7.seats.filter(c=>pl(c)); if(!humans.length) return f7Reset();
+    const nb=Math.max(0,3-humans.length), keys=shuffle(Object.keys(F7_NPCS)).slice(0,nb);
+    f7.gameNo++; f7.cids=[...humans,...keys.map(()=>null)];
+    f7.G=f7New([...humans.map(c=>({id:idOf(c),name:nm(c),color:pl(c).color})),...keys.map(k=>({id:k,npc:k,name:F7_NPCS[k].n}))],{target:f7.target,rig:H.rig.f7||null});
+    f7.pot=r2(f7.buy*f7.cids.length); Object.assign(f7,{phase:'play',deadline:0,folded:{},sbNext:{},sbLive:{},sbOpen:false,ready:{},log:[],res:null,dealGo:false,stepAt:now()+400});
+    f7L(`🃏 Game #${f7.gameNo}: ${f7.G.players.map(q=>q.name).join(', ')}. Pot ${money(f7.pot)}${keys.length?` (the house stakes ${keys.length} degenerate${keys.length>1?'s':''})`:''}. Race to ${f7.target}.`);
+    sys(`🃏 Flip 7 game #${f7.gameNo} is ON: pot ${money(f7.pot)}, race to ${f7.target}.`); dirty(); }
+  function f7Sb(p,k,i,v){ if(f7.phase!=='play'||!f7.sbOpen) return rej(p,'Side bets only between rounds.'); if(p.table!=='f7') return rej(p,'Walk over to the Flip 7 table first.');
+    if(v==null||!MPC.F7_SBV.includes(v)) return rej(p,'Bad chip.'); const G=f7.G, B=f7.sbNext[p.cid]||{f7:0,bust:{}}; let cur;
+    if(k==='f7'){ if(f7.cids.indexOf(p.cid)<0||f7.folded[p.cid]) return rej(p,'The Flip 7 bonus is for players in the game.'); cur=B.f7; }
+    else if(k==='bust'){ if(i==null||!G.players[i]||!G.players[i].npc) return rej(p,'Bust bets only on the house degenerates. No betting on your friends to choke.'); cur=B.bust[i]||0; }
+    else return rej(p,'Bad bet.');
+    const diff=v-cur; if(!diff) return; if(diff>p.bal+1e-9) return rej(p,'Not enough cash, champ.');
+    if(k==='f7') B.f7=v; else if(v) B.bust[i]=v; else delete B.bust[i];
+    const tot=f7SbTot(B); if(tot) f7.sbNext[p.cid]=B; else delete f7.sbNext[p.cid];
+    led(p,f7SbW(),-diff,tot,'Flip 7 side bet'); delete f7.ready[p.cid]; dirty(); }
+  function f7SettleSide(){ const G=f7.G, w='f7s'+f7.gameNo+'.'+G.round;
+    for(const c in f7.sbLive){ const B=f7.sbLive[c], p=pl(c); if(!p) continue; const me=f7.cids.indexOf(c), stake=f7SbTot(B); let ret=0;
+      if(B.f7&&me>=0&&G.players[me].f7) ret+=B.f7*(1+F7_SIDE.f7.pay);
+      for(const i in B.bust){ const q=G.players[i]; if(q&&q.npc&&q.st==='busted') ret+=B.bust[i]*(1+F7_SIDE.bust[q.npc]); }
+      ret=r2(ret); led(p,w,ret,0,`Flip 7 side bets, round ${G.round}`,ret-stake); if(ret-stake>=100) sys(`💰 ${p.name} cashes ${money(ret)} in Flip 7 side bets.`); }
+    f7.sbLive={}; }
+  function f7Fold(c,why){ const i=f7.cids.indexOf(c); if(f7.phase!=='play'||i<0||f7.folded[c]) return; const p=pl(c), G=f7.G; f7.folded[c]=1; G.players[i].auto=true;
+    led(p,'f7g'+f7.gameNo,0,0,'Flip 7: walked out, buy-in forfeited',-f7.buy);
+    if(f7.sbNext[c]){ const B=f7.sbNext[c]; delete f7.sbNext[c]; led(p,f7SbW(),f7SbTot(B),0,'Flip 7 side bets returned'); }
+    if(f7.sbLive[c]){ const B=f7.sbLive[c]; delete f7.sbLive[c]; led(p,'f7s'+f7.gameNo+'.'+G.round,0,0,'Flip 7 side bets forfeited',-f7SbTot(B)); }
+    f7L(`🏳️ ${G.players[i].name} ${why}. Autopilot plays the seat for the house.`); sys(`🏳️ ${nm(c)} ${why} mid-Flip 7. Buy-in stays in the pot.`); dirty(); }
+  function f7Finish(winners){ const G=f7.G, share=r2(f7.pot*(1-F7_RAKE)/winners.length), w='f7g'+f7.gameNo;
+    f7.cids.forEach((c,i)=>{ if(!c||f7.folded[c]) return; const p=pl(c); if(!p) return;
+      if(winners.includes(i)) led(p,w,share,0,`🏆 Flip 7 pot #${f7.gameNo}`,share-f7.buy); else led(p,w,0,0,`Flip 7 #${f7.gameNo}: lost the buy-in`,-f7.buy); });
+    const names=winners.map(i=>G.players[i].name).join(' & '), house=winners.every(i=>!f7.cids[i]||f7.folded[f7.cids[i]]);
+    f7.res={names,share,ids:winners.map(i=>f7.cids[i]?idOf(f7.cids[i]):null),house};
+    const line=`🏁 Flip 7 #${f7.gameNo}: ${names} take${winners.length>1?'':'s'} the ${money(f7.pot)} pot (${money(share)} after the house's 5%).${house?' The house wins. Of course it does.':''}`; f7L(line); sys(line);
+    f7.phase='over'; f7.doneAt=now()+MPC.F7_DONE_MS; f7.sbOpen=false; dirty(); }
+  function f7Events(){ const G=f7.G; let d=350; const N=i=>G.players[i].name;
+    while(G.ev.length){ const e=G.ev.shift();
+      switch(e.k){
+        case 'round': f7L(`— Round ${e.n} — ${N(e.dealer)} deals.`); d=Math.max(d,700); break;
+        case 'card': if(e.card.t==='a'){ f7L(`🃏 ${N(e.p)} flips ${f7CardLabel(e.card)}.`); d=Math.max(d,800); } else d=Math.max(d,450); break;
+        case 'bust': { const line='💥 '+pick(F7_BUST_TALK).replace('{n}',N(e.p)).replace('{v}',e.v); f7L(line); if(f7.cids[e.p]) sys(line); d=Math.max(d,1100); break; }
+        case 'flip7': { const line='⭐ '+pick(F7_F7_TALK).replace('{n}',N(e.p)); f7L(line); sys(line); d=Math.max(d,1400); break; }
+        case 'saved': f7L(`🛟 Second Chance saves ${N(e.p)}! The dupe ${e.v} hits the trash.`); d=Math.max(d,800); break;
+        case 'sc': f7L(`🛟 ${N(e.p)} pockets a Second Chance.`); break;
+        case 'action': f7L({freeze:`❄️ ${N(e.from)} FREEZES ${e.from===e.to?'themself (banking it)':N(e.to)}. Cold.`,flip3:`🔥 ${N(e.from)} makes ${e.from===e.to?'themself':N(e.to)} FLIP THREE. Pray.`,sc:`🛟 ${N(e.from)} hands ${N(e.to)} a Second Chance.`}[e.a]||''); d=Math.max(d,900); break;
+        case 'stay': f7L(`✋ ${N(e.p)} stays on ${f7Pts(G.players[e.p])}.`); d=Math.max(d,550); break;
+        case 'reshuffle': f7L("♻️ Deck's dry. Reshuffling the discards."); break;
+        case 'roundEnd': f7L(`📊 Round ${G.round}: ${e.res.map((v,i)=>`${N(i)} +${v}`).join(' · ')}`); f7SettleSide(); d=Math.max(d,1200); break;
+        case 'over': f7Finish(e.winners); break;
+      } } return d; }
+  function f7Auto(G){ const W=G.await; if(!W) return; if(W.k==='decide') f7Act(G,W.i,f7Decide(G,W.i)); else f7AutoAct(G); }
+  function f7ActMsg(p,a,to){ if(f7.phase!=='play') return rej(p,'No Flip 7 game running.'); const G=f7.G, i=f7.cids.indexOf(p.cid); if(i<0||f7.folded[p.cid]) return rej(p,"You're not in this game.");
+    if(!G.await||G.await.i!==i) return rej(p,'Not your turn, hot shot.'); const err=f7Act(G,i,a,to); if(err) return rej(p,err); f7Events(); f7.stepAt=now()+300; dirty(); }
+  function f7Tick(t){
+    if(f7.phase==='lobby'){ if(f7.deadline){ const here=f7.seats.filter(c=>H.P[c]&&H.P[c].conn); if(here.length&&here.every(c=>f7.ready[c])) f7.deadline=Math.min(f7.deadline,t+1500); if(t>=f7.deadline) f7Start(); } return; }
+    if(f7.phase==='over'){ if(t>=f7.doneAt) f7Reset(); return; }
+    if(f7.phase!=='play') return; const G=f7.G;
+    if(G.await){ const i=G.await.i, c=f7.cids[i], p=c&&H.P[c]; let why=null;
+      if(!p||f7.folded[c]) why='is on autopilot'; else if(p.table!=='f7') why='wandered off to another table'; else if(!p.conn&&t-p.dcAt>1500) why='disconnected'; else if(t>=f7.turnAt) why='timed out';
+      if(why){ const W=G.await; f7Auto(G); f7L(`⏰ ${G.players[i].name} ${why}. Autopilot ${W.k==='decide'?'made the call':'picked a target'}.`); f7Events(); f7.stepAt=Math.max(f7.stepAt,t+300); dirty(); } return; }
+    if(f7WaitDeal(G)&&!f7.dealGo){ if(!f7.sbOpen){ f7.sbOpen=true; f7.sbDeadline=t+MPC.F7_SB_MS; f7.ready={}; dirty(); return; }
+      const here=f7.cids.filter(c=>c&&!f7.folded[c]&&H.P[c]&&H.P[c].conn&&H.P[c].table==='f7'); if(!here.length||here.every(c=>f7.ready[c])) f7.sbDeadline=Math.min(f7.sbDeadline,t+(here.length?1200:2500));
+      if(t>=f7.sbDeadline){ f7.sbOpen=false; f7.sbLive=f7.sbNext; f7.sbNext={}; f7.ready={}; f7.dealGo=true; f7.stepAt=t; dirty(); } return; }
+    if(t<f7.stepAt) return;
+    f7.dealGo=false; const r=f7Advance(G); const d=f7Events(); if(r==='wait'&&G.await) f7.turnAt=t+MPC.F7_TURN_MS; f7.stepAt=t+d; dirty(); }
+  // ---------------- KENO (one shared draw; everybody's tickets settle on it; multi-race tickets ride automatically) ----------------
+  const kn=H.kn={ phase:'bet', tickets:{}, ready:{}, deadline:0, draw:null, shown:0, nextBall:0, raceNo:0, inRace:[], res:{}, last:null, doneAt:0, tn:0 };
+  function knTicket(p,spots,bet,races){ if(kn.phase==='draw') return rej(p,'Balls are flying. Get your ticket in for the next race.'); if(p.table!=='kn') return rej(p,'Walk over to the keno lounge first.');
+    if(!Array.isArray(spots)||spots.length>10) return rej(p,'Pick 1 to 10 numbers from 1–80.'); spots=spots.map(n=>typeof n==='number'?n:NaN); if(!kenoValid(spots)) return rej(p,'Pick 1 to 10 numbers from 1–80.');
+    if(bet==null||!MPC.KN_BETS.includes(bet)) return rej(p,`Bet $1–$${MPC.KN_MAX} per race.`); if(races==null||!MPC.KN_RACES.includes(races)) return rej(p,'Races: 1, 2, 5 or 10.');
+    const old=kn.tickets[p.cid], back=old?r2(old.left*old.bet):0, cost=r2(bet*races); if(cost>p.bal+back+1e-9) return rej(p,"Can't afford that ticket. Karen's judging you.");
+    if(old) led(p,old.w,back,0,'Keno ticket swapped: refunded');
+    const T={w:'kn'+(++kn.tn),spots:spots.slice().sort((a,b)=>a-b),bet,races,left:races}; kn.tickets[p.cid]=T; delete kn.ready[p.cid];
+    led(p,T.w,-cost,cost,`Keno ${T.spots.length}-spot ticket ${money(bet)} × ${races}`); if(!kn.deadline&&kn.phase==='bet') kn.deadline=now()+MPC.KN_MS; dirty(); }
+  function knCancel(p,why){ const T=kn.tickets[p.cid]; if(!T) return; delete kn.tickets[p.cid]; delete kn.ready[p.cid]; led(p,T.w,r2(T.left*T.bet),0,why||'Keno ticket cancelled: refunded'); if(!Object.keys(kn.tickets).length) kn.deadline=0; dirty(); }
+  function knDraw(t){ const rg=H.rig.keno&&H.rig.keno.length?H.rig.keno.shift():null; kn.draw=kenoDraw(rg); kn.raceNo++; kn.inRace=Object.keys(kn.tickets); kn.shown=0; kn.nextBall=t+MPC.KN_BALL_MS; kn.phase='draw'; kn.deadline=0; kn.res={}; dirty(); }
+  function knSettle(t){ const D=kn.draw; let best=null;
+    for(const c of kn.inRace){ const T=kn.tickets[c]; if(!T) continue; const p=pl(c), r=kenoSettle(T.spots,D,T.bet); T.left--;
+      if(p){ const net=r2(r.ret-T.bet); led(p,T.w,r.ret,T.left*T.bet,`Keno race #${kn.raceNo}: caught ${r.hits}/${T.spots.length}`,net); kn.res[p.id]={h:r.hits,s:T.spots.length,ret:r.ret,net,bet:T.bet};
+        if(net>=250||r.hits>=7) sys(`🎱 ${p.name} catches ${r.hits} of ${T.spots.length} at keno for ${money(r.ret)}! Karen is visibly annoyed.`); if(!best||net>best.net) best={net,p}; }
+      if(T.gone&&T.left>0){ if(p) led(p,T.w,r2(T.left*T.bet),0,'Keno: rest of the ticket refunded (you left)'); T.left=0; }
+      if(T.left<=0){ delete kn.tickets[c]; delete kn.ready[c]; } }
+    kn.last={n:kn.raceNo,draw:D.slice()}; kn.phase='done'; kn.doneAt=t+MPC.KN_DONE_MS; dirty(); }
+  function knTick(t){
+    if(kn.phase==='bet'){ const cs=Object.keys(kn.tickets); if(!cs.length){ kn.deadline=0; return; } if(!kn.deadline) kn.deadline=t+MPC.KN_MS;
+      if(cs.every(c=>kn.ready[c]||kn.tickets[c].left<kn.tickets[c].races||!H.P[c]||!H.P[c].conn)) kn.deadline=Math.min(kn.deadline,t+1500);
+      if(t>=kn.deadline) knDraw(t); return; }
+    if(kn.phase==='draw'){ let ch=false; while(kn.shown<20&&t>=kn.nextBall){ kn.shown++; kn.nextBall+=MPC.KN_BALL_MS; ch=true; } if(ch) dirty(); if(kn.shown>=20&&t>=kn.nextBall+400) knSettle(t); return; }
+    if(kn.phase==='done'&&t>=kn.doneAt){ kn.phase='bet'; kn.ready={}; kn.deadline=Object.keys(kn.tickets).length?t+MPC.KN_NEXT_MS:0; dirty(); } }
   // ---------------- clock ----------------
-  H.tick=function(){ if(H.closed) return; const t=now(); try{ bjTick(t); crTick(t); rlTick(t); sbTick(t);
+  H.tick=function(){ if(H.closed) return; const t=now(); try{ bjTick(t); crTick(t); rlTick(t); sbTick(t); f7Tick(t); knTick(t);
     for(const c of H.order.slice()){ const p=H.P[c]; if(p&&!p.conn&&t-p.dcAt>MPC.DC_MS) remove(c,'timed out and got kicked',false); } }catch(e){ console.warn('mp host tick error',e); } };
   // ---------------- close (host leaving): void & refund everything still at risk ----------------
   H.close=function(why){ if(H.closed) return; const all=c=>pl(c);
@@ -1565,6 +1961,11 @@ function mpHostCreate(io){ // io: {send(cid,msg), now(), room, sess}
     for(const c in cr.C){ const t=crapsTotalOnTable(cr.C[c]); if(t>0) led(all(c),'cr',t,0,'Table closed: craps chips returned'); } cr.C={};
     if(rl.phase!=='done'){ for(const c in rl.bets) led(all(c),'rl'+(rl.phase==='spin'?rl.spinNo:rl.spinNo+1),sumObj(rl.bets[c]),0,'Table closed: roulette bets returned'); rl.bets={}; }
     for(const b of sb.bets) if(b.status==='open'){ b.status='void'; led(all(b.cid),b.id,b.stake,0,'Table closed: sportsbook bet voided'); }
+    if(f7.phase==='lobby'){ for(const c of f7.seats) led(all(c),'f7g'+(f7.gameNo+1),f7.buy,0,'Table closed: Flip 7 buy-in returned'); f7.seats=[]; }
+    else if(f7.phase==='play'){ f7.cids.forEach(c=>{ if(c&&!f7.folded[c]) led(all(c),'f7g'+f7.gameNo,f7.buy,0,'Table closed: Flip 7 game voided, buy-in returned'); });
+      for(const c in f7.sbNext) led(all(c),f7SbW(),f7SbTot(f7.sbNext[c]),0,'Table closed: Flip 7 side bets returned');
+      for(const c in f7.sbLive) led(all(c),'f7s'+f7.gameNo+'.'+f7.G.round,f7SbTot(f7.sbLive[c]),0,'Table closed: Flip 7 side bets returned'); f7.phase='closed'; }
+    for(const c in kn.tickets){ const T=kn.tickets[c]; if(T.left>0) led(all(c),T.w,r2(T.left*T.bet),0,'Table closed: keno ticket refunded'); } kn.tickets={};
     H.closed=true; for(const c of H.order) if(H.P[c].conn) io.send(c,{t:'close',why:why||'The host closed the table.'}); };
   // ---------------- public snapshot (no shoe, no hole card, no secret ids) ----------------
   H.view=function(){ const t=now(), rem=d=>d?Math.max(0,d-t):0; const byId=o=>{ const r={}; for(const c in o){ const id=idOf(c); if(id) r[id]=o[c]; } return r; };
@@ -1578,7 +1979,16 @@ function mpHostCreate(io){ // io: {send(cid,msg), now(), room, sess}
       rl:{phase:rl.phase,rem:rem(rl.deadline),bets:byId(rl.bets),ready:Object.keys(rl.ready).map(idOf),n:rl.phase==='spin'?null:rl.n,spinNo:rl.spinNo,spinRem:rl.phase==='spin'?rem(rl.spinAt):0,hist:rl.hist,res:rl.res},
       sb:{day:sb.day,phase:sb.phase,rem:rem(sb.phase==='final'?sb.finalAt:sb.deadline),t:sb.t,ready:Object.keys(sb.ready).map(idOf),ticker:sb.ticker.slice(-16),stats:byId(sb.stats),
         games:sb.games.map(g=>{ const L=g.lines.DQ; return {id:g.id,sp:g.sp,slot:g.slot,a:{ab:g.a.ab,nm:g.a.nm},h:{ab:g.h.ab,nm:g.h.nm},L:{spread:L.spread,spH:L.spH,spA:L.spA,total:L.total,tO:L.tO,tU:L.tU,mlH:L.mlH,mlA:L.mlA},live:g.live||null,fin:sb.phase==='final'&&g.res?{sa:g.res.sa,sh:g.res.sh,ot:g.res.ot}:null}; }),
-        bets:sb.bets.map(b=>({id:b.id,pid:idOf(b.cid),name:nm(b.cid),legs:b.legs,stake:b.stake,odds:b.odds,status:b.status,ret:b.ret,net:b.net,res:b.res}))} }; };
+        bets:sb.bets.map(b=>({id:b.id,pid:idOf(b.cid),name:nm(b.cid),legs:b.legs,stake:b.stake,odds:b.odds,status:b.status,ret:b.ret,net:b.net,res:b.res}))},
+      f7:f7View(rem,byId), kn:knView(rem,byId) }; };
+  function f7View(rem,byId){ const G=f7.G, W=G&&G.await;
+    return {phase:f7.phase,buy:f7.buy,target:f7.target,seats:f7.seats.map(idOf),ready:Object.keys(f7.ready).map(idOf),gameNo:f7.gameNo,pot:f7.pot,sbOpen:f7.sbOpen,res:f7.res,log:f7.log.slice(-14),
+      rem:f7.phase==='lobby'?rem(f7.deadline):f7.phase==='over'?rem(f7.doneAt):f7.sbOpen?rem(f7.sbDeadline):W?rem(f7.turnAt):0, sb:byId(f7.sbNext), live:byId(f7.sbLive),
+      G:G?{round:G.round,dealer:G.dealer,target:G.target,deckN:G.deck.length,phase:G.phase,winners:G.winners,
+        players:G.players.map((q,i)=>({name:q.name,npc:q.npc,pid:f7.cids[i]?idOf(f7.cids[i]):null,color:q.color,score:q.score,cards:q.cards,st:q.st,f7:q.f7,last:q.last,folded:!!(f7.cids[i]&&f7.folded[f7.cids[i]])})),
+        await:W?{k:W.k,i:W.i,a:W.a||null,card:W.card||null,cands:W.cands||null,bp:W.k==='decide'?Math.round(f7BustP(G,G.players[W.i])*100):null}:null}:null}; }
+  function knView(rem,byId){ const tk={}; for(const c in kn.tickets){ const id=idOf(c), T=kn.tickets[c]; if(id) tk[id]={spots:T.spots,bet:T.bet,races:T.races,left:T.left}; }
+    return {phase:kn.phase,rem:rem(kn.deadline),raceNo:kn.raceNo,shown:kn.phase==='draw'?kn.draw.slice(0,kn.shown):(kn.last?kn.last.draw:[]),tickets:tk,ready:Object.keys(kn.ready).map(idOf),inRace:kn.phase==='draw'?kn.inRace.map(idOf):[],res:kn.res}; }
   H.flush=function(){ if(!H.dirty||H.closed) return; H.dirty=false; const s=H.view(); for(const c of H.order){ const p=H.P[c]; if(p.conn) io.send(c,{t:'st',s}); } };
   return H; }
 // ===================== MULTIPLAYER: TRANSPORT (PeerJS/WebRTC) + CLIENT LEDGER =====================
@@ -1623,7 +2033,7 @@ function mpBorrow(v){ if(MP.st!=='in'||!S) return; v=Number(v); if(!MPC.LOANS.in
   if(mpMyHandBusy()) return toast('✋ No re-upping mid-hand. Finish the hand first.');
   if(U.mpLoanPend) return; U.mpLoanPend=v; mpSend({t:'loan',amt:v,lvl:S.lvl,debt:S.debt,loans:S.loans,whale:!!S.whaleMode}); renderMPSafe();
   setTimeout(()=>{ if(U.mpLoanPend===v){ U.mpLoanPend=0; renderMPSafe(); } },8000); }
-function mpResultFx(net,why){ if(net>0){ addTilt(-Math.min(6,2+net/Math.max(20,S.cash)*10)); gainXp(2+Math.min(25,net/40)); sfx.win(); fx.text('+'+money(net),'#5dff8a'); if(/BLACKJACK/.test(why)) unlock('bj'); if(net>=500) fx.money(20); }
+function mpResultFx(net,why){ if(net>0){ addTilt(-Math.min(6,2+net/Math.max(20,S.cash)*10)); gainXp(2+Math.min(25,net/40)); sfx.win(); fx.text('+'+money(net),'#5dff8a'); if(/BLACKJACK/.test(why)) unlock('bj'); if(/Flip 7 pot/.test(why)) unlock('f7pot'); const kc=why.match(/caught (\d+)\//); if(kc&&+kc[1]>=7) unlock('keno'); if(net>=500) fx.money(20); }
   else if(net<0){ addTilt(Math.min(10,2+(-net)/Math.max(20,S.cash)*20)); gainXp(1); sfx.lose(); fx.text(money(net),'#ff5d5d'); } }
 // ---------- sending ----------
 function mpSend(msg){ if(MP.role==='host'&&MP.H){ MP.H.msg(mpStore().cid,msg); mpFlushSoon(); return; } const c=MP.conn; if(c&&c.open){ try{ c.send(msg); }catch(e){} } }
@@ -1696,12 +2106,15 @@ function mpTeardown(){ clearInterval(MP.tick); MP.tick=0; clearTimeout(MP.flushT
   if(peer) setTimeout(()=>{ try{ peer.destroy(); }catch(e){} },350); }
 function mpFail(msg){ mpTeardown(); MP.st='error'; MP.err=msg; MP.role=null; if(U.screen==='mp') render(); }
 function mpClosed(why,clean){ if(MP.st==='closed') return; mpDrainLocal(); MP.st='closed'; MP.why=why; if(mpOpenTotal()>0&&(clean||/host left/i.test(why))) mpVoidOpen('table closed'); mpTeardown(); if(U.screen==='mp') render(); }
-function mpMyHandBusy(){ const R=MP.R; if(!R) return false; const X=R.bj.hands[MP.me]; if(X&&(R.bj.phase==='play'||R.bj.phase==='dealer')) return true; if(R.rl.phase==='spin'&&R.rl.bets[MP.me]) return true; if(R.cr.phase==='roll'&&R.cr.bets[MP.me]&&R.cr.bets[MP.me].on>0) return true; return false; }
+function mpMyHandBusy(){ const R=MP.R; if(!R) return false; const X=R.bj.hands[MP.me]; if(X&&(R.bj.phase==='play'||R.bj.phase==='dealer')) return true; if(R.rl.phase==='spin'&&R.rl.bets[MP.me]) return true; if(R.cr.phase==='roll'&&R.cr.bets[MP.me]&&R.cr.bets[MP.me].on>0) return true;
+  const F=R.f7; if(F&&F.phase==='play'&&F.G&&(F.G.phase==='deal'||F.G.phase==='turns')&&(F.G.players.some(q=>q.pid===MP.me&&!q.folded)||(F.live&&F.live[MP.me]))) return true;
+  if(R.kn&&R.kn.phase==='draw'&&R.kn.inRace.includes(MP.me)) return true; return false; }
 function mpLeave(){ if(MP.st==='closed'||MP.st==='error'||MP.st==='idle') return mpFinishLeave();
   if(MP.st==='loading'||MP.st==='connecting') return mpCancel();
   if(MP.st==='in'&&mpMyHandBusy()){ toast('✋ Finish your hand / let the spin land first.'); return; }
   if(MP.role==='host'){ if(Date.now()-MP.closeArm>4000){ MP.closeArm=Date.now(); toast('⚠️ You are the host. Tap again to close the table for everyone.'); return; }
     MP.leaving=true; if(MP.H){ MP.H.close('The host left. Table closed.'); } mpDrainLocal(); mpTeardown(); return mpFinishLeave(); }
+  const F=MP.R&&MP.R.f7; if(F&&F.phase==='play'&&F.G&&F.G.players.some(q=>q.pid===MP.me&&!q.folded)&&Date.now()-MP.closeArm>4000){ MP.closeArm=Date.now(); toast(`⚠️ You're in a Flip 7 game. Leaving forfeits your ${money(F.buy)} buy-in. Tap again to walk.`); return; }
   MP.leaving=true; mpSend({t:'bye'}); setTimeout(()=>{ if(MP.leaving&&MP.st!=='idle') mpFinishLeave(); },2500); }
 function mpCancel(){ mpTeardown(); MP.st='idle'; MP.role=null; render(); }
 function mpFinishLeave(){ mpDrainLocal(); const net=MP.sessNet, played=MP.charged; mpTeardown();
@@ -1710,9 +2123,9 @@ function mpFinishLeave(){ mpDrainLocal(); const net=MP.sessNet, played=MP.charge
   U.mpv='lobby'; go(S&&!S.ended?(U.mpFrom==='casino'&&U.cs?'casino':'hub'):'title'); }
 window.addEventListener('pagehide',()=>{ try{ if(MP.role==='host'&&MP.H&&!MP.H.closed){ MP.H.close('The host left. Table closed.'); mpDrainLocal(); } }catch(e){} });
 // ===================== MULTIPLAYER: SCREENS =====================
-const MP_TNAME={lobby:'🛋️ Lobby',bj:'🂡 Blackjack',cr:'🎲 Craps',rl:'🎡 Roulette',sb:'📺 Sportsbook'};
-const MP_TSHORT={lobby:'🛋️ Lobby',bj:'🂡 BJ',cr:'🎲 Craps',rl:'🎡 Wheel',sb:'📺 Book'};
-const MP_TDESC={bj:'5 seats, turn timer, S17, 3:2',cr:'Shared shooter, full bets',rl:'One wheel, everyone\'s chips',sb:'Shared slate + live sweat'};
+const MP_TNAME={lobby:'🛋️ Lobby',bj:'🂡 Blackjack',cr:'🎲 Craps',rl:'🎡 Roulette',sb:'📺 Sportsbook',f7:'7️⃣ Flip 7',kn:'🎱 Keno'};
+const MP_TSHORT={lobby:'🛋️ Lobby',bj:'🂡 BJ',cr:'🎲 Craps',rl:'🎡 Wheel',sb:'📺 Book',f7:'7️⃣ Flip7',kn:'🎱 Keno'};
+const MP_TDESC={bj:'5 seats, turn timer, S17, 3:2',cr:'Shared shooter, full bets',rl:'One wheel, everyone\'s chips',sb:'Shared slate + live sweat',f7:'Buy in, winner takes the pot',kn:'One draw, everyone\'s tickets'};
 const MP_SEATX=[.1,.3,.5,.7,.9];
 const MP_WHEEL=[0,28,9,26,30,11,7,20,32,17,5,22,34,15,3,24,36,13,1,37,27,10,25,29,12,8,19,31,18,6,21,33,16,4,23,35,14,2];
 function mpP(id){ return MP.R&&MP.R.players.find(p=>p.id===id); }
@@ -1746,7 +2159,7 @@ function mpSetupHtml(){ const st=mpStore(); const sv=(S&&!S.ended)?S:load(); con
   h+=`<div class="small dim" style="margin-top:6px">Stick-figure color</div><div class="row">${MP_COLORS.map(c=>`<button class="mpsw ${U.mpCol===c?'on':''}" style="background:${c}" onclick="mpSetColor('${c}')" aria-label="color ${c}"></button>`).join('')}</div>`;
   h+=`<button class="btn big go" onclick="mpGoHost()">🏠 HOST A TABLE<small style="text-align:center">Get a room code + invite link. Your browser runs the dealer, so keep this tab open.</small></button>`;
   h+=`<div class="panel"><label class="small dim">Got a code from a friend?</label><div class="row"><input type="text" id="mpcode" placeholder="DEGEN-AB12" value="${U.mpCode?'DEGEN-'+esc(U.mpCode):''}" style="flex:1;text-transform:uppercase" autocomplete="off"><button class="btn c go" style="width:auto;margin:0" onclick="mpGoJoin()">🚪 JOIN</button></div></div>`;
-  h+=`<div class="small dim">2–5 players. Blackjack, craps, roulette and a shared sportsbook. Needs a network that allows WebRTC (most home Wi-Fi and phones do; some strict corporate/cellular networks don't).</div><button class="btn c" onclick="mpBack()">⬅ Back</button>`; return h; }
+  h+=`<div class="small dim">2–5 players. Blackjack, craps, roulette, Flip 7, keno and a shared sportsbook. Needs a network that allows WebRTC (most home Wi-Fi and phones do; some strict corporate/cellular networks don't).</div><button class="btn c" onclick="mpBack()">⬅ Back</button>`; return h; }
 function mpSaveIdent(){ const el=document.getElementById('mpnm'); const name=mpCleanText(el?el.value:U.mpName,14)||'Degen'; U.mpName=name; U.mpCol=mpColor(U.mpCol); mpStoreSet({name,color:U.mpCol}); }
 function mpGoHost(){ mpSaveIdent(); mpHostStart(); }
 function mpGoJoin(){ mpSaveIdent(); const el=document.getElementById('mpcode'); const v=el?el.value:U.mpCode; U.mpCode=mpNormCode(v); mpJoinStart(v); }
@@ -1769,7 +2182,7 @@ function mpLoanHtml(){ if(!S) return '';
   if(busy) h+=`<div class="small a">✋ Finish your hand / let the spin land first. No re-upping mid-hand.</div>`;
   h+=`<div class="grid2">${MPC.LOANS.map(v=>{ const fee=Math.round(v*(.1+.05*S.loans)); return `<button class="btn" ${v<=cap&&!busy&&!pend?'':'disabled'} onclick="mpBorrow(${v})">${pend===v?'⏳ Counting…':'Borrow '+money(v)}<small>+${money(v+fee)} debt</small></button>`; }).join('')}</div></div>`; return h; }
 function mpViewHtml(){ const R=MP.R; try{ return mpLoanHtml()+mpTableHtml(R); }catch(e){ console.error(e); return `<div class="panel r">Render glitch: ${esc(e.message)}</div>`; } }
-function mpTableHtml(R){ { switch(U.mpv){ case 'bj': return mpBJHtml(R); case 'cr': return mpCrHtml(R); case 'rl': return mpRlHtml(R); case 'sb': return mpSbHtml(R); default: return mpLobbyHtml(R); } } }
+function mpTableHtml(R){ { switch(U.mpv){ case 'bj': return mpBJHtml(R); case 'cr': return mpCrHtml(R); case 'rl': return mpRlHtml(R); case 'sb': return mpSbHtml(R); case 'f7': return mpF7Html(R); case 'kn': return mpKnHtml(R); default: return mpLobbyHtml(R); } } }
 function mpGo(tb){ if(!MP_TABLES.includes(tb)||!MP.R) return; if(U.mpv==='bj'&&tb!=='bj'){ const B=MP.R.bj, X=B.hands[MP.me]; if(X&&B.phase==='play'&&!X.done){ toast('✋ Finish your blackjack hand first.'); return; } }
   if(U.mpv===tb) return; U.mpv=tb; mpSend({t:'go',table:tb}); sfx.click(); window.scrollTo(0,0); mpRenderRoom(false); }
 function mpChatShell(){ return `<div class="panel mpchat"><div class="log mplog" id="mpclog"></div><div class="mpemo">${MP_EMOJI.map((e,i)=>`<button class="tab" onclick="mpEmote(${100+i})">${e}</button>`).join('')}</div><div class="mpemo">${MP_TALK.map((t,i)=>`<button class="mptalk" onclick="mpEmote(${i})">${esc(t)}</button>`).join('')}</div><form class="row" onsubmit="mpChatSend();return false"><input type="text" id="mpmsg" maxlength="${MPC.CHATLEN}" placeholder="Talk trash (max ${MPC.CHATLEN} chars)" autocomplete="off" style="flex:1;min-width:0"><button class="btn c" style="width:auto;margin:0;min-width:66px">Send</button></form></div>`; }
@@ -1793,6 +2206,12 @@ function mpStateFx(R,P){ const me=MP.me, tb=U.mpv;
     if(R.cr.rollNo>P.cr.rollNo&&R.cr.last){ const L=R.cr.last; rollDiceAnim([L.d1,L.d2]); setTimeout(()=>{ for(const id in (L.res||{})){ const n=L.res[id].net; pose('mp_'+id,n>0?'cheer':n<0?(L.event==='sevenout'?'facepalm':'groan'):'idle',1600,'idle'); } },900); } }
   if(R.rl.phase==='spin'&&P.rl.phase!=='spin'){ MP.rlT0=SC.t; MP.rlDur=Math.max(.5,(R.rl.spinRem||3000)/1000); if(tb==='rl') sfx.dice(); }
   if(tb==='rl'&&R.rl.phase==='done'&&P.rl.phase!=='done') for(const id in R.rl.res){ const n=R.rl.res[id].net; pose('mp_'+id,n>0?'celebrate':n<0?'facepalm':'idle',2000,'idle'); }
+  const F=R.f7, PF=P.f7; if(F&&F.G){ const myI=F.G.players.findIndex(q=>q.pid===me), W=F.G.await, PW=PF&&PF.G&&PF.G.await;
+    if(myI>=0&&W&&W.i===myI&&!(PW&&PW.i===myI&&PW.k===W.k)){ sfx.coin(); if(tb!=='f7') toast('7️⃣ Your move at Flip 7! (autopilot in '+Math.round(MPC.F7_TURN_MS/1000)+'s)'); }
+    if(myI>=0&&F.G.players[myI].f7&&!(PF&&PF.G&&PF.G.players[myI]&&PF.G.players[myI].f7)) unlock('flip7');
+    if(tb==='f7'&&PF&&PF.G){ F.G.players.forEach((q,i)=>{ const o=PF.G.players[i]; if(!o) return; const id=q.pid?'mp_'+q.pid:'f7b_'+i; if(q.st==='busted'&&o.st!=='busted'){ pose(id,q.pid?'facepalm':'cry',1800,'idle'); say(id,pick(['NOOOO','I hate it here','RIGGED','bro…']),1500); if(q.pid===me) sfx.lose(); } if(q.f7&&!o.f7){ pose(id,'celebrate',2200,'idle'); sfx.win(); } }); } }
+  if(tb==='kn'&&R.kn&&P.kn){ if(R.kn.phase==='draw'&&R.kn.shown.length>(P.kn.phase==='draw'?P.kn.shown.length:0)){ sfx.tick(); pose('kr','point',400,'idle'); }
+    if(R.kn.phase==='done'&&P.kn.phase!=='done') for(const id in R.kn.res){ const n=R.kn.res[id].net; pose('mp_'+id,n>0?'celebrate':'facepalm',2000,'idle'); } }
   if(tb==='sb'&&R.sb.ticker.length&&P.sb.ticker.length){ const a=R.sb.ticker[R.sb.ticker.length-1], b=P.sb.ticker[P.sb.ticker.length-1]; if(a.txt!==b.txt&&a.cls==='big'){ const here=R.players.filter(p=>p.table==='sb'); if(here.length) pose('mp_'+pick(here).id,rnd()<.5?'cheer':'groan',1400,'sit'); } } }
 function mpUiTick(){ if(U.screen!=='mp'||!MP.R) return; for(const el of document.querySelectorAll('[data-cd]')){ const k=el.getAttribute('data-cd'); const o=MP.R[k]; if(o) el.textContent=mpSec(o.rem); } }
 // ---------- canvas scenes ----------
@@ -1802,6 +2221,13 @@ function mpSceneFor(tb){ const R=MP.R; if(!R) return null; const ps=R.players; c
   else if(tb==='cr'){ bg='craps'; ps.filter(p=>p.table==='cr').forEach((p,i)=>actors.push(mpActor(p,i,{x:.1+i*.17,y:.52,s:.66}))); actors.push({id:'stick',x:.93,y:.52,s:.7,pose:'deal',hat:'visor',color:'#ffd9a0',label:'STICKMAN'}); opts.point=R.cr.point; opts.caption='🎲 DEGEN-'+MP.code; }
   else if(tb==='rl'){ bg='mprl'; ps.filter(p=>p.table==='rl').forEach((p,i)=>actors.push(mpActor(p,i,{x:[.1,.9,.25,.75,.4][i],s:.55}))); opts.over=mpOverRL; opts.caption='🎡 DEGEN-'+MP.code; }
   else if(tb==='sb'){ bg='book'; ps.filter(p=>p.table==='sb').forEach((p,i)=>actors.push(mpActor(p,i,{x:.14+i*.18,s:.7,pose:'sit',held:'phone'}))); opts.games=R.sb.games; opts.caption='📺 DEGEN-'+MP.code; }
+  else if(tb==='f7'){ bg='f7'; const G=R.f7.G; if(G){ const n=G.players.length, xs=n<=3?[.2,.5,.8]:n===4?[.14,.38,.62,.86]:[.1,.3,.5,.7,.9];
+      G.players.forEach((q,i)=>{ const p=q.pid&&mpP(q.pid); if(p) actors.push(mpActor(p,i,{x:xs[i],s:.62})); else { const N=F7_NPCS[q.npc]||{}; actors.push({id:'f7b_'+i,x:xs[i],s:.62,label:(N.n||q.name).split(' ').slice(-1)[0].slice(0,9),hat:N.hat||'cap',hatc:N.color,color:N.color||'#ccc',pose:'idle',ph:i*.9}); } });
+      opts.f7p=G.players.map((q,i)=>({x:xs[i],n:q.cards.length,bust:q.st==='busted',f7:q.f7,tag:q.st==='busted'?'BUST':q.st==='frozen'?'❄ '+f7Pts(q):q.st==='stayed'&&G.phase!=='between'?'✋ '+f7Pts(q):(q.cards.length?String(f7Pts(q)):'')})); }
+    else { ps.filter(p=>p.table==='f7').forEach((p,i)=>actors.push(mpActor(p,i,{x:.14+i*.18,s:.62}))); actors.push({id:'f7d',x:.9,hat:'fedora',label:'TONY',color:'#ddd',pose:'deal',s:.62}); opts.f7p=[]; }
+    opts.over=f7Over; opts.caption='7️⃣ FLIP 7 · DEGEN-'+MP.code; }
+  else if(tb==='kn'){ bg='keno'; ps.filter(p=>p.table==='kn').forEach((p,i)=>actors.push(mpActor(p,i,{x:.3+i*.11,s:.6,held:'slip'}))); actors.push({id:'kr',x:.88,flip:true,hat:'visor',label:'KENO KAREN',color:'#ffd9a0',pose:'idle',held:'slip',s:.66});
+    const mine=R.kn.tickets[MP.me]; opts.keno={drawn:R.kn.shown,picks:mine?mine.spots:((U.mpKn&&U.mpKn.picks)||[])}; opts.caption='🎱 DEGEN-'+MP.code; }
   else { bg='casino'; ps.forEach((p,i)=>actors.push(mpActor(p,i,{x:.12+i*.19,s:.72,pose:p.table==='lobby'?'idle':'phone',held:p.table==='lobby'?'beer':'phone'}))); opts.caption='🌐 THE BACK ROOM · DEGEN-'+MP.code; }
   return {bg,actors,opts}; }
 function mpSyncScene(force){ const tb=U.mpv, d=mpSceneFor(tb); if(!d) return;
@@ -1835,7 +2261,7 @@ function mpLeaderHtml(R){ const ps=R.players.slice().sort((a,b)=>b.net-a.net); r
 function mpLobbyHtml(R){ const url=mpLink();
   let h=`<h2>🌐 THE BACK ROOM <span class="small dim">${R.players.length}/${MPC.MAXP} degenerates</span></h2><div class="panel" style="text-align:center"><div class="small dim">Room code — send it to your friends</div><div class="mpcode">DEGEN-${esc(MP.code)}</div><div class="grid2"><button class="btn c" onclick="mpCopy()">📋 Copy invite link</button><button class="btn c" onclick="mpShare()">📤 Share</button></div><div class="small dim" style="word-break:break-all">${esc(url)}</div></div>`;
   h+=`<h3>🪑 Who's here</h3><table><tr><th>Degen</th><th>At</th><th>Bankroll</th><th>Session</th></tr>${R.players.map(p=>`<tr><td>${mpDot(p.color)}<b>${esc(p.name)}</b>${p.host?' 👑':''}${p.id===MP.me?' <span class="g small">(you)</span>':''}${p.conn?'':' <span class="r small">📵</span>'}</td><td>${MP_TSHORT[p.table]||''}</td><td>${money(p.bal)}${p.loaned?` <span class="small a" title="borrowed from Sal this session">🥪${money(p.loaned)}</span>`:''}</td><td class="${p.net>=0?'g':'r'}">${p.net>=0?'+':''}${money(p.net)}</td></tr>`).join('')}</table>`;
-  h+=`<h3>🎰 Tables</h3><div class="grid2">${['bj','cr','rl','sb'].map(t=>`<button class="btn" onclick="mpGo('${t}')">${MP_TNAME[t]}<small>${MP_TDESC[t]} · ${R.players.filter(p=>p.table===t).length} here</small></button>`).join('')}</div>`;
+  h+=`<h3>🎰 Tables</h3><div class="grid2">${['bj','cr','rl','sb','f7','kn'].map(t=>`<button class="btn" onclick="mpGo('${t}')">${MP_TNAME[t]}<small>${MP_TDESC[t]} · ${R.players.filter(p=>p.table===t).length} here</small></button>`).join('')}</div>`;
   h+=mpLeaderHtml(R)+`<div class="small dim">Your online bankroll is your single-player save (${money(S?S.cash:0)}). Wins & losses write back to your run. The day doesn't advance while you're here.</div>`;
   h+=`<button class="btn c ${MP.role==='host'?'bad':''}" onclick="mpLeave()">${MP.role==='host'?'🔒 Close the table (kicks everyone)':'🚪 Leave the room'}</button>`; return h; }
 function mpChipsAdd(vals,fn,max){ return `<div class="row">${vals.map(v=>`<button class="chip" ${v>max?'disabled':''} onclick="${fn}(${v})">+$${v>=1000?(v/1000)+'k':v}</button>`).join('')}</div>`; }
@@ -1923,6 +2349,129 @@ function mpSbHtml(R){ const T=R.sb, me=MP.me, myP=mpP(me)||{bal:0}; if(!T.day) r
 function mpSbLeg(gid,mkt,side){ U.mpSlip=U.mpSlip||[]; const i=U.mpSlip.findIndex(l=>l.gid===gid); if(i>=0&&U.mpSlip[i].mkt===mkt&&U.mpSlip[i].side===side) U.mpSlip.splice(i,1); else { if(i>=0) U.mpSlip.splice(i,1); if(U.mpSlip.length>=4) toast('Max 4 legs. This isn\'t a lottery. (It is.)'); else U.mpSlip.push({gid,mkt,side}); } sfx.click(); mpRenderRoom(false); }
 function mpSbStakeSet(v){ U.mpSbStake=v; mpRenderRoom(false); }
 function mpSbPlace(){ if(!U.mpSlip||!U.mpSlip.length) return; mpSend({t:'sb.bet',legs:U.mpSlip.map(l=>({gid:l.gid,mkt:l.mkt,side:l.side})),stake:U.mpSbStake||10}); U.mpSlip=[]; sfx.coin(); mpRenderRoom(false); }
+
+// ---------- FLIP 7 (online) ----------
+function mpF7Log(T){ return `<div class="log mplog" style="max-height:150px">${T.log.slice(-10).map(x=>`<div>${esc(x)}</div>`).join('')}</div>`; }
+function mpF7Html(R){ const T=R.f7, me=MP.me, myP=mpP(me)||{bal:0}; U.mpF7=U.mpF7||{buy:25,target:100};
+  let h=`<h2>7️⃣ FLIP 7 <span class="small dim">buy in · winner takes the pot (5% rake) · house degenerates fill to 3</span></h2>`;
+  if(T.phase==='lobby'||!T.G){ const inn=T.seats.includes(me), amt=T.seats.length?T.buy:U.mpF7.buy;
+    h+=`<div class="panel small">${T.seats.length?`⏳ Game #${T.gameNo+1} deals in <b data-cd="f7">${mpSec(T.rem)}</b> (or when everyone in taps Ready). Buy-in <b class="a">${money(T.buy)}</b> · race to ${T.target}.`:"💤 Nobody's in yet. First buyer sets the stakes."}<br>In: ${T.seats.map(id=>mpName(id)+(T.ready.includes(id)?' ✅':'')).join(', ')||'—'}</div>`;
+    if(!T.seats.length) h+=`<div class="small dim">Buy-in</div><div class="row">${MPC.F7_BUYS.map(v=>`<button class="chip ${U.mpF7.buy===v?'on':''}" onclick="U.mpF7.buy=${v};mpRenderRoom(false)">${money(v)}</button>`).join('')}</div><div class="small dim">Length</div><div class="row">${[100,200].map(v=>`<button class="chip ${U.mpF7.target===v?'on':''}" onclick="U.mpF7.target=${v};mpRenderRoom(false)">Race to ${v}${v===200?' (official)':' (quick)'}</button>`).join('')}</div>`;
+    h+=inn?`<div class="grid2"><button class="btn go" ${T.ready.includes(me)?'disabled':''} onclick="mpSend({t:'f7.ready'})">${T.ready.includes(me)?'✅ Ready':'✅ Deal me in now'}</button><button class="btn c" onclick="mpSend({t:'f7.out'})">↩ Take my buy-in back</button></div>`
+      :`<button class="btn big go" ${amt<=myP.bal?'':'disabled'} onclick="mpSend({t:'f7.buy',amt:${amt},target:${U.mpF7.target}});sfx.coin()">🃏 BUY IN ${money(amt)}</button>`;
+    h+=`<div class="panel small">94 cards: number cards 0–12 (twelve 12s … one 1, one 0), +2/+4/+6/+8/+10 & x2, and 3× Freeze / Flip Three / Second Chance. Hit or stay; draw a number you already have = <b class="r">BUST</b>. 7 unique numbers ends the round, +15. ${MPC.F7_TURN_MS/1000}s turn timer, then autopilot. Side bets between rounds.</div>`;
+    return h+(T.log.length?mpF7Log(T):''); }
+  const G=T.G, W=G.await, myI=G.players.findIndex(q=>q.pid===me), mine=myI>=0?G.players[myI]:null;
+  let st; if(T.phase==='over'&&T.res) st=`🏁 <b>${esc(T.res.names)}</b> take${T.res.ids.length>1?'':'s'} the pot: ${money(T.res.share)} each.${T.res.house?' The house wins.':''} New lobby in <span data-cd="f7">${mpSec(T.rem)}</span>.`;
+  else if(T.sbOpen) st=`💸 Side bets for round ${G.round+1} · deal in <b data-cd="f7">${mpSec(T.rem)}</b> (or when all players tap Ready)`;
+  else if(W) st=W.i===myI?`<b class="a">🎯 YOUR MOVE</b> · <b data-cd="f7">${mpSec(T.rem)}</b> before autopilot`:`🎯 ${esc(G.players[W.i].name)} is deciding… <span data-cd="f7">${mpSec(T.rem)}</span>`;
+  else st=G.phase==='deal'?'🃏 Dealing…':'🃏 Cards are flying…';
+  h+=`<div class="panel small">${st}<br>Game #${T.gameNo} · round ${G.round||1} · race to ${G.target} · pot <b class="a">${money(T.pot)}</b> · deck ${G.deckN}</div>`;
+  h+=`<div class="f7tbl">${G.players.map((q,i)=>{ const N=F7_NPCS[q.npc], p=q.pid&&mpP(q.pid); const turn=W&&W.i===i; const sts=q.st==='busted'?'<b class="r">BUSTED</b>':q.st==='frozen'?'<b class="b">❄ FROZEN</b>':q.st==='stayed'&&G.phase!=='between'?'<b class="g">✋ STAYED</b>':q.f7?'<b class="a">FLIP 7!</b>':'';
+    const myBust=T.live[me]&&T.live[me].bust&&T.live[me].bust[i];
+    return `<div class="f7p ${turn?'on':''} ${q.pid===me?'me':''}"><div class="row" style="justify-content:space-between"><b>${q.pid?mpDot(p?p.color:q.color):(N?N.ic+' ':'🤖 ')}${esc(q.name)}${q.pid===me?' (you)':''}${q.folded?' 🏳️':''}</b><span><b class="a">${q.score}</b>${q.cards.length?` <span class="small">+${f7Pts(q)}</span>`:''} ${sts}</span></div><div>${q.cards.map(c=>f7Card(c)).join('')||'<span class="small dim">—</span>'}</div>${myBust?`<div class="small a">💸 You bet ${money(myBust)} on this clown busting</div>`:''}</div>`; }).join('')}</div>`;
+  if(T.phase==='play'&&W&&W.i===myI&&W.k==='decide') h+=`<div class="panel small">🎯 Showing <b>${f7Pts(mine)}</b> · ${f7Nums(mine).length}/7 unique · bust risk ≈ <b class="${W.bp>35?'r':W.bp>20?'a':'g'}">${W.bp}%</b>${f7HasSC(mine)?' (Second Chance covers you)':''}</div><div class="grid2"><button class="btn c big" onclick="mpF7Act('hit')">👆 HIT</button><button class="btn c big" ${f7CanStay(mine)?'':'disabled'} onclick="mpF7Act('stay')">✋ STAY (bank ${f7Pts(mine)})</button></div>`;
+  else if(T.phase==='play'&&W&&W.i===myI&&W.k==='choose') h+=`<div class="panel small">🃏 You drew <b>${f7CardLabel(W.card)}</b>. ${W.a==='freeze'?'Freeze someone (they bank their points and are out).':W.a==='flip3'?'Make someone flip three cards.':'You already hold one; hand this Second Chance to someone.'}</div><div class="grid2">${W.cands.map(j=>`<button class="btn c" onclick="mpF7Act('target',${j})">${j===myI?'🫵 Myself':esc(G.players[j].name)}<small>${G.players[j].score} pts · showing ${f7Pts(G.players[j])}</small></button>`).join('')}</div>`;
+  else if(T.phase==='play'&&T.sbOpen){ const B=T.sb[me]||{f7:0,bust:{}}; const inGame=mine&&!mine.folded;
+    h+=`<div class="panel">${inGame?`<div class="small">7️⃣ <b>Flip 7 bonus</b> — you Flip 7 this round, pays <b>${F7_SIDE.f7.pay}:1</b></div><div class="row">${MPC.F7_SBV.map(v=>`<button class="chip ${(B.f7||0)===v?'on':''}" ${v-(B.f7||0)>myP.bal?'disabled':''} onclick="mpF7Sb('f7',0,${v})">${v?'$'+v:'none'}</button>`).join('')}</div>`:''}`;
+    G.players.forEach((q,i)=>{ if(!q.npc) return; const cur=(B.bust&&B.bust[i])||0; h+=`<div class="small">💥 <b>${esc(q.name)} busts</b> this round — pays <b>${F7_SIDE.bust[q.npc]}:1</b></div><div class="row">${MPC.F7_SBV.map(v=>`<button class="chip ${cur===v?'on':''}" ${v-cur>myP.bal?'disabled':''} onclick="mpF7Sb('bust',${i},${v})">${v?'$'+v:'none'}</button>`).join('')}</div>`; });
+    h+=`</div>${inGame?`<button class="btn go" ${T.ready.includes(me)?'disabled':''} onclick="mpSend({t:'f7.ready'})">${T.ready.includes(me)?'✅ Ready':'🃏 Ready — deal it'}</button>`:''}`; }
+  return h+mpF7Log(T); }
+function mpF7Act(a,to){ mpSend({t:'f7.act',a,to}); sfx.click(); }
+function mpF7Sb(k,i,v){ mpSend({t:'f7.sb',k,i,v}); sfx.click(); }
+// ---------- KENO (online) ----------
+function mpKnHtml(R){ const T=R.kn, me=MP.me, myP=mpP(me)||{bal:0}, mine=T.tickets[me]; const K=U.mpKn=U.mpKn||{picks:[],bet:5,races:1};
+  const picks=mine?mine.spots:K.picks, drawing=T.phase==='draw', D=new Set(T.shown), hits=picks.filter(n=>D.has(n)).length;
+  let st; if(drawing) st=`🎱 Race #${T.raceNo}: ball <b>${T.shown.length}</b>/20${T.shown.length?` — <b class="a">${T.shown[T.shown.length-1]}</b>`:''}${picks.length?` · you've caught <b class="g">${hits}</b>`:''}`;
+  else if(T.phase==='done') st=`🏁 Race #${T.raceNo} done. ${picks.length?`You caught <b>${hits}</b> of ${picks.length}. `:''}Next race soon.`;
+  else st=Object.keys(T.tickets).length?`⏳ Next draw in <b data-cd="kn">${mpSec(T.rem)}</b> (or when every ticket is Ready)`:'💤 No tickets yet. Fill one out.';
+  let h=`<h2>🎱 KENO LOUNGE <span class="small dim">80 balls · pick 1–10 · 20 drawn · one draw for the whole room</span></h2><div class="panel small">${st}</div>`;
+  h+=`<div class="knb">${kenoBoardCells(picks,T.shown,!mine&&!drawing,'mpKnTog')}</div>`;
+  if(!mine){ const cost=K.bet*K.races;
+    h+=`<div class="small dim">Quick pick</div><div class="row">${[1,2,3,4,5,6,7,8,9,10].map(n=>`<button class="chip" onclick="mpKnQP(${n})">${n}</button>`).join('')}<button class="chip" onclick="U.mpKn.picks=[];mpRenderRoom(false)">✖</button></div>`;
+    h+=`<div class="small dim">Bet per race</div>${chips(MPC.KN_BETS,K.bet,'mpKnBet')}<div class="small dim">Races (same ticket, N draws in a row)</div>${chips(MPC.KN_RACES,K.races,'mpKnRaces')}`;
+    h+=`<button class="btn big go" ${picks.length&&cost<=myP.bal&&!drawing?'':'disabled'} onclick="mpKnPlay()">🎟️ PLAY ${picks.length||0}-SPOT · ${money(K.bet)} × ${K.races} = ${money(cost)}</button>`; }
+  else { h+=`<div class="panel small">🎟️ Your ticket: <b>${mine.spots.length}-spot</b> ${money(mine.bet)}/race · <b>${mine.left}</b> of ${mine.races} race${mine.races>1?'s':''} left${T.inRace.includes(me)?' · <b class="a">in this draw</b>':''}</div>`;
+    h+=`<div class="grid2"><button class="btn go" ${drawing||T.ready.includes(me)||mine.left<mine.races?'disabled':''} onclick="mpSend({t:'kn.ready'})">${T.ready.includes(me)||mine.left<mine.races?'✅ Ready':'✅ Ready — draw!'}</button><button class="btn c" ${drawing?'disabled':''} onclick="mpSend({t:'kn.cancel'})">✖ Cancel (refund ${money(mine.left*mine.bet)})</button></div>`; }
+  if(picks.length) h+=kenoPaytableHtml(picks.length,T.phase!=='bet'?hits:-1);
+  const res=Object.entries(T.res||{}); if(res.length) h+=`<div class="panel small">${res.map(([id,x])=>`<div class="kv"><span>${mpName(id)}${id===me?' (you)':''} · caught ${x.h}/${x.s}</span><b class="${x.net>0?'g':x.net<0?'r':''}">${x.net>0?'+':''}${money(x.net)}</b></div>`).join('')}</div>`;
+  const others=Object.entries(T.tickets).filter(([id])=>id!==me); if(others.length) h+=`<div class="small dim">Tickets in: ${others.map(([id,t])=>`${mpName(id)} ${t.spots.length}-spot ${money(t.bet)}${t.races>1?` (${t.left} left)`:''}${T.ready.includes(id)?' ✅':''}`).join(' · ')}</div>`;
+  return h; }
+function mpKnTog(n){ const K=U.mpKn; const i=K.picks.indexOf(n); if(i>=0) K.picks.splice(i,1); else if(K.picks.length<10) K.picks.push(n); else return toast('Ten spots max.'); sfx.click(); mpRenderRoom(false); }
+function mpKnQP(n){ U.mpKn.picks=kenoQuick(n); sfx.click(); mpRenderRoom(false); }
+function mpKnBet(v){ U.mpKn.bet=v; mpRenderRoom(false); }
+function mpKnRaces(v){ U.mpKn.races=v; mpRenderRoom(false); }
+function mpKnPlay(){ const K=U.mpKn; if(!K.picks.length) return; mpSend({t:'kn.ticket',spots:K.picks.slice(),bet:K.bet,races:K.races}); sfx.coin(); say('mp_'+MP.me,pick(['Birthdays and my ex\'s jersey number.','Karen, this is the one.','Mama needs a 7-spot.']),1500); }
+// ===================== WHAT'S NEW (full update log, newest first) =====================
+// Every update since the game was created, rebuilt from the crow99999/arcade git history, the build/test notes and the
+// bugs fixed during testing. Returning players get a pop-up card on the title screen with only the entries newer than
+// the version they last saw (META.wnSeen); brand-new players aren't spammed. The full log lives on a scrollable screen.
+const GAME_VER='1.7.0';
+const WN_BEFORE_LOG='1.4.1'; // what returning players had before this log existed (last deploy before v1.5.0)
+const CHANGELOG=[
+ {v:'1.7.0',d:'Oct 6, 2026 · evening',t:'📰 What\'s New log',items:[
+  'This screen: every update since day one, newest first, in one scrollable log (title screen and hub → 📰 What\'s New).',
+  'Returning players get a pop-up on the title screen with just the stuff that\'s new since their last visit.',
+  'Built from the arcade repo\'s git history plus the build/test notes and every bug squashed along the way.']},
+ {v:'1.6.0',d:'Oct 6, 2026 · evening',t:'🎱 Keno Lounge',items:[
+  'New casino game: classic 80-ball keno. Pick 1–10 spots, Keno Karen draws 20 balls with an animated ball draw.',
+  'Vegas-style paytable for every spot count (RTP 75%–87%, like real keno — the house is NOT your friend). 10-spot even pays 3× for catching zero.',
+  'Quick Pick, multi-race tickets (same numbers for 1/2/5/10/20 draws in a row, stop any time for a refund of unplayed races), fast-draw toggle.',
+  'Online: shared keno table — one draw for the whole room, everybody\'s tickets settle on it, multi-race tickets ride automatically.',
+  'New achievement: 🎱 Keno Lounge Lizard (catch 7+).']},
+ {v:'1.5.0',d:'Oct 6, 2026 · evening',t:'7️⃣ Flip 7 in Tony\'s back room',items:[
+  'New casino card game based on the real Flip 7 rules: 94-card deck (0–12 with twelve 12s down to one 1 and one 0, +2/+4/+6/+8/+10, x2, 3× Freeze, 3× Flip Three, 3× Second Chance).',
+  'Gambling version: buy in ($25–$2,500) against 2–3 stick-figure degenerates — Risky Ricky, Nervous Ned, Card-Countin\' Carl and Tilted Tina, each with their own risk-taking AI. Winner takes the pot, house rakes 5%.',
+  'Side bets every round: Flip 7 bonus (10:1) and "this clown busts" bets on any NPC. Crude bust commentary included.',
+  'Online: shared Flip 7 table — buy-ins and a pot, house bots fill to 3 players, turn order with the turn timer (autopilot if you snooze), side bets between rounds, results written back to your save, loans work the same.',
+  'New achievements: 7️⃣ Flip Seven and 🧹 Pot Sweeper.',
+  'Fixed during testing: cards could vanish from the deck when a Flip 7 ended a round mid-Flip-Three; Tilted Tina was busting 61% of the time (now a more believable ~42%).']},
+ {v:'1.4.1',d:'Oct 6, 2026 · 4:48 PM ET',t:'📡 Clearer connection errors',items:[
+  'If an office/school network blocks the peer-to-peer connection, the error now tells you what to do: switch one player to a phone hotspot or home Wi-Fi, turn off VPNs, keep the host tab open.',
+  'Connection setup now uses Google + Cloudflare STUN servers. (No free, no-signup relay server exists, so strict corporate networks still can\'t be relayed.)']},
+ {v:'1.4.0',d:'Oct 6, 2026 · 4:48 PM ET',t:'🥪 Loans at the online table',items:[
+  '"💰 Get a Loan / Re-up" button in online rooms: same menu, fees and credit limit as Big Sal\'s deli in single-player.',
+  'The host double-checks your credit limit, the cash lands in your save and on the table instantly, and the room gets a crude chat announcement.',
+  'No re-upping mid-hand. Busted players get the deli offered automatically.',
+  'Fixed during testing: the loan panel didn\'t close after the cash arrived.']},
+ {v:'1.3.0',d:'Oct 6, 2026 · 4:16 PM ET',t:'💵 Shared bankroll',items:[
+  'Your online bankroll IS your single-player save: wins and losses write straight back to your run.',
+  'Every bet is tracked in a numbered ledger, so a refresh or dropped connection can\'t eat your money — winnings are delivered when you rejoin, and if the host leaves, anything riding is refunded.',
+  'An online session costs ⚡1 (once per table) and the day doesn\'t advance while you\'re online.']},
+ {v:'1.2.0',d:'Oct 6, 2026 · 4:16 PM ET',t:'🌐 The whole casino goes online',items:[
+  'Online rooms now have craps (one shooter, everyone rides the same dice), roulette (one wheel, everyone\'s chips) and a shared sportsbook slate you sweat live together.',
+  'Lobby with leaderboard, trash-talk chat, emotes and canned insults.']},
+ {v:'1.1.0',d:'Oct 6, 2026 · 4:16 PM ET',t:'🂡 Multiplayer blackjack',items:[
+  'Host a table and send friends a DEGEN-XXXX room code or invite link (peer-to-peer, no accounts).',
+  '5 seats, turn timer with auto-stand, dealer stands on soft 17, blackjack pays 3:2, doubles and splits. The host\'s browser deals and checks every move.']},
+ {v:'1.0.0',d:'Oct 6, 2026 · 12:55 PM ET',t:'🚀 Live on GitHub Pages',items:[
+  'DEGEN goes public at crow99999.github.io/arcade/degen/ as part of the arcade.']},
+ {v:'0.2.4',d:'Oct 5, 2026 · late night',t:'🐛 Fix: peak bankroll display',items:['Fixed the peak bankroll display so it shows your real high-water mark.']},
+ {v:'0.2.3',d:'Oct 5, 2026 · late night',t:'🐛 Fix: craps redraw',items:['Fixed the craps table not redrawing properly after a roll.']},
+ {v:'0.2.2',d:'Oct 5, 2026 · late night',t:'🐛 Fix: three-card monte crash',items:['Fixed a crash during Shifty Pete\'s monte shuffle.']},
+ {v:'0.2.1',d:'Oct 5, 2026 · late night',t:'🐛 Fix: bonus-bet token slot',items:['Fixed a bug with promo bonus-bet tokens and betslip slots found during testing.']},
+ {v:'0.2.0',d:'Oct 5, 2026 · late night',t:'🎲 Craps table',items:[
+  'Full craps in the casino: pass/don\'t pass, odds at true odds, come/don\'t come, place bets, field, hardways, any 7 and any craps, with animated dice.']},
+ {v:'0.1.0',d:'Oct 5, 2026 · late night',t:'🎉 DEGEN: The Road to Whale — first build',items:[
+  'Crude Newgrounds-style stick-figure gambling RPG: you have $50, you owe Big Sal $10,000, and you have 4 weeks (weekly payments every Sunday).',
+  'Four archetypes: The Sharp Wannabe, The Barfly, The Hustler and The Lucky Idiot — stats, perks and level-ups.',
+  'Sportsbook with two books (DraftQueens & FanDoodle) to line-shop: spreads, totals, moneylines, parlays, same-game parlays, props, El Jefe\'s picks, promo tokens/bonus bets, live sweat and live betting.',
+  'Casino: blackjack, slots, roulette and scratch-offs. Back alley: three-card monte with Shifty Pete, heads-up limit hold\'em (with cheating perks) and street fights.',
+  'Tilt, buzz and HP systems, random events, side hustles, the bar, Speedy-Mart & Pawn, Mom\'s emergency Venmo and plasma.',
+  'Achievements, run history and six endings: Debt Free, The Retirement, Whale Ascension, Van Down by the River, Sleeping with the Fishes, Mid-Stakes Lifer.']}
+];
+function wnIdx(v){ const i=CHANGELOG.findIndex(e=>e.v===v); return i<0?CHANGELOG.length:i; }
+// entries newer than the version this player last saw (empty for brand-new players, who get marked as seen)
+function wnPending(){ if(U.wnNew) return U.wnNew; let seen=META.wnSeen;
+  if(!seen){ let ret=false; try{ ret=META.runs>0||!!load(); }catch(e){} seen=ret?WN_BEFORE_LOG:GAME_VER; }
+  U.wnPrev=seen; U.wnNew=CHANGELOG.slice(0,wnIdx(seen)); if(META.wnSeen!==GAME_VER){ META.wnSeen=GAME_VER; saveMeta(); } return U.wnNew; }
+function wnEntryHtml(e,isNew){ return `<div class="wv ${isNew?'new':''}"><b>v${e.v} — ${esc(e.t)}</b>${isNew?' <span class="badge w">NEW</span>':''}<div class="small dim">${esc(e.d)}</div><ul class="small">${e.items.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div>`; }
+// title-screen pop-up for returning players
+function wnPopHtml(){ const L=wnPending(); if(!L.length||U.wnDismissed) return '';
+  return `<div class="panel wnpop" id="wnpop"><div class="row" style="justify-content:space-between"><b class="a">📰 NEW SINCE YOUR LAST VISIT</b><button class="chip" onclick="U.wnDismissed=true;renderTitle()" aria-label="close">✖</button></div><div class="wn" style="max-height:38vh">${L.map(e=>wnEntryHtml(e,true)).join('')}</div><div class="grid2"><button class="btn c" onclick="U.wnDismissed=true;renderTitle()">👍 Got it</button><button class="btn c" onclick="U.wnDismissed=true;go('news')">📜 Full update log</button></div></div>`; }
+function renderNews(){ scene('title',[{id:'a',x:.3,pose:'point',hat:'cap',hatc:'#e8541e',label:'EXTRA!',held:'slip'},{id:'b',x:.7,pose:'idle',hat:'fedora',color:'#f0e0c0',label:'BIG SAL'}],{});
+  const P=wnPending(), nw=new Set(P.map(e=>e.v));
+  setMain(`<h2>📰 WHAT'S NEW <span class="small dim">v${GAME_VER} · every update since day one · newest first</span></h2><div class="panel wn" id="wnlog">${CHANGELOG.map(e=>wnEntryHtml(e,nw.has(e.v))).join('')}</div><button class="btn c" onclick="go(S&&!S.ended&&U.wnFrom==='hub'?'hub':'title')">⬅ Back</button>`); }
 // ===================== BACK ALLEY: POKER + MONTE =====================
 // ---------- poker hand evaluation (r: 2..14) ----------
 const PR=['','','2','3','4','5','6','7','8','9','10','J','Q','K','A'];
@@ -2218,7 +2767,7 @@ function render(){ const s=U.screen; mpCanvasTall(s==='mp'); renderTop(); try{
   if(s==='mp') return renderMP(true);
   if(s==='title') return renderTitle(); if(s==='create') return renderCreate(); if(s==='hub') return renderHub(); if(s==='book'){ scene('book',[youActor({x:.5,pose:'phone',held:'phone'})],{caption:'THE SPORTSBOOK'}); return renderBook(); }
   if(s==='live') return renderLive(); if(s==='casino') return renderCasino(); if(s==='alley') return renderAlley(); if(s==='fight') return renderFight(); if(s==='event') return renderEvent();
-  if(s==='char') return renderChar(); if(s==='shop') return renderShop(); if(s==='sal') return renderSal(); if(s==='jobs') return renderJobs(); if(s==='bar') return renderBar(); if(s==='ach') return renderAch(); if(s==='morning') return renderMorning(); if(s==='ending') return renderEnding(); if(s==='help') return renderHelp(); if(s==='final') return renderFinal();
+  if(s==='char') return renderChar(); if(s==='shop') return renderShop(); if(s==='sal') return renderSal(); if(s==='jobs') return renderJobs(); if(s==='bar') return renderBar(); if(s==='ach') return renderAch(); if(s==='morning') return renderMorning(); if(s==='ending') return renderEnding(); if(s==='help') return renderHelp(); if(s==='news') return renderNews(); if(s==='final') return renderFinal();
   } catch(e){ console.error(e); setMain(`<div class="panel r">Something broke: ${esc(e.message)}</div><button class="btn" onclick="go('hub')">Back to hub</button>`); } }
 // ---------- title / create ----------
 const ASCII_TITLE = String.raw`
@@ -2229,12 +2778,12 @@ const ASCII_TITLE = String.raw`
  |____/|_____\____|_____|_| \_|`;
 function renderTitle(){ scene('title',[{id:'a',x:.2,pose:'celebrate',hat:'cap',hatc:'#e8541e',held:'slip'},{id:'b',x:.5,pose:'cry',hat:'beanie',color:'#ddd'},{id:'c',x:.8,pose:'punched',hat:'fedora',color:'#f0e0c0',fat:true}],{});
   const sv=load(); const live=sv&&!sv.ended;
-  setMain(`<div class="title"><pre class="ascii">${ASCII_TITLE}</pre><div class="t1">THE ROAD TO WHALE</div><div class="t2">A crude stick-figure gambling RPG. You have $50. You owe Big Sal $10,000. You have 4 weeks.</div></div>
+  setMain(`<div class="title"><pre class="ascii">${ASCII_TITLE}</pre><div class="t1">THE ROAD TO WHALE</div><div class="t2">A crude stick-figure gambling RPG. You have $50. You owe Big Sal $10,000. You have 4 weeks.</div></div>${wnPopHtml()}
   ${live?`<button class="btn big go" onclick="continueGame()">▶ CONTINUE<small style="text-align:center">${esc(sv.name)} · Day ${sv.day} · ${money(sv.cash)} cash · ${money(sv.debt)} debt</small></button>`:''}
   <button class="btn big ${live?'':'go'}" onclick="go('create')">🆕 NEW RUN</button>
-  <button class="btn big gold" data-nomk="1" onclick="mpOpen('title')">🌐 ONLINE CASINO<small style="text-align:center">Host or join a table with friends: blackjack, craps, roulette, sportsbook</small></button>
+  <button class="btn big gold" data-nomk="1" onclick="mpOpen('title')">🌐 ONLINE CASINO<small style="text-align:center">Host or join a table with friends: blackjack, craps, roulette, Flip 7, keno, sportsbook</small></button>
   <div class="grid2"><button class="btn c" onclick="go('help')">📖 How to play</button><button class="btn c" onclick="U.achMeta=true;go('ach')">🏆 Achievements (${Object.keys(META.ach).length}/${Object.keys(ACHS).length})</button></div>
-  <button class="btn c" onclick="SND.on=!SND.on;renderTitle()">🔊 Sound: ${SND.on?'ON':'OFF'}</button>
+  <div class="grid2"><button class="btn c" onclick="U.wnFrom='title';go('news')">📰 What's New <small style="text-align:center">v${GAME_VER}</small></button><button class="btn c" onclick="SND.on=!SND.on;renderTitle()">🔊 Sound: ${SND.on?'ON':'OFF'}</button></div>
   <div class="small dim" style="text-align:center;margin-top:8px">Runs: ${META.runs} · Best score: ${META.best.toLocaleString()} · Endings found: ${Object.keys(META.endings).length}/6<br>All teams, books, people and gambling are fictional. Please don't actually do this.</div>`); }
 function continueGame(){ S=load(); if(!S) return go('title'); if(S.craps&&crapsTotalOnTable(S.craps)>0){ const t=crapsRefundAll(); toast(`Your ${money(t)} of craps chips were returned.`); } if(!S.slate||S.slate.day!==S.day) genSlate(); go('hub'); }
 function renderCreate(){ U.arch=U.arch||'sharp'; scene('apt',[youActor({x:.5,pose:'idle',label:'YOU'})],{});
@@ -2294,7 +2843,7 @@ function renderHub(){
    <button class="btn" onclick="go('char')">🧍 Character<small>Stats, perks, inventory</small></button>
    <button class="btn" onclick="U.achMeta=false;go('ach')">🏆 Achievements<small>${Object.keys(S.ach).length}/${Object.keys(ACHS).length}</small></button></div>
    <button class="btn big ${e?'':'gold'}" onclick="doSleep()">😴 Sleep (end day ${S.day})<small style="text-align:center">${!S.slate.done&&S.bets.length?'Unwatched games will auto-sim':''}${e?' · You still have energy left':''}</small></button>
-   <div class="row" style="justify-content:space-between"><button class="tab" onclick="go('help')">📖 Help</button><button class="tab" onclick="SND.on=!SND.on;render()">🔊 ${SND.on?'On':'Off'}</button><button class="tab" onclick="save();go('title')">💾 Save & Title</button></div>`;
+   <div class="row" style="justify-content:space-between"><button class="tab" onclick="go('help')">📖 Help</button><button class="tab" onclick="U.wnFrom='hub';go('news')">📰 New</button><button class="tab" onclick="SND.on=!SND.on;render()">🔊 ${SND.on?'On':'Off'}</button><button class="tab" onclick="save();go('title')">💾 Save & Title</button></div>`;
   save(); setMain(h); }
 function doSleep(){ sfx.click(); const out=sleep(); S.lastLog=[]; U.morning=out; go('morning'); }
 function renderMorning(){ scene('apt',[youActor({x:.5,pose:'idle',held:null}),{id:'sun',x:.12,y:.3,s:.01}],{caption:'☀️ GOOD MORNING'}); pose('you','idle');
@@ -2412,6 +2961,8 @@ function renderHelp(){ scene('title',[{id:'a',x:.5,pose:'point',hat:'cap',hatc:'
   <p><b>Sportsbook:</b> Two books (DraftQueens 👑 & FanDoodle 🌀) with slightly different lines, so <b>line shop!</b> Spreads/totals are −110 (the vig). Tap odds to build a slip; 2+ legs = parlay (or straights). Same-game legs = SGP (20% juice tax). Use promo tokens: bonus bets (stake not returned), no-sweat bets, profit boosts. Watch games in the <b>Live Sweat</b> to live-bet and cash out. Win too much and the books LIMIT you.</p>
   <p><b>Tilt:</b> Losing raises tilt. At 60+ you're forced to bet at least 10% of your roll; 85+ is 20% plus worse odds. At 100 you do something stupid. Beer, wins, sleep and touching grass lower it.</p>
   <p><b>Edges:</b> the house always has one, but you can beat it with perks: Sharp (see +EV bets), Rain Man (count cards), Vig Killer, Promo Abuser, Eagle Eye (monte), Bottom Dealer (cheat at poker). Fading El Jefe has historically... worked.</p>
+  <p><b>Flip 7 (Tony's back room):</b> buy in against 2–3 degenerates. Each round hit or stay; draw a number you already have and you BUST (0). 7 different numbers ends the round (+15). Freeze banks someone out, Flip Three forces 3 cards, Second Chance saves one bust. First to 200 wins the pot (5% rake).</p>
+  <p><b>Keno:</b> pick 1–10 numbers of 80, 20 get drawn, payout depends on how many you catch. RTP is ~75–87%. It's a lottery with a cocktail menu.</p>
   <p><b>Craps quick guide:</b> Pass Line on the come-out, add Odds once a point is set (true odds, no house edge). Place 6/8 pay 7:6. Hardways and Any 7 are fun sucker bets.</p>
   <p><b>Safety net:</b> new-user promos, Mom's emergency Venmo, plasma, and side jobs mean you can always claw back.</p></div>
   <button class="btn c" onclick="go(S&&!S.ended?'hub':'title')">⬅ Back</button>`); }
