@@ -117,6 +117,26 @@ pre.ascii{color:var(--green);font-size:11px;line-height:1.1;overflow-x:auto;marg
 .badge{display:inline-block;padding:1px 6px;border-radius:9px;font-size:11px;font-weight:bold}
 .badge.w{background:#1f5f2d;color:#bfffcf}.badge.l{background:#6b1f1f;color:#ffc9c9}.badge.p{background:#555;color:#eee}.badge.o{background:#4b3d10;color:#ffe08a}
 @media (min-width:640px){.scene{height:230px}body{font-size:15.5px}}
+.scene.tall{height:250px}
+@media (min-width:640px){.scene.tall{height:300px}}
+.mpcode{font-size:30px;font-weight:900;color:var(--amber);letter-spacing:3px;margin:4px 0;font-family:ui-monospace,Menlo,monospace}
+.mpdot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:5px;border:1px solid #0008;vertical-align:middle}
+.mpsw{width:34px;height:34px;border-radius:50%;border:3px solid transparent;cursor:pointer;margin:2px}
+.mpsw.on{border-color:#fff;box-shadow:0 0 0 2px var(--amber)}
+.mpseats{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin:5px 0}
+.mpseat{border:1px solid var(--line);border-radius:6px;padding:4px 6px;background:#12160f;min-width:0}
+.mpseat.on{border-color:var(--amber);box-shadow:0 0 0 1px var(--amber)}
+.mpseat.me{background:#17240f}
+.cards.sm{min-height:40px;gap:3px;margin:3px 0}
+.cards.sm .card{width:30px;height:42px;font-size:11px;padding:1px 3px}
+.mpemo{display:flex;gap:4px;overflow-x:auto;padding:3px 0;-webkit-overflow-scrolling:touch}
+.mpemo .tab{flex:0 0 auto;min-width:42px;font-size:18px}
+.mptalk{flex:0 0 auto;border:1px solid #6b3d5f;background:#2a1626;color:var(--pink);border-radius:14px;padding:6px 10px;font-size:12px;cursor:pointer;white-space:nowrap;min-height:34px}
+.mplog{max-height:150px;margin:0 0 4px}
+.mptabs .tab{font-size:12px;padding:3px 2px}
+.mpmine{border-color:#3f8a4b}
+.rn .oth{position:absolute;left:2px;bottom:0;font-size:9px;color:#6fc3ff}
+.chip[disabled]{opacity:.35;cursor:not-allowed}
 </style>
 </head>
 <body>
@@ -432,7 +452,7 @@ function bgDraw(c,bg,W,H,t){
       break; }
     case 'book': case 'bar': {
       c.fillStyle=g(0,floor,'#1d1a2e','#121020'); c.fillRect(0,0,W,floor); c.fillStyle='#2b2118'; c.fillRect(0,floor,W,H-floor);
-      const n=Math.max(3,Math.floor(W/110)); const lines=(S&&S.slate&&S.slate.games)||[];
+      const n=Math.max(3,Math.floor(W/110)); const lines=(SC.cur&&SC.cur.games)||(S&&S.slate&&S.slate.games)||[];
       for(let i=0;i<n;i++){ const x=10+i*(W-20)/n, w=(W-20)/n-10, y=12, h=H*.3; c.fillStyle='#000'; c.fillRect(x,y,w,h); c.strokeStyle='#444'; c.strokeRect(x,y,w,h);
         c.fillStyle=['#0a3','#03a','#a30','#606'][i%4]; c.globalAlpha=.25+.08*Math.sin(t*5+i); c.fillRect(x+2,y+2,w-4,h-4); c.globalAlpha=1;
         const gm=lines[i%Math.max(1,lines.length)]; c.fillStyle='#fff'; c.font='bold 10px monospace';
@@ -454,7 +474,8 @@ function bgDraw(c,bg,W,H,t){
       c.fillStyle='#0f5e2e'; c.beginPath(); c.roundRect? c.roundRect(W*.05,H*.54,W*.9,H*.42,20) : c.rect(W*.05,H*.54,W*.9,H*.42); c.fill();
       c.strokeStyle='#e9e4d266'; c.lineWidth=1; c.strokeRect(W*.12,H*.6,W*.76,H*.3);
       c.fillStyle='#e9e4d299'; c.font='bold 10px monospace'; c.fillText('PASS LINE',W*.5,H*.93); [4,5,6,8,9,10].forEach((n,i)=>{ c.fillText(n===6?'SIX':n===9?'NINE':String(n),W*(.2+i*.12),H*.66); });
-      if(S&&S.craps&&S.craps.point){ const i=[4,5,6,8,9,10].indexOf(S.craps.point); c.fillStyle='#fff'; c.beginPath(); c.arc(W*(.2+i*.12),H*.74,9,0,7); c.fill(); c.fillStyle='#000'; c.font='bold 8px monospace'; c.fillText('ON',W*(.2+i*.12),H*.74); }
+      const cpt=(SC.cur&&SC.cur.point!==undefined)?SC.cur.point:(S&&S.craps?S.craps.point:null);
+      if(cpt){ const i=[4,5,6,8,9,10].indexOf(cpt); c.fillStyle='#fff'; c.beginPath(); c.arc(W*(.2+i*.12),H*.74,9,0,7); c.fill(); c.fillStyle='#000'; c.font='bold 8px monospace'; c.fillText('ON',W*(.2+i*.12),H*.74); }
       else { c.fillStyle='#000'; c.beginPath(); c.arc(W*.9,H*.6,9,0,7); c.fill(); c.fillStyle='#fff'; c.font='bold 8px monospace'; c.fillText('OFF',W*.9,H*.6); }
       break; }
     case 'alley': {
@@ -483,6 +504,18 @@ function bgDraw(c,bg,W,H,t){
       c.fillStyle='#ddd'; c.fillRect(W*.55,H*.55,W*.32,H*.25); c.fillStyle='#8ab'; c.fillRect(W*.58,H*.58,W*.08,H*.08); c.fillStyle='#222'; c.beginPath(); c.arc(W*.6,H*.82,7,0,7); c.arc(W*.82,H*.82,7,0,7); c.fill();
       c.fillStyle='#333'; c.font='bold 9px monospace'; c.fillText('FREE CANDY (jk)',W*.73,H*.72);
       break; }
+    case 'mpbj': {
+      c.fillStyle=g(0,H,'#2a0d20','#12050d'); c.fillRect(0,0,W,H);
+      c.fillStyle='#ffc24a99'; c.font='bold 10px monospace'; c.fillText('BLACKJACK PAYS 3 TO 2 · DEALER STANDS ON ALL 17s',W/2,26);
+      const ty=H*.47, rx=W*.5, ry=H*.42; c.fillStyle='#5a3a1a'; c.beginPath(); c.ellipse(W/2,ty,rx+2,ry+8,0,0,Math.PI); c.closePath(); c.fill();
+      c.fillStyle='#0f5e2e'; c.beginPath(); c.ellipse(W/2,ty,rx-6,ry,0,0,Math.PI); c.closePath(); c.fill();
+      c.strokeStyle='#e9e4d233'; c.lineWidth=1; c.beginPath(); c.ellipse(W/2,ty,rx*.62,ry*.5,0,0,Math.PI); c.stroke();
+      c.fillStyle='#e9e4d255'; c.font='bold 8px monospace'; c.fillText('INSURANCE IS FOR COWARDS',W/2,ty+ry*.66);
+      break; }
+    case 'mprl': {
+      c.fillStyle=g(0,H,'#1d0b2a','#0d0514'); c.fillRect(0,0,W,H); c.fillStyle='#0f5e2e'; c.fillRect(0,H*.8,W,H*.2); c.fillStyle='#5a3a1a'; c.fillRect(0,H*.78,W,5);
+      c.fillStyle='#ffc24a99'; c.font='bold 10px monospace'; c.fillText('~ ROULETTE ~ 0 · 00 ~',W/2,26);
+      break; }
     case 'title': {
       c.fillStyle=g(0,H,'#140a1e','#2a0d10'); c.fillRect(0,0,W,H);
       for(let i=0;i<30;i++){ const x=(i*97+t*20)%W, y=(i*53)%H; c.fillStyle='#ffffff10'; c.fillRect(x,y,2,2); }
@@ -502,6 +535,7 @@ function scDraw(){
       c.fillStyle='#fff'; c.strokeStyle='#000'; c.lineWidth=1; c.beginPath(); c.rect(bx,by,tw,18); c.fill(); c.stroke(); c.beginPath(); c.moveTo(x-4,by+18); c.lineTo(x,by+25); c.lineTo(x+4,by+18); c.fill();
       c.fillStyle='#000'; c.textAlign='center'; c.textBaseline='middle'; let s=a.bubble; while(c.measureText(s).width>tw-8&&s.length>3) s=s.slice(0,-2); if(s!==a.bubble) s=s.slice(0,-1)+'…'; c.fillText(s,bx+tw/2,by+9.5); }
   }
+  if(SC.cur.over) SC.cur.over(c,W,H,t);
   // dice
   if(SC.dice){ const d=SC.dice, k=clamp((t-d.t0)/d.dur,0,1); const ease=1-Math.pow(1-k,3);
     for(let i=0;i<2;i++){ const x=W*(d.x0+(d.x1-d.x0)*ease)+i*26, y=H*(.78)-Math.abs(Math.sin(ease*Math.PI*3))*(1-ease)*50; const v= k<1? ri(1,6) : d.v[i]; drawDie(c,x,y,20*sc,v,k<1?t*15+i:0.15*(i?1:-1)); } }
@@ -1145,6 +1179,7 @@ function renderCasino(){
       <div class="grid2"><button class="btn" onclick="cgo('bj')">🂡 Blackjack<small>6-deck, 3:2, dealer stands soft 17</small></button><button class="btn" onclick="cgo('craps')">🎲 Craps<small>Full table: line, come, odds, place, props</small></button>
       <button class="btn" onclick="cgo('slots')">🎰 Slots<small>"Turd Jackpot" edition</small></button><button class="btn" onclick="cgo('roul')">🎡 Roulette<small>American wheel. 0 and 00, baby.</small></button>
       <button class="btn" onclick="cgo('scr')">🎫 Scratch-offs<small>From the gift shop. Sad but legal.</small></button><button class="btn" onclick="casinoDrink()">🍸 Free Drink<small>Tip the waitress $2. +buzz, −tilt</small></button></div>
+      <button class="btn gold c" data-nomk="1" onclick="mpOpen('casino')">🌐 Multiplayer tables (play with friends)</button>
       <button class="btn c" onclick="leaveCasino()">🚪 Leave the casino</button>`); return; }
   if(g==='bj') return renderBJ(); if(g==='slots') return renderSlots(); if(g==='roul') return renderRoul(); if(g==='craps') return renderCraps(); if(g==='scr') return renderScratch();
 }
@@ -1251,27 +1286,31 @@ function renderCraps(){ const C=S.craps; const b=C.bets; U.crChip=U.crChip||5; c
   h+=`<details class="small dim"><summary>How craps works (for the uninitiated)</summary>Come-out roll: Pass wins on 7/11, loses on 2/3/12; anything else sets the POINT. Then Pass wins if the point repeats before a 7. Don't Pass is the opposite (12 on come-out pushes). Come/Don't Come work like Pass/Don't Pass but start on the next roll. Odds behind the line pay TRUE odds (no house edge!). Place bets win when their number hits before a 7 (off on the come-out). Hardways win if the number rolls as doubles before a 7 or the "easy" way. Field/Any 7/Any Craps are one-roll bets.</details>`;
   h+=backBtn; setMain(h); }
 function crLog(s,c){ U.crLog=U.crLog||[]; U.crLog.unshift({s,c}); if(U.crLog.length>40) U.crLog.length=40; }
-function crAdd(k,n){ if(U.busy) return; const C=S.craps, b=C.bets, v=U.crChip, on=C.point!==null, mx=casinoMax();
-  if(v>S.cash){ toast('Not enough cash for that chip.'); return; }
-  const fail=m=>{ toast('🎲 '+m); };
-  let cur, set;
+// Pure bet validation / application (shared by single-player and the multiplayer host)
+function crapsBetCheck(C,k,n,v,mx){ const b=C.bets, on=C.point!==null; let cur;
   switch(k){
-    case 'pass': if(on) return fail('Pass line goes down on the come-out. Use Come instead.'); cur=b.pass; set=x=>b.pass=x; break;
-    case 'dp': if(on) return fail("Don't Pass only on the come-out. Use Don't Come."); cur=b.dp; set=x=>b.dp=x; break;
-    case 'come': if(!on) return fail('Come bets need a point. On the come-out, just bet the Pass Line.'); cur=b.come; set=x=>b.come=x; break;
-    case 'dc': if(!on) return fail("Don't Come needs a point."); cur=b.dc; set=x=>b.dc=x; break;
-    case 'passOdds': if(!on||!b.pass) return fail('You need a Pass Line bet and a point first.'); cur=b.passOdds; if(cur+v>b.pass*MAX_ODDS[C.point]) return fail(`Max odds is ${MAX_ODDS[C.point]}x your line bet.`); set=x=>b.passOdds=x; break;
-    case 'dpOdds': if(!on||!b.dp) return fail("You need a Don't Pass bet and a point first."); cur=b.dpOdds; if(cur+v>b.dp*MAX_ODDS[C.point]*TRUE_ODDS[C.point]) return fail('That\'s over the max lay.'); set=x=>b.dpOdds=x; break;
-    case 'comeOdds': { const c=C.comes[n]; if(!c) return; if(c.odds+v>c.amt*MAX_ODDS[c.n]) return fail(`Max odds is ${MAX_ODDS[c.n]}x.`); cBet(v); c.odds+=v; sfx.click(); renderCraps(); return; }
-    case 'dcOdds': { const c=C.dcs[n]; if(!c) return; if(c.odds+v>c.amt*MAX_ODDS[c.n]*TRUE_ODDS[c.n]) return fail('Over the max lay.'); cBet(v); c.odds+=v; sfx.click(); renderCraps(); return; }
-    case 'place': cur=b.place[n]; set=x=>b.place[n]=x; break;
-    case 'hard': cur=b.hard[n]; set=x=>b.hard[n]=x; break;
-    case 'field': case 'any7': case 'anyCraps': cur=b[k]; set=x=>b[k]=x; break;
-    default: return; }
-  if(cur+v>mx) return fail(`Table max is ${money(mx)} per bet.`);
-  cBet(v); set(cur+v); sfx.click(); renderCraps(); }
-function crDown(){ if(U.busy) return; const C=S.craps, b=C.bets; let back=b.passOdds+b.dp+b.dpOdds+b.come+b.dc+b.field+b.any7+b.anyCraps; b.passOdds=b.dp=b.dpOdds=b.come=b.dc=b.field=b.any7=b.anyCraps=0;
-  for(const n in b.place){ back+=b.place[n]; b.place[n]=0; } for(const n in b.hard){ back+=b.hard[n]; b.hard[n]=0; } for(const c of C.comes){ back+=c.odds; c.odds=0; } for(const c of C.dcs){ back+=c.amt+c.odds; } C.dcs=[];
+    case 'pass': if(on) return 'Pass line goes down on the come-out. Use Come instead.'; cur=b.pass; break;
+    case 'dp': if(on) return "Don't Pass only on the come-out. Use Don't Come."; cur=b.dp; break;
+    case 'come': if(!on) return 'Come bets need a point. On the come-out, just bet the Pass Line.'; cur=b.come; break;
+    case 'dc': if(!on) return "Don't Come needs a point."; cur=b.dc; break;
+    case 'passOdds': if(!on||!b.pass) return 'You need a Pass Line bet and a point first.'; cur=b.passOdds; if(cur+v>b.pass*MAX_ODDS[C.point]) return `Max odds is ${MAX_ODDS[C.point]}x your line bet.`; break;
+    case 'dpOdds': if(!on||!b.dp) return "You need a Don't Pass bet and a point first."; cur=b.dpOdds; if(cur+v>b.dp*MAX_ODDS[C.point]*TRUE_ODDS[C.point]) return 'That\'s over the max lay.'; break;
+    case 'comeOdds': { const c=C.comes[n]; if(!c) return 'No such come bet.'; if(c.odds+v>c.amt*MAX_ODDS[c.n]) return `Max odds is ${MAX_ODDS[c.n]}x.`; return null; }
+    case 'dcOdds': { const c=C.dcs[n]; if(!c) return "No such Don't Come bet."; if(c.odds+v>c.amt*MAX_ODDS[c.n]*TRUE_ODDS[c.n]) return 'Over the max lay.'; return null; }
+    case 'place': if(!PLACE_PAY[n]) return 'Not a place number.'; cur=b.place[n]; break;
+    case 'hard': if(!HARD_PAY[n]) return 'Not a hardway.'; cur=b.hard[n]; break;
+    case 'field': case 'any7': case 'anyCraps': cur=b[k]; break;
+    default: return 'Unknown bet.'; }
+  if(cur+v>mx) return `Table max is ${money(mx)} per bet.`;
+  return null; }
+function crapsBetApply(C,k,n,v){ const b=C.bets; if(k==='comeOdds') C.comes[n].odds+=v; else if(k==='dcOdds') C.dcs[n].odds+=v; else if(k==='place') b.place[n]+=v; else if(k==='hard') b.hard[n]+=v; else b[k]+=v; }
+function crapsTakeDown(C){ const b=C.bets; let back=b.passOdds+b.dp+b.dpOdds+b.come+b.dc+b.field+b.any7+b.anyCraps; b.passOdds=b.dp=b.dpOdds=b.come=b.dc=b.field=b.any7=b.anyCraps=0;
+  for(const n in b.place){ back+=b.place[n]; b.place[n]=0; } for(const n in b.hard){ back+=b.hard[n]; b.hard[n]=0; } for(const c of C.comes){ back+=c.odds; c.odds=0; } for(const c of C.dcs){ back+=c.amt+c.odds; } C.dcs=[]; return back; }
+function crAdd(k,n){ if(U.busy) return; const C=S.craps, v=U.crChip;
+  if(v>S.cash){ toast('Not enough cash for that chip.'); return; }
+  const err=crapsBetCheck(C,k,n,v,casinoMax()); if(err){ toast('🎲 '+err); return; }
+  cBet(v); crapsBetApply(C,k,n,v); sfx.click(); renderCraps(); }
+function crDown(){ if(U.busy) return; const back=crapsTakeDown(S.craps);
   if(back>0){ cPay(back); crLog(`↩ You pulled ${money(back)} off the table. The stickman sighs audibly.`,'dim'); } renderCraps(); }
 function crapsRefundAll(){ const C=S.craps; if(!C) return 0; const t=crapsTotalOnTable(C); if(t>0){ addCash(t); if(U.cs) U.cs.net=r2(U.cs.net+t); } S.craps=newCraps(); return t; }
 const CR_TALK = {
@@ -1287,11 +1326,13 @@ function crRoll(){ if(U.busy) return; const C=S.craps; const tot=crapsTotalOnTab
   pose('you','throw',900,'idle'); say('you',pick(['Daddy needs rent!','COME ON BABY','No sevens no sevens','For Big Sal!']),1200);
   setTimeout(()=>rollDiceAnim([d1,d2]),250);
   setTimeout(()=>{ U.busy=false; crResolve(d1,d2); }, 1250); }
-function crResolve(d1,d2){ const C=S.craps; const pt=C.point; const res=crapsRoll(C,d1,d2); cPay(res.ret);
-  let won=0, lost=0; for(const l of res.lines){ if(l.w===1) won+=l.win; else if(l.w===0) lost+=l.amt; }
-  const s=res.sum; let talk='';
+function crTalk(res,pt){ const s=res.sum; let talk='';
   if(res.comeOut){ if(s===7) talk=pick(CR_TALK.natural7); else if(CR_TALK[s]) talk=pick(CR_TALK[s]); else talk=`Mark it! The point is ${s}. ${s===6||s===8?'Easy or hard, just no seven.':''}`; }
   else { if(res.event==='sevenout') talk=pick(CR_TALK.sevenout); else if(res.event==='hit') talk=pick(CR_TALK.hit); else if(CR_TALK[s]&&s!==7) talk=pick(CR_TALK[s]); else talk=`${s}${res.hard&&[4,6,8,10].includes(s)?` — HARD ${s}! Born hard!`:[4,6,8,10].includes(s)?` easy, no hardways`:''}. ${pt?`Point is still ${pt}.`:''}`; }
+  return talk; }
+function crResolve(d1,d2){ const C=S.craps; const pt=C.point; const res=crapsRoll(C,d1,d2); cPay(res.ret);
+  let won=0, lost=0; for(const l of res.lines){ if(l.w===1) won+=l.win; else if(l.w===0) lost+=l.amt; }
+  const s=res.sum; const talk=crTalk(res,pt);
   crLog(`🎲 <b>${d1} + ${d2} = ${s}</b> — ${talk}`,'big');
   for(const l of res.lines) crLog(l.w===1?`<span class="g">✔ ${l.what}: +${money(l.win)}</span>`:l.w===2?`<span class="dim">↩ ${l.what}: ${money(l.amt)} back</span>`:`<span class="r">✘ ${l.what}: −${money(l.amt)}</span>`);
   if(rnd()<.35) crLog(`🗣️ ${pick(CR_TALK.crowd)}`,'roast');
@@ -1303,6 +1344,540 @@ function crResolve(d1,d2){ const C=S.craps; const pt=C.point; const res=crapsRol
   else if(res.event==='point'){ crowd('point',900); }
   if(res.event==='sevenout'){ crLog(`📢 Stickman: "New shooter!" ...it's still you. Nobody else wants to play with you. (Last hand: ${C.lastShooter} rolls)`,'dim'); }
   save(); if(U.screen==='casino'&&U.cgame==='craps') renderCraps(); }
+// ===================== MULTIPLAYER: HOST-AUTHORITATIVE ROOM LOGIC =====================
+// Transport-agnostic. The host's browser runs this; clients only send intents ("I bet $25 on red").
+// Everything a client sends is validated here. Money moves via a per-player LEDGER of numbered
+// settlements {seq,w(wager id),d(cash delta),out(amount still at risk on that wager),net?} that each
+// client applies to its OWN single-player save (the bankroll lives in the save, the host tracks a mirror).
+const MPC = { VER:1, MAXP:5, SEATS:5, BJ_MIN:5, BJ_MAX:1000, TMAX:500, SB_MAXBETS:12,
+  BET_MS:15000, TURN_MS:20000, DEAL_MS:650, DONE_MS:5000, RL_MS:20000, RL_SPIN_MS:3200, RL_DONE_MS:4500,
+  CR_MS:25000, CR_ROLL_MS:700, SB_MS:90000, SB_LIVE_MS:45000, SB_FINAL_MS:25000, DC_MS:60000, MAXCASH:1e8, CHATLEN:120 };
+const MP_COLORS=['#f2efe4','#ff6b6b','#6fc3ff','#5dff8a','#ffc24a','#ff7ad9','#b78bff','#ff9a3c','#3ee6d0'];
+const MP_TALK=["Hit on 16, you coward","Dealer's rigged","Sal is gonna kill me","LET IT RIDE","That was MY card","Bro is down BAD","Easy money 💰","I'm calling my mom","Nice hit, nerd","Who touched the dice?!","Seven out? GET OUT.","Drinks on me (lie)","Pray for me 🙏","gg go next","Sir, this is a Wendy's"];
+const MP_EMOJI=['😂','💀','🤡','🔥','🐋','💩','🍺','😭'];
+const MP_TABLES=['lobby','bj','cr','rl','sb'];
+const RL_KEYS=new Set(['red','black','odd','even','low','high','d1','d2','d3','c1','c2','c3']);
+function mpCleanText(s,n){ return String(s==null?'':s).replace(/[\u0000-\u001f\u007f\u200b-\u200f\u2028-\u202e\u2066-\u2069\ufeff]/g,'').replace(/\s+/g,' ').trim().slice(0,n); }
+function mpInt(v,lo,hi){ if(typeof v==='string'&&v.trim()!=='') v=Number(v); if(typeof v!=='number'||!Number.isFinite(v)) return null; v=Math.floor(v); return (v<lo||v>hi)?null:v; }
+function mpColor(c){ return (typeof c==='string'&&/^#[0-9a-fA-F]{6}$/.test(c))?c:MP_COLORS[0]; }
+// a throwaway "S" for running single-player engine code (genSlate, simRun, crapsRoll...) without touching anyone's save
+function mpRoomS(){ const ach={}; for(const k in ACHS) ach[k]=1; return {v:1,name:'ROOM',day:1,cash:0,debt:0,tilt:0,perks:[],inv:{},tmp:{},stats:{luck:0,cha:0,hustle:0,street:0,liver:0},flags:{},ach,
+  stats2:{handsBJ:0,spins:0,rolls:0,fights:0,jobs:0,events:0},books:{DQ:{profit:0,max:1e9,limited:0},FD:{profit:0,max:1e9,limited:0}},bets:[],hist:[],tokens:[],queue:[],news:[],
+  league:null,slate:null,jefe:{w:0,l:0},whaleMode:false,buzz:0,peak:0,weekPeak:0,lowWater:0,lvl:1,xp:0}; }
+function mpWithS(tmp,fn){ const oS=S, oN=U.noSave, oQ=U.silent; S=tmp; U.noSave=true; U.silent=true; try{ return fn(); } finally{ S=oS; U.noSave=oN; U.silent=oQ; } }
+
+function mpHostCreate(io){ // io: {send(cid,msg), now(), room, sess}
+  const now=()=>io.now();
+  const H={ room:io.room, sess:io.sess, P:{}, order:[], ghost:{}, chat:[], chatN:0, pn:0, dirty:true, rig:{}, closed:false, rs:mpRoomS() };
+  const bj=H.bj={ phase:'bet', seats:Array(MPC.SEATS).fill(null), shoe:newShoe(), dealer:[], hole:true, hands:{}, bets:{}, last:{}, order:[], turn:null, deadline:0, handNo:0, msg:'Place your bets.', doneAt:0, nextDraw:0, needDraw:false };
+  const cr=H.cr={ point:null, shooter:null, C:{}, phase:'bet', rollAt:0, deadline:0, last:null, rollNo:0, hist:[], dice:null, thrower:'', sRolls:0 };
+  const rl=H.rl={ phase:'bet', bets:{}, ready:{}, deadline:0, n:null, spinAt:0, doneAt:0, spinNo:0, hist:[], res:{} };
+  const sb=H.sb={ day:0, phase:'bet', bets:[], ready:{}, deadline:0, games:[], recs:{}, events:[], ei:0, ticker:[], t:0, liveStart:0, finalAt:0, betN:0, stats:{} };
+  const pl=c=>H.P[c]||H.ghost[c]||null;
+  const idOf=c=>{ const p=pl(c); return p?p.id:null; };
+  const nm=c=>{ const p=pl(c); return p?p.name:'?'; };
+  const dirty=()=>{ H.dirty=true; };
+  const rej=(p,why)=>{ if(p) io.send(p.cid,{t:'rej',why}); return false; };
+  function sys(txt){ H.chat.push({i:++H.chatN,sys:1,txt:String(txt).slice(0,200)}); if(H.chat.length>60) H.chat.splice(0,H.chat.length-60); dirty(); }
+  function led(p,w,d,out,why,net){ if(!p) return; d=r2(d); p.seq++; const e={seq:p.seq,w,d,out:r2(Math.max(0,out)),why:String(why||'').slice(0,90)}; if(net!=null) e.net=r2(net);
+    p.bal=r2(p.bal+d); p.led.push(e); if(p.led.length>400) p.led.splice(0,p.led.length-400); if(H.P[p.cid]&&p.conn) io.send(p.cid,{t:'led',e:[e]}); dirty(); return e; }
+  const atTable=tb=>H.order.filter(c=>H.P[c].table===tb);
+  // ---------------- join / leave ----------------
+  H.join=function(cid,m,isHost){ if(H.closed) return {err:'Table is closing.'}; cid=String(cid||'').slice(0,40); if(!cid) return {err:'bad hello'};
+    const key=String((m&&m.key)||'').slice(0,40), name=mpCleanText(m&&m.name,14)||'Degen', color=mpColor(m&&m.color);
+    let cash=Number(m&&m.cash); if(!Number.isFinite(cash)||cash<0) cash=0; cash=r2(Math.min(cash,MPC.MAXCASH));
+    const lastSeq=(m&&m.sess===H.sess)?(mpInt(m.lastSeq,0,1e9)||0):0;
+    let p=H.P[cid]||H.ghost[cid];
+    if(p){ if(p.key!==key) return {err:'That seat belongs to someone else.'};
+      const pend=p.led.filter(e=>e.seq>lastSeq); const nb=r2(cash+pend.reduce((s,e)=>s+e.d,0)); p.start=r2(p.start+(nb-p.bal)); p.bal=nb; // trust the save, keep session net
+      const back=!!H.ghost[cid]; delete H.ghost[cid]; H.P[cid]=p; if(!H.order.includes(cid)) H.order.push(cid); p.conn=true; p.dcAt=0; p.leaving=false; p.name=name; p.color=color; if(back) p.table='lobby';
+      io.send(cid,{t:'welcome',id:p.id,room:H.room,sess:H.sess,bal:p.bal}); if(pend.length) io.send(cid,{t:'led',e:pend}); sys(`🔌 ${name} reconnected.`); return {ok:1,p}; }
+    if(H.order.length>=MPC.MAXP) return {err:`Room is full (${MPC.MAXP} degenerates max).`};
+    p={cid,key,id:'p'+(++H.pn),name,color,bal:cash,start:cash,table:'lobby',conn:true,dcAt:0,seq:0,led:[],acked:0,lastChat:0,chatBurst:0,isHost:!!isHost,leaving:false};
+    H.P[cid]=p; H.order.push(cid); io.send(cid,{t:'welcome',id:p.id,room:H.room,sess:H.sess,bal:p.bal});
+    sys(isHost?`🏠 ${name} opened the table with ${money(cash)}.`:`👋 ${name} pulled up a chair with ${money(cash)}.`); return {ok:1,p}; };
+  H.drop=function(cid){ const p=H.P[cid]; if(!p||!p.conn) return; p.conn=false; p.dcAt=now(); sys(`📵 ${p.name} lost connection…`); };
+  function remove(cid,why,voluntary){ const p=H.P[cid]; if(!p) return;
+    bjLeave(p,true); crRefundAll(p,'Left the craps table: chips returned'); if(cr.shooter===cid) cr.shooter=null;
+    if(rl.phase==='bet'&&rl.bets[cid]){ const t=sumObj(rl.bets[cid]); delete rl.bets[cid]; delete rl.ready[cid]; led(p,'rl'+(rl.spinNo+1),t,0,'Roulette bets returned'); }
+    if(voluntary) for(const b of sb.bets) if(b.cid===cid&&b.status==='open'){ b.status='void'; led(p,b.id,b.stake,0,'Sportsbook bet voided (you left)'); }
+    H.order=H.order.filter(c=>c!==cid); delete H.P[cid]; p.conn=false; H.ghost[cid]=p; sys(`🚪 ${p.name} ${why}.`); }
+  // ---------------- messages ----------------
+  H.msg=function(cid,m){ const p=H.P[cid]; if(!p||!m||typeof m!=='object'||H.closed) return; try{ switch(m.t){
+    case 'ack': { const a=mpInt(m.seq,0,1e9); if(a!=null&&a<=p.seq){ p.acked=Math.max(p.acked,a); p.led=p.led.filter(e=>e.seq>p.acked); } return; }
+    case 'go': return go(p,m.table);
+    case 'chat': return chat(p,m);
+    case 'bye': remove(cid,'left the room',true); io.send(cid,{t:'byeok'}); return;
+    case 'bj.bet': return bjBet(p,mpInt(m.amt,0,MPC.BJ_MAX));
+    case 'bj.add': { const v=mpInt(m.v,1,MPC.BJ_MAX); if(v==null) return rej(p,'Bad chip.'); return bjBet(p,Math.min(MPC.BJ_MAX,(bj.bets[cid]||0)+v)); }
+    case 'bj.act': return bjAct(cid,String(m.a||''));
+    case 'cr.bet': return crBet(p,String(m.k||''),m.n==null?null:mpInt(m.n,0,12),mpInt(m.v,1,MPC.TMAX));
+    case 'cr.down': return crDown(p);
+    case 'cr.roll': return crRoll(p);
+    case 'rl.bet': return rlBet(p,String(m.k||''),mpInt(m.v,1,MPC.TMAX));
+    case 'rl.clear': return rlClear(p);
+    case 'rl.ready': if(rl.phase==='bet'&&rl.bets[cid]){ rl.ready[cid]=1; dirty(); } return;
+    case 'sb.bet': return sbBet(p,m.legs,mpInt(m.stake,1,MPC.TMAX));
+    case 'sb.ready': if(sb.phase==='bet'){ sb.ready[cid]=1; dirty(); } return;
+    case 'sb.start': if(!p.isHost) return rej(p,'Only the host can start the games.'); if(sb.phase==='bet'&&sb.bets.some(b=>b.status==='open')) sbStart(); else rej(p,'Nobody has bet yet.'); return;
+    case 'sb.next': if(!p.isHost) return rej(p,'Only the host can roll the slate.'); if(sb.phase==='final') sbNewSlate(); return;
+    default: return; } }catch(e){ console.warn('mp host msg error',e); } };
+  function go(p,tb){ if(!MP_TABLES.includes(tb)||p.table===tb) return; const old=p.table; p.table=tb; if(old==='bj') bjLeave(p,false); if(tb==='bj') bjSit(p); if(tb==='sb'&&!sb.day) sbNewSlate(); dirty(); }
+  function chat(p,m){ const t=now(); if(t-p.lastChat<700){ if(++p.chatBurst>4) return rej(p,'Easy on the trash talk. (rate limit)'); } else p.chatBurst=0; p.lastChat=t;
+    let txt, em=false; if(m.em!=null){ const i=mpInt(m.em,0,200); if(i==null) return; txt=i>=100?MP_EMOJI[i-100]:MP_TALK[i]; if(!txt) return; em=true; } else { txt=mpCleanText(m.txt,MPC.CHATLEN); if(!txt) return; }
+    H.chat.push({i:++H.chatN,id:p.id,name:p.name,color:p.color,txt,em}); if(H.chat.length>60) H.chat.splice(0,H.chat.length-60); dirty(); }
+  const sumObj=o=>{ let t=0; for(const k in o) t+=o[k]; return r2(t); };
+  // ---------------- BLACKJACK ----------------
+  function draw(){ if(H.rig.cards&&H.rig.cards.length) return H.rig.cards.shift(); if(!bj.shoe.cards.length) bj.shoe=newShoe(); return bj.shoe.cards.pop(); }
+  function bjSit(p){ if(bj.seats.includes(p.cid)) return; const i=bj.seats.indexOf(null); if(i<0) return rej(p,'Blackjack table is full. You can watch and heckle.'); bj.seats[i]=p.cid; dirty(); }
+  function bjLeave(p,force){ const c=p.cid; if(bj.phase==='bet'){ if(bj.bets[c]){ led(p,'bj'+(bj.handNo+1),bj.bets[c],0,'Blackjack bet returned'); delete bj.bets[c]; } const i=bj.seats.indexOf(c); if(i>=0) bj.seats[i]=null; }
+    else if(bj.hands[c]){ if(force) p.leaving=true; /* seat frees after the hand; turns auto-stand */ }
+    else { const i=bj.seats.indexOf(c); if(i>=0) bj.seats[i]=null; } dirty(); }
+  function bjBet(p,amt){ const c=p.cid; if(bj.phase!=='bet') return rej(p,'Hand in progress. Wait for the next one.'); if(!bj.seats.includes(c)) return rej(p,'Grab a seat at the blackjack table first.');
+    if(amt==null) return rej(p,'Bad bet.'); if(amt>0&&amt<MPC.BJ_MIN) return rej(p,`Table min is ${money(MPC.BJ_MIN)}.`);
+    const cur=bj.bets[c]||0, diff=amt-cur; if(diff>p.bal+1e-9) return rej(p,'Not enough chips, champ.'); if(!diff) return;
+    led(p,'bj'+(bj.handNo+1),-diff,amt,amt?'Blackjack bet':'Blackjack bet pulled'); if(amt){ bj.bets[c]=amt; bj.last[c]=amt; } else delete bj.bets[c];
+    const any=Object.keys(bj.bets).length; if(any&&!bj.deadline) bj.deadline=now()+MPC.BET_MS; if(!any) bj.deadline=0; dirty(); }
+  function bjDeal(){ const parts=bj.seats.filter(c=>c&&bj.bets[c]>0&&pl(c)); if(!parts.length){ bj.deadline=0; return; }
+    if(bj.shoe.cards.length<=bj.shoe.cut){ bj.shoe=newShoe(); sys('🔀 Cut card! Dealer reshuffles the 6-deck shoe.'); }
+    bj.handNo++; bj.hands={}; bj.dealer=[]; bj.hole=true; bj.order=parts; bj.deadline=0;
+    for(const c of parts) bj.hands[c]={w:'bj'+bj.handNo,hs:[{cards:[],bet:bj.bets[c],done:false,dbl:false,split:false}],act:0,done:false,net:null};
+    bj.bets={};
+    for(let r=0;r<2;r++){ for(const c of parts) bj.hands[c].hs[0].cards.push(draw()); bj.dealer.push(draw()); }
+    for(const c of parts){ const X=bj.hands[c]; if(isBJ(X.hs[0].cards)){ X.hs[0].done=true; X.done=true; } }
+    const up=bj.dealer[0]; if((up.r===1||cval(up)===10)&&isBJ(bj.dealer)){ bj.msg='Dealer peeks… BLACKJACK. Brutal.'; return bjFinish(); }
+    bj.phase='play'; bj.msg=''; bjNext(); dirty(); }
+  function bjNext(){ for(const c of bj.order){ const X=bj.hands[c]; if(X.done) continue; while(X.act<X.hs.length&&X.hs[X.act].done) X.act++; if(X.act>=X.hs.length){ X.done=true; continue; } bj.turn=c; bj.deadline=now()+MPC.TURN_MS; dirty(); return; }
+    bj.turn=null; bj.deadline=0; bj.phase='dealer'; bj.hole=false;
+    bj.needDraw=bj.order.some(c=>{ const X=bj.hands[c]; return X.hs.some(h=>handVal(h.cards).t<=21&&!(isBJ(h.cards)&&!h.split&&X.hs.length===1)); });
+    bj.nextDraw=now()+MPC.DEAL_MS; bj.msg='Dealer flips the hole card…'; dirty(); }
+  function bjAct(c,a,auto){ const p=pl(c); if(bj.phase!=='play'||bj.turn!==c) return rej(p,'Not your turn, hot shot.'); const X=bj.hands[c], h=X.hs[X.act]; const staked=X.hs.reduce((s,x)=>s+x.bet,0);
+    if(a==='hit'){ h.cards.push(draw()); if(handVal(h.cards).t>=21) h.done=true; }
+    else if(a==='stand'){ h.done=true; }
+    else if(a==='double'){ if(h.cards.length!==2) return rej(p,'Double only on your first two cards.'); if(p.bal<h.bet) return rej(p,'Not enough to double.'); led(p,X.w,-h.bet,staked+h.bet,'Blackjack double'); h.bet*=2; h.dbl=true; h.cards.push(draw()); h.done=true; }
+    else if(a==='split'){ if(!(X.hs.length===1&&h.cards.length===2&&cval(h.cards[0])===cval(h.cards[1]))) return rej(p,'You can only split a pair (once).'); if(p.bal<h.bet) return rej(p,'Not enough to split.');
+      led(p,X.w,-h.bet,staked+h.bet,'Blackjack split'); const c2=h.cards.pop(); const nh={cards:[c2],bet:h.bet,done:false,dbl:false,split:true}; h.split=true; h.cards.push(draw()); nh.cards.push(draw()); X.hs.push(nh); if(h.cards[0].r===1){ h.done=true; nh.done=true; } }
+    else return rej(p,'Unknown action.');
+    if(auto) bj.msg=`⏰ ${nm(c)} ${auto}. Auto-stand.`;
+    while(X.act<X.hs.length&&X.hs[X.act].done) X.act++;
+    if(X.act>=X.hs.length){ X.done=true; bjNext(); } else { bj.deadline=now()+MPC.TURN_MS; } dirty(); return true; }
+  function bjFinish(){ bj.phase='done'; bj.hole=false; bj.turn=null; bj.deadline=0; bj.doneAt=now()+MPC.DONE_MS; const dv=handVal(bj.dealer).t;
+    for(const c of bj.order){ const X=bj.hands[c]; const B={hands:X.hs,dealer:bj.dealer}; bjSettle(B); X.hs.forEach((h,i)=>{ h.res=B.res[i].r; h.ret=B.res[i].ret; });
+      const staked=X.hs.reduce((s,x)=>s+x.bet,0); X.net=r2(B.ret-staked); led(pl(c),X.w,B.ret,0,`Blackjack #${bj.handNo}: ${X.hs.map(h=>h.res).join(' / ')}`,X.net);
+      if(X.net>=250) sys(`💰 ${nm(c)} wins ${money(X.net)} at blackjack.`); }
+    bj.msg=isBJ(bj.dealer)?'Dealer has BLACKJACK. Brutal.':dv>21?`Dealer BUSTS (${dv})!`:`Dealer stands on ${dv}.`; dirty(); }
+  function bjReset(){ bj.phase='bet'; bj.hands={}; bj.dealer=[]; bj.order=[]; bj.turn=null; bj.deadline=0; bj.hole=true; bj.msg='Place your bets.';
+    for(let i=0;i<bj.seats.length;i++){ const c=bj.seats[i]; const p=c&&H.P[c]; if(c&&(!p||p.table!=='bj'||p.leaving)) bj.seats[i]=null; }
+    for(const c of H.order){ if(H.P[c].table==='bj'&&!bj.seats.includes(c)&&bj.seats.includes(null)) bj.seats[bj.seats.indexOf(null)]=c; } dirty(); }
+  function bjTick(t){
+    if(bj.phase==='bet'&&bj.deadline){ const seated=bj.seats.filter(c=>c&&H.P[c]&&H.P[c].conn); if(seated.length&&seated.every(c=>bj.bets[c]>0)) bj.deadline=Math.min(bj.deadline,t+2500); if(t>=bj.deadline) bjDeal(); }
+    else if(bj.phase==='play'){ const p=pl(bj.turn); if(!p||!H.P[p.cid]||p.leaving) bjAct(bj.turn,'stand','left'); else if(!p.conn&&t-p.dcAt>1500) bjAct(bj.turn,'stand','disconnected'); else if(t>=bj.deadline) bjAct(bj.turn,'stand','timed out'); }
+    else if(bj.phase==='dealer'&&t>=bj.nextDraw){ if(bj.needDraw&&handVal(bj.dealer).t<17){ bj.dealer.push(draw()); bj.nextDraw=t+MPC.DEAL_MS; dirty(); } else bjFinish(); }
+    else if(bj.phase==='done'&&t>=bj.doneAt) bjReset(); }
+  // ---------------- CRAPS (one shared shooter, everyone's bets ride the same dice) ----------------
+  const crC=c=>cr.C[c]||(cr.C[c]=newCraps());
+  const crTableTotal=()=>{ let t=0; for(const c in cr.C) t+=crapsTotalOnTable(cr.C[c]); return t; };
+  function crBet(p,k,n,v){ if(cr.phase!=='bet') return rej(p,'Dice are in the air. Hands off the felt!'); if(p.table!=='cr') return rej(p,'Walk over to the craps table first.');
+    if(v==null) return rej(p,'Bad chip.'); if(v>p.bal+1e-9) return rej(p,'Not enough cash for that chip.'); const C=crC(p.cid); C.point=cr.point;
+    const err=crapsBetCheck(C,k,n,v,MPC.TMAX); if(err) return rej(p,'🎲 '+err); crapsBetApply(C,k,n,v); led(p,'cr',-v,crapsTotalOnTable(C),'Craps bet');
+    if(!cr.shooter) crNextShooter(false); if(!cr.deadline) cr.deadline=now()+MPC.CR_MS; dirty(); }
+  function crDown(p){ if(cr.phase!=='bet') return rej(p,'Wait for the dice to land.'); const C=cr.C[p.cid]; if(!C) return; const back=crapsTakeDown(C); if(back>0) led(p,'cr',back,crapsTotalOnTable(C),'Craps bets taken down'); dirty(); }
+  function crRefundAll(p,why){ const C=cr.C[p.cid]; if(!C) return; const t=crapsTotalOnTable(C); delete cr.C[p.cid]; if(t>0) led(p,'cr',t,0,why); }
+  function crNextShooter(advance){ const cand=H.order.filter(c=>H.P[c].table==='cr'&&H.P[c].conn); if(!cand.length){ if(cr.shooter){ cr.shooter=null; dirty(); } return; }
+    const i=cand.indexOf(cr.shooter); const nx=(i<0)?cand[0]:cand[(i+(advance?1:0))%cand.length]; if(nx!==cr.shooter||advance){ cr.shooter=nx; cr.sRolls=0; dirty(); } }
+  function crRoll(p){ if(cr.phase!=='bet') return rej(p,'Dice are already rolling.'); if(cr.shooter!==p.cid) return rej(p,`You're not the shooter. ${nm(cr.shooter)} has the dice.`); if(crTableTotal()<=0) return rej(p,'Nobody has money on the felt yet.'); crThrow(p.name); }
+  function crThrow(by){ const d=H.rig.dice&&H.rig.dice.length?H.rig.dice.shift():[ri(1,6),ri(1,6)]; cr.dice=d; cr.phase='roll'; cr.rollAt=now()+MPC.CR_ROLL_MS; cr.thrower=by; cr.deadline=0; dirty(); }
+  function crResolve(){ const [d1,d2]=cr.dice, pt=cr.point, res={}; let tres;
+    mpWithS(H.rs,()=>{ const dummy=newCraps(); dummy.point=pt; tres=crapsRoll(dummy,d1,d2); cr.point=dummy.point;
+      for(const c in cr.C){ const C=cr.C[c]; C.point=pt; const before=crapsTotalOnTable(C); if(before<=0){ C.point=cr.point; continue; } const r=crapsRoll(C,d1,d2); const after=crapsTotalOnTable(C); const net=r2(r.ret-(before-after));
+        const p=pl(c); if(p){ res[p.id]={net,ret:r.ret,lines:r.lines.map(l=>({w:l.w,what:l.what,amt:l.amt,win:l.win||0}))}; if(r.ret>0||before!==after) led(p,'cr',r.ret,after,`Craps ${d1}+${d2}=${d1+d2}`,net); } } });
+    const s=d1+d2; cr.rollNo++; cr.sRolls++; cr.hist.unshift(s); if(cr.hist.length>14) cr.hist.length=14;
+    cr.last={d1,d2,sum:s,event:tres.event,hard:tres.hard,talk:crTalk(tres,pt),by:cr.thrower,res,n:cr.rollNo};
+    if(tres.event==='sevenout'){ const old=cr.shooter, n=cr.sRolls; crNextShooter(true); sys(`🎲 Seven out after ${n} roll${n===1?'':'s'}! ${old?nm(old):'The stickman'} passes the dice${cr.shooter?' to '+nm(cr.shooter):''}.`); }
+    cr.phase='bet'; cr.dice=null; cr.deadline=crTableTotal()>0?now()+MPC.CR_MS:0; dirty(); }
+  function crTick(t){ if(cr.phase==='roll'){ if(t>=cr.rollAt) crResolve(); return; }
+    const s=cr.shooter&&H.P[cr.shooter]; if(!s||s.table!=='cr'||!s.conn){ const old=cr.shooter; crNextShooter(true); if(old!==cr.shooter&&cr.shooter) sys(`🎲 New shooter: ${nm(cr.shooter)}.`); }
+    if(cr.deadline&&t>=cr.deadline){ if(crTableTotal()>0) crThrow(`the stickman (${nm(cr.shooter)} fell asleep)`); else cr.deadline=0; } }
+  // ---------------- ROULETTE (one wheel, everyone's chips) ----------------
+  function rlBet(p,k,v){ if(rl.phase!=='bet') return rej(p,'No more bets! Wheel is spinning.'); if(p.table!=='rl') return rej(p,'Walk over to the roulette wheel first.');
+    if(!(RL_KEYS.has(k)||/^n([0-9]|[12][0-9]|3[0-7])$/.test(k))) return rej(p,'Not a real roulette bet.'); if(v==null) return rej(p,'Bad chip.');
+    const B=rl.bets[p.cid]||{}; if((B[k]||0)+v>MPC.TMAX) return rej(p,`Table max ${money(MPC.TMAX)} per spot.`); if(v>p.bal+1e-9) return rej(p,'You\'re out of chips, chief.');
+    B[k]=(B[k]||0)+v; rl.bets[p.cid]=B; delete rl.ready[p.cid]; led(p,'rl'+(rl.spinNo+1),-v,sumObj(B),'Roulette bet'); if(!rl.deadline) rl.deadline=now()+MPC.RL_MS; dirty(); }
+  function rlClear(p){ if(rl.phase!=='bet') return rej(p,'Too late, it\'s spinning.'); const B=rl.bets[p.cid]; if(!B) return; delete rl.bets[p.cid]; delete rl.ready[p.cid]; led(p,'rl'+(rl.spinNo+1),sumObj(B),0,'Roulette bets pulled'); if(!Object.keys(rl.bets).length) rl.deadline=0; dirty(); }
+  function rlSpin(){ rl.phase='spin'; rl.n=(H.rig.rl!=null&&H.rig.rl.length)?H.rig.rl.shift():ri(0,37); rl.spinNo++; rl.spinAt=now()+MPC.RL_SPIN_MS; rl.deadline=0; rl.res={}; dirty(); }
+  function rlFinish(){ const n=rl.n; for(const c in rl.bets){ const B=rl.bets[c], tot=sumObj(B), ret=rlSettle(B,n), p=pl(c); if(!p) continue; rl.res[p.id]={tot,ret,net:r2(ret-tot)}; led(p,'rl'+rl.spinNo,ret,0,`Roulette ${rlLabel(n)}`,ret-tot); if(ret-tot>=500) sys(`💰 ${p.name} hits ${rlLabel(n)} for ${money(ret)}!`); }
+    rl.hist.unshift(n); if(rl.hist.length>12) rl.hist.length=12; rl.phase='done'; rl.doneAt=now()+MPC.RL_DONE_MS; dirty(); }
+  function rlTick(t){ if(rl.phase==='bet'&&rl.deadline){ const b=Object.keys(rl.bets); if(b.length&&b.every(c=>rl.ready[c])) rl.deadline=Math.min(rl.deadline,t+1200); if(t>=rl.deadline){ if(b.length) rlSpin(); else rl.deadline=0; } }
+    else if(rl.phase==='spin'&&t>=rl.spinAt) rlFinish(); else if(rl.phase==='done'&&t>=rl.doneAt){ rl.phase='bet'; rl.bets={}; rl.ready={}; rl.deadline=0; dirty(); } }
+  // ---------------- SPORTSBOOK (shared slate, shared sweat) ----------------
+  function sbNewSlate(){ sb.day++; mpWithS(H.rs,()=>{ H.rs.day=sb.day; if(!H.rs.league) H.rs.league=genLeague(); genSlate(); }); sb.games=H.rs.slate.games; sb.phase='bet'; sb.bets=[]; sb.ready={}; sb.deadline=0; sb.recs={}; sb.events=[]; sb.ei=0; sb.t=0;
+    sb.ticker=[{txt:`📋 Day ${sb.day} slate is up. ${sb.games.length} games. Bet 'em, then sweat 'em together.`}]; dirty(); }
+  function sbBet(p,legs,stake){ if(sb.phase!=='bet') return rej(p,'Betting is closed. Games are live!'); if(!Array.isArray(legs)||legs.length<1||legs.length>4) return rej(p,'1 to 4 legs per bet.');
+    if(stake==null) return rej(p,`Stake must be $1–${money(MPC.TMAX)}.`); if(stake>p.bal+1e-9) return rej(p,'Not enough cash, champ.'); if(sb.bets.filter(b=>b.cid===p.cid).length>=MPC.SB_MAXBETS) return rej(p,'That\'s enough bets for one slate, degenerate.');
+    const seen=new Set(), built=[]; for(const l of legs){ if(!l||typeof l!=='object') return rej(p,'Bad leg.'); const g=sb.games.find(x=>x.id===l.gid); if(!g) return rej(p,'Unknown game.'); if(seen.has(g.id)) return rej(p,'One leg per game, chief.'); seen.add(g.id);
+      const mkt=l.mkt, side=l.side; if(!(((mkt==='sp'||mkt==='ml')&&(side==='h'||side==='a'))||(mkt==='tot'&&(side==='o'||side==='u')))) return rej(p,'Bad market.'); built.push(mpWithS(H.rs,()=>makeLeg(g,mkt,side,'DQ'))); }
+    const odds=built.length===1?built[0].odds:decToAm(parlayDec(built,false));
+    const bet={id:'sb'+(++sb.betN),cid:p.cid,legs:built.map(l=>({gid:l.gid,mkt:l.mkt,side:l.side,line:l.line,odds:l.odds,label:l.label})),stake,odds,status:'open',ret:0,net:0,res:null};
+    sb.bets.push(bet); delete sb.ready[p.cid]; led(p,bet.id,-stake,stake,`Sportsbook ${built.length>1?built.length+'-leg parlay':built[0].label} ${fmtAm(odds)}`); if(!sb.deadline) sb.deadline=now()+MPC.SB_MS; dirty(); }
+  function sbStart(){ mpWithS(H.rs,()=>{ for(const g of sb.games){ const rec={events:[],snaps:[]}; const r=simRun(g,null,rec); rec.final=r; sb.recs[g.id]=rec; } });
+    sb.events=[]; for(const g of sb.games) for(const e of sb.recs[g.id].events) sb.events.push(Object.assign({sp:g.sp},e)); sb.events.sort((a,b)=>a.t-b.t); sb.ei=0;
+    sb.phase='live'; sb.liveStart=now(); sb.t=0; sb.deadline=0; sb.ticker.push({txt:'🎬 GAMES ARE LIVE. Everybody sweat together.',cls:'big'}); sbLive(now()); }
+  function sbLive(t){ sb.t=(t-sb.liveStart)/MPC.SB_LIVE_MS;
+    while(sb.ei<sb.events.length&&sb.events[sb.ei].t<=sb.t){ const e=sb.events[sb.ei++]; sb.ticker.push({txt:`${SPORTS[e.sp].icon} ${e.txt}`,cls:e.cls||''}); }
+    if(sb.ticker.length>40) sb.ticker.splice(0,sb.ticker.length-40);
+    for(const g of sb.games){ const rec=sb.recs[g.id]; const lastT=rec.events.length?rec.events[rec.events.length-1].t:1; const fin=sb.t>=Math.max(1,lastT)+.001; const s=fin?rec.final:curSnap(rec,sb.t); g.live={sa:s.sa,sh:s.sh,fin,ot:fin?rec.final.ot:''}; }
+    dirty(); if(sb.t>=1.06) sbFinal(); }
+  function sbFinal(){ let best=null, worst=null;
+    mpWithS(H.rs,()=>{ for(const g of sb.games) finalizeGame(g,sb.recs[g.id].final);
+      for(const b of sb.bets){ if(b.status!=='open') continue; const res=b.legs.map(l=>{ const g=sb.games.find(x=>x.id===l.gid); const v=legValue(l,g.res.sa,g.res.sh,g.res.ps); return v>0?'w':v===0?'p':'l'; });
+        const r=betReturn(b,res); b.status=r.status; b.ret=r.ret; b.res=res; b.net=r2(r.ret-b.stake); const p=pl(b.cid); led(p,b.id,r.ret,0,`Sportsbook ${r.status}: ${b.legs.length>1?b.legs.length+'-leg parlay':b.legs[0].label}`,b.net);
+        const s=sb.stats[b.cid]||(sb.stats[b.cid]={w:0,l:0,p:0,net:0}); s[r.status==='won'?'w':r.status==='lost'?'l':'p']++; s.net=r2(s.net+b.net);
+        if(!best||b.net>best.net) best=b; if(!worst||b.net<worst.net) worst=b; } });
+    sb.phase='final'; sb.finalAt=now()+MPC.SB_FINAL_MS; sb.ticker.push({txt:'🏁 FINAL. All bets settled.',cls:'big'});
+    if(best&&best.net>0) sb.ticker.push({txt:`🏆 Bet of the night: ${nm(best.cid)} +${money(best.net)}`,cls:'big'}); if(worst&&worst.net<0) sb.ticker.push({txt:`🤡 Worst beat: ${nm(worst.cid)} ${money(worst.net)}. Thoughts and prayers.`,cls:'roast'}); dirty(); }
+  function sbTick(t){ if(sb.phase==='bet'&&sb.deadline){ const here=atTable('sb').filter(c=>H.P[c].conn); if(here.length&&here.every(c=>sb.ready[c])) sb.deadline=Math.min(sb.deadline,t+2000); if(t>=sb.deadline){ if(sb.bets.some(b=>b.status==='open')) sbStart(); else sb.deadline=0; } }
+    else if(sb.phase==='live') sbLive(t); else if(sb.phase==='final'&&t>=sb.finalAt) sbNewSlate(); }
+  // ---------------- clock ----------------
+  H.tick=function(){ if(H.closed) return; const t=now(); try{ bjTick(t); crTick(t); rlTick(t); sbTick(t);
+    for(const c of H.order.slice()){ const p=H.P[c]; if(p&&!p.conn&&t-p.dcAt>MPC.DC_MS) remove(c,'timed out and got kicked',false); } }catch(e){ console.warn('mp host tick error',e); } };
+  // ---------------- close (host leaving): void & refund everything still at risk ----------------
+  H.close=function(why){ if(H.closed) return; const all=c=>pl(c);
+    if(bj.phase==='bet'){ for(const c in bj.bets) led(all(c),'bj'+(bj.handNo+1),bj.bets[c],0,'Table closed: bet returned'); bj.bets={}; }
+    else if(bj.phase!=='done'){ for(const c of bj.order){ const X=bj.hands[c]; const st=X.hs.reduce((s,h)=>s+h.bet,0); led(all(c),X.w,st,0,'Table closed: hand voided'); } bj.phase='done'; }
+    for(const c in cr.C){ const t=crapsTotalOnTable(cr.C[c]); if(t>0) led(all(c),'cr',t,0,'Table closed: craps chips returned'); } cr.C={};
+    if(rl.phase!=='done'){ for(const c in rl.bets) led(all(c),'rl'+(rl.phase==='spin'?rl.spinNo:rl.spinNo+1),sumObj(rl.bets[c]),0,'Table closed: roulette bets returned'); rl.bets={}; }
+    for(const b of sb.bets) if(b.status==='open'){ b.status='void'; led(all(b.cid),b.id,b.stake,0,'Table closed: sportsbook bet voided'); }
+    H.closed=true; for(const c of H.order) if(H.P[c].conn) io.send(c,{t:'close',why:why||'The host closed the table.'}); };
+  // ---------------- public snapshot (no shoe, no hole card, no secret ids) ----------------
+  H.view=function(){ const t=now(), rem=d=>d?Math.max(0,d-t):0; const byId=o=>{ const r={}; for(const c in o){ const id=idOf(c); if(id) r[id]=o[c]; } return r; };
+    const players=H.order.map(c=>{ const p=H.P[c]; return {id:p.id,name:p.name,color:p.color,table:p.table,bal:p.bal,net:r2(p.bal-p.start),conn:p.conn,host:p.isHost}; });
+    const hands={}; for(const c of bj.order){ const X=bj.hands[c], id=idOf(c); if(id) hands[id]={hs:X.hs.map(h=>({cards:h.cards,bet:h.bet,dbl:h.dbl,split:h.split,done:h.done,res:h.res||null,ret:h.ret})),act:X.act,done:X.done,net:X.net}; }
+    const crb={}; for(const c in cr.C){ const id=idOf(c), C=cr.C[c]; if(id) crb[id]={bets:C.bets,comes:C.comes,dcs:C.dcs,on:crapsTotalOnTable(C)}; }
+    return { v:MPC.VER, room:H.room, players, chat:H.chat.slice(-30),
+      bj:{phase:bj.phase,seats:bj.seats.map(c=>c?idOf(c):null),dealer:bj.dealer.map((c,i)=>bj.hole&&i===1?{h:1}:c),dv:bj.dealer.length?(bj.hole?cval(bj.dealer[0]):handVal(bj.dealer).t):0,
+        turn:idOf(bj.turn),rem:rem(bj.deadline),hands,bets:byId(bj.bets),last:byId(bj.last),handNo:bj.handNo,msg:bj.msg,left:bj.shoe.cards.length},
+      cr:{point:cr.point,shooter:idOf(cr.shooter),phase:cr.phase,rem:rem(cr.deadline),last:cr.last,rollNo:cr.rollNo,hist:cr.hist,bets:crb,thrower:cr.phase==='roll'?cr.thrower:'',sRolls:cr.sRolls},
+      rl:{phase:rl.phase,rem:rem(rl.deadline),bets:byId(rl.bets),ready:Object.keys(rl.ready).map(idOf),n:rl.phase==='spin'?null:rl.n,spinNo:rl.spinNo,spinRem:rl.phase==='spin'?rem(rl.spinAt):0,hist:rl.hist,res:rl.res},
+      sb:{day:sb.day,phase:sb.phase,rem:rem(sb.phase==='final'?sb.finalAt:sb.deadline),t:sb.t,ready:Object.keys(sb.ready).map(idOf),ticker:sb.ticker.slice(-16),stats:byId(sb.stats),
+        games:sb.games.map(g=>{ const L=g.lines.DQ; return {id:g.id,sp:g.sp,slot:g.slot,a:{ab:g.a.ab,nm:g.a.nm},h:{ab:g.h.ab,nm:g.h.nm},L:{spread:L.spread,spH:L.spH,spA:L.spA,total:L.total,tO:L.tO,tU:L.tU,mlH:L.mlH,mlA:L.mlA},live:g.live||null,fin:sb.phase==='final'&&g.res?{sa:g.res.sa,sh:g.res.sh,ot:g.res.ot}:null}; }),
+        bets:sb.bets.map(b=>({id:b.id,pid:idOf(b.cid),name:nm(b.cid),legs:b.legs,stake:b.stake,odds:b.odds,status:b.status,ret:b.ret,net:b.net,res:b.res}))} }; };
+  H.flush=function(){ if(!H.dirty||H.closed) return; H.dirty=false; const s=H.view(); for(const c of H.order){ const p=H.P[c]; if(p.conn) io.send(c,{t:'st',s}); } };
+  return H; }
+// ===================== MULTIPLAYER: TRANSPORT (PeerJS/WebRTC) + CLIENT LEDGER =====================
+const MP={ st:'idle', role:null, peer:null, conn:null, conns:{}, H:null, R:null, prevR:null, rAt:0, me:null, code:'', sess:'', err:'', why:'', sessNet:0,
+  tick:0, uiTick:0, retry:0, leaving:false, charged:false, localQ:[], localBusy:false, flushT:0, closeArm:0, rate:{} };
+const MP_PREFIX='degenwhale-', MP_ALPH='ABCDEFGHJKMNPQRSTUVWXYZ23456789', MP_STORE='degenMP_v1';
+function mpRid(n,alph){ alph=alph||'abcdefghijkmnpqrstuvwxyz23456789'; let s=''; let a=null; try{ a=crypto.getRandomValues(new Uint32Array(n)); }catch(e){} for(let i=0;i<n;i++) s+=alph[(a?a[i]:Math.floor(Math.random()*4294967296))%alph.length]; return s; }
+function mpStore(){ let o={}; try{ o=JSON.parse(localStorage.getItem(MP_STORE)||'{}')||{}; }catch(e){} if(!o.cid){ o.cid=mpRid(16); o.key=mpRid(20); try{ localStorage.setItem(MP_STORE,JSON.stringify(o)); }catch(e){} } return o; }
+function mpStoreSet(patch){ const o=Object.assign(mpStore(),patch); try{ localStorage.setItem(MP_STORE,JSON.stringify(o)); }catch(e){} return o; }
+function mpNormCode(s){ s=String(s||'').toUpperCase(); const m=s.match(/ROOM=([A-Z0-9-]+)/); if(m) s=m[1]; s=s.replace(/[^A-Z0-9]/g,''); if(s.startsWith('DEGEN')) s=s.slice(5); return /^[A-Z0-9]{4}$/.test(s)?s:''; }
+function mpLink(code){ return location.origin+location.pathname+'?room=DEGEN-'+(code||MP.code); }
+let _peerLoad=null;
+function mpLoadPeer(){ if(window.Peer) return Promise.resolve(); if(_peerLoad) return _peerLoad;
+  const srcs=['https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js','https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js'];
+  _peerLoad=new Promise((res,rej)=>{ let i=0; const next=()=>{ if(i>=srcs.length){ _peerLoad=null; rej(new Error('Could not load the multiplayer library. Are you offline?')); return; }
+    const sc=document.createElement('script'); sc.src=srcs[i++]; sc.async=true; sc.crossOrigin='anonymous'; sc.onload=()=>{ if(window.Peer) res(); else next(); }; sc.onerror=()=>{ sc.remove(); next(); }; document.head.appendChild(sc); }; next(); });
+  return _peerLoad; }
+// ---------- save handling: the online bankroll IS the single-player save ----------
+function mpEnsureSave(){ if(!S){ S=load(); if(S){ if(S.craps&&crapsTotalOnTable(S.craps)>0){ const t=crapsRefundAll(); toast(`Your ${money(t)} of craps chips were returned.`); } if(!S.slate||S.slate.day!==S.day) genSlate(); } }
+  if(!S||S.ended){ const st=mpStore(); S=newState((st.name||'Degen').slice(0,14),ARCHETYPES[0].id); S.league=genLeague(); genSlate(); META.runs++; saveMeta(); S.hp=maxHp();
+    S.lastLog=['🌐 You started a fresh run from the online casino. You have $50. You owe Big Sal $10,000. Your friends are watching.']; toast('🆕 Fresh run started: $50 in your pocket, $10,000 owed to Big Sal.'); }
+  S.mp=S.mp||{sess:'',room:'',lastSeq:0,open:{}}; S.mp.open=S.mp.open||{}; save(); }
+function mpOpenTotal(){ if(!S||!S.mp||!S.mp.open) return 0; let t=0; for(const w in S.mp.open) t+=S.mp.open[w]; return r2(t); }
+function mpVoidOpen(why){ const t=mpOpenTotal(); if(S&&S.mp){ if(t>0){ addCash(t); MP.sessNet=r2(MP.sessNet+t); toast(`↩ ${money(t)} of open online bets refunded (${esc(why)}).`); } S.mp.open={}; save(); } return t; }
+function mpBindSess(sess){ if(!S) return; S.mp=S.mp||{}; if(S.mp.sess!==sess){ if(mpOpenTotal()>0) mpVoidOpen('old table is gone'); S.mp={sess,room:MP.code,lastSeq:0,open:{}}; } else S.mp.room=MP.code; save(); }
+function mpApply(list){ if(!S||!S.mp||!Array.isArray(list)) return; const es=list.filter(e=>e&&typeof e.seq==='number').sort((a,b)=>a.seq-b.seq); let any=false;
+  for(const e of es){ if(e.seq<=S.mp.lastSeq) continue; S.mp.lastSeq=e.seq; any=true; const d=Number(e.d); if(Number.isFinite(d)&&d!==0){ addCash(d); MP.sessNet=r2(MP.sessNet+d); }
+    const w=String(e.w||'').slice(0,20), out=Number(e.out)||0; if(out>0) S.mp.open[w]=r2(out); else delete S.mp.open[w];
+    if(e.net!=null&&Number.isFinite(Number(e.net))) mpResultFx(Number(e.net),String(e.why||'')); }
+  if(any){ save(); renderTop(); } mpSend({t:'ack',seq:S.mp.lastSeq}); }
+function mpResultFx(net,why){ if(net>0){ addTilt(-Math.min(6,2+net/Math.max(20,S.cash)*10)); gainXp(2+Math.min(25,net/40)); sfx.win(); fx.text('+'+money(net),'#5dff8a'); if(/BLACKJACK/.test(why)) unlock('bj'); if(net>=500) fx.money(20); }
+  else if(net<0){ addTilt(Math.min(10,2+(-net)/Math.max(20,S.cash)*20)); gainXp(1); sfx.lose(); fx.text(money(net),'#ff5d5d'); } }
+// ---------- sending ----------
+function mpSend(msg){ if(MP.role==='host'&&MP.H){ MP.H.msg(mpStore().cid,msg); mpFlushSoon(); return; } const c=MP.conn; if(c&&c.open){ try{ c.send(msg); }catch(e){} } }
+function mpFlushSoon(){ if(MP.flushT) return; MP.flushT=setTimeout(()=>{ MP.flushT=0; if(MP.H) MP.H.flush(); },25); }
+function mpLocalDeliver(msg){ MP.localQ.push(JSON.parse(JSON.stringify(msg))); if(!MP.localBusy){ MP.localBusy=true; setTimeout(mpDrainLocal,0); } }
+function mpDrainLocal(){ while(MP.localQ.length) mpRecv(MP.localQ.shift()); MP.localBusy=false; }
+function mpHostSend(cid,msg){ if(cid===mpStore().cid) return mpLocalDeliver(msg); const c=MP.conns[cid]; if(c&&c.open){ try{ c.send(msg); }catch(e){} } }
+// ---------- HOST ----------
+async function mpHostStart(){ if(MP.st!=='idle'&&MP.st!=='error') return; mpEnsureSave(); MP.err=''; MP.st='loading'; MP.role='host'; render();
+  try{ await mpLoadPeer(); }catch(e){ return mpFail(e.message); }
+  let tries=0; const attempt=()=>{ const code=mpRid(4,MP_ALPH); const peer=new Peer(MP_PREFIX+code.toLowerCase(),{debug:0}); MP.peer=peer;
+    peer.on('open',()=>{ if(MP.peer!==peer) return; MP.code=code; MP.sess=mpRid(10); MP.H=mpHostCreate({send:mpHostSend,now:()=>Date.now(),room:code,sess:MP.sess});
+      MP.tick=setInterval(()=>{ if(MP.H){ MP.H.tick(); MP.H.flush(); } },250);
+      const st=mpStore(); const r=MP.H.join(st.cid,{key:st.key,name:st.name,color:st.color,cash:S.cash,sess:S.mp.sess,lastSeq:S.mp.lastSeq},true); if(r&&r.err) return mpFail(r.err); mpFlushSoon(); });
+    peer.on('connection',conn=>mpHostConn(conn));
+    peer.on('disconnected',()=>{ if(MP.peer===peer&&!MP.leaving&&!peer.destroyed){ setTimeout(()=>{ try{ if(peer.disconnected&&!peer.destroyed) peer.reconnect(); }catch(e){} },1500); } });
+    peer.on('error',e=>{ if(MP.peer!==peer) return; const ty=e&&e.type;
+      if(ty==='unavailable-id'&&tries++<6){ try{ peer.destroy(); }catch(x){} attempt(); return; }
+      if(MP.st==='loading') return mpFail('Could not open a table ('+(ty||e.message)+'). The matchmaking server may be unreachable.');
+      /* in-room broker hiccups: existing peer links keep working */ }); };
+  attempt(); }
+function mpHostConn(conn){ let cid=null; conn.on('data',d=>{ if(!MP.H||!d||typeof d!=='object') return;
+    const now=Date.now(), r=MP.rate[conn.peer]||(MP.rate[conn.peer]={t:now,n:0}); if(now-r.t>1000){ r.t=now; r.n=0; } if(++r.n>40) return; // flood guard
+    let sz=0; try{ sz=JSON.stringify(d).length; }catch(e){ return; } if(sz>5000) return;
+    if(!cid){ if(d.t!=='hello'||typeof d.cid!=='string'){ try{ conn.close(); }catch(e){} return; } const want=d.cid.slice(0,40);
+      if(want===mpStore().cid){ try{ conn.send({t:'deny',why:'You cannot join your own table from the same browser.'}); }catch(e){} return; }
+      const old=MP.conns[want]; if(old&&old!==conn){ try{ old.send({t:'close',why:'You joined from another tab.'}); old.close(); }catch(e){} }
+      MP.conns[want]=conn; const res=MP.H.join(want,d,false);
+      if(res&&res.err){ if(MP.conns[want]===conn) delete MP.conns[want]; try{ conn.send({t:'deny',why:res.err}); }catch(e){} setTimeout(()=>{ try{ conn.close(); }catch(e){} },400); return; }
+      cid=want; MP.H.dirty=true; mpFlushSoon(); return; }
+    if(MP.conns[cid]!==conn) return; MP.H.msg(cid,d); mpFlushSoon(); });
+  const gone=()=>{ if(cid&&MP.conns[cid]===conn){ delete MP.conns[cid]; if(MP.H){ MP.H.drop(cid); mpFlushSoon(); } } };
+  conn.on('close',gone); conn.on('error',gone); }
+// ---------- CLIENT ----------
+async function mpJoinStart(code){ if(MP.st!=='idle'&&MP.st!=='error') return; code=mpNormCode(code); if(!code){ MP.err='That room code looks wrong. It should look like DEGEN-AB12.'; MP.st='error'; render(); return; }
+  mpEnsureSave(); MP.err=''; MP.code=code; MP.role='client'; MP.st='connecting'; MP.retry=0; render();
+  try{ await mpLoadPeer(); }catch(e){ return mpFail(e.message); }
+  const peer=new Peer({debug:0}); MP.peer=peer;
+  peer.on('open',()=>{ if(MP.peer===peer) mpConnect(); });
+  peer.on('disconnected',()=>{ if(MP.peer===peer&&!MP.leaving&&!peer.destroyed) setTimeout(()=>{ try{ if(peer.disconnected&&!peer.destroyed) peer.reconnect(); }catch(e){} },1500); });
+  peer.on('error',e=>{ if(MP.peer!==peer) return; const ty=e&&e.type;
+    if(ty==='peer-unavailable'){ if(MP.st==='connecting'){ if(S&&S.mp&&S.mp.room===MP.code&&mpOpenTotal()>0) mpVoidOpen('that table is gone'); return mpFail(`No table found for DEGEN-${MP.code}. Check the code — or the host already left.`); }
+      if(MP.st==='reconnecting') return mpClosed('The host left. Table closed.'); return; }
+    if(MP.st==='connecting') return mpFail('Could not reach the matchmaking server ('+(ty||'error')+'). Check your connection.'); }); }
+function mpConnect(){ if(!MP.peer||MP.peer.destroyed) return; const conn=MP.peer.connect(MP_PREFIX+MP.code.toLowerCase(),{reliable:true,serialization:'json'}); MP.conn=conn; let opened=false;
+  const to=setTimeout(()=>{ if(!opened&&MP.conn===conn){ try{ conn.close(); }catch(e){} mpConnFail(); } },15000);
+  conn.on('open',()=>{ opened=true; clearTimeout(to); MP.retry=0; const st=mpStore(); conn.send({t:'hello',v:MPC.VER,cid:st.cid,key:st.key,name:st.name,color:st.color,cash:S?S.cash:0,sess:(S&&S.mp&&S.mp.sess)||'',lastSeq:(S&&S.mp&&S.mp.lastSeq)||0}); });
+  conn.on('data',d=>{ if(MP.conn===conn) mpRecv(d); });
+  conn.on('close',()=>{ clearTimeout(to); if(MP.conn===conn&&opened) mpConnLost(); });
+  conn.on('error',()=>{}); }
+function mpConnFail(){ if(MP.st==='connecting') return mpFail(`Couldn't connect to DEGEN-${MP.code}. WebRTC may be blocked on this network (strict NAT / no TURN), or the host's tab is asleep.`); if(MP.st==='reconnecting') mpRetry(); }
+function mpConnLost(){ if(MP.leaving||MP.st==='closed'||MP.st==='idle') return; MP.st='reconnecting'; renderMPSafe(); mpRetry(); }
+function mpRetry(){ if(MP.st!=='reconnecting') return; if(++MP.retry>8) return mpClosed('Lost connection to the table. If the host is still there, rejoin with the code to collect anything owed to you.',false);
+  setTimeout(()=>{ if(MP.st!=='reconnecting') return; try{ if(MP.peer.disconnected&&!MP.peer.destroyed) MP.peer.reconnect(); }catch(e){} mpConnect(); }, 2500); }
+function mpRecv(d){ if(!d||typeof d!=='object') return;
+  switch(d.t){
+    case 'welcome': { MP.me=String(d.id||''); MP.sess=String(d.sess||''); mpBindSess(MP.sess); const was=MP.st; MP.st='in'; MP.why='';
+      if(!MP.charged){ MP.charged=true; if(S.mp.paid!==MP.sess){ S.mp.paid=MP.sess; if(U.mpFrom!=='casino'&&S.energy>0) useEnergy(1); } S.dayPhase='night'; save(); } // ⚡1 once per table session, even across refreshes
+      if(MP.role==='client'&&was==='connecting'){ mpStoreSet({lastRoom:MP.code}); }
+      if(was==='reconnecting') toast('🔌 Reconnected.'); U.mpv=U.mpv&&was==='reconnecting'?U.mpv:'lobby'; if(U.mpv!=='lobby') mpSend({t:'go',table:U.mpv}); if(U.screen!=='mp') go('mp'); else renderMP(true); return; }
+    case 'deny': return mpFail(String(d.why||'Denied.'));
+    case 'st': if(!d.s||typeof d.s!=='object') return; MP.prevR=MP.R; MP.R=d.s; MP.rAt=Date.now(); return mpOnState();
+    case 'led': return mpApply(d.e);
+    case 'rej': toast('🚫 '+esc(String(d.why||'Nope.')).slice(0,160)); return;
+    case 'close': return mpClosed(String(d.why||'The host closed the table.'),true);
+    case 'byeok': return mpFinishLeave();
+  } }
+// ---------- leaving / failure ----------
+function mpTeardown(){ clearInterval(MP.tick); MP.tick=0; clearTimeout(MP.flushT); MP.flushT=0; const peer=MP.peer; MP.peer=null; MP.conn=null; MP.conns={}; MP.H=null; MP.rate={};
+  if(peer) setTimeout(()=>{ try{ peer.destroy(); }catch(e){} },350); }
+function mpFail(msg){ mpTeardown(); MP.st='error'; MP.err=msg; MP.role=null; if(U.screen==='mp') render(); }
+function mpClosed(why,clean){ if(MP.st==='closed') return; mpDrainLocal(); MP.st='closed'; MP.why=why; if(mpOpenTotal()>0&&(clean||/host left/i.test(why))) mpVoidOpen('table closed'); mpTeardown(); if(U.screen==='mp') render(); }
+function mpMyHandBusy(){ const R=MP.R; if(!R) return false; const X=R.bj.hands[MP.me]; if(X&&(R.bj.phase==='play'||R.bj.phase==='dealer')) return true; if(R.rl.phase==='spin'&&R.rl.bets[MP.me]) return true; if(R.cr.phase==='roll'&&R.cr.bets[MP.me]&&R.cr.bets[MP.me].on>0) return true; return false; }
+function mpLeave(){ if(MP.st==='closed'||MP.st==='error'||MP.st==='idle') return mpFinishLeave();
+  if(MP.st==='loading'||MP.st==='connecting') return mpCancel();
+  if(MP.st==='in'&&mpMyHandBusy()){ toast('✋ Finish your hand / let the spin land first.'); return; }
+  if(MP.role==='host'){ if(Date.now()-MP.closeArm>4000){ MP.closeArm=Date.now(); toast('⚠️ You are the host. Tap again to close the table for everyone.'); return; }
+    MP.leaving=true; if(MP.H){ MP.H.close('The host left. Table closed.'); } mpDrainLocal(); mpTeardown(); return mpFinishLeave(); }
+  MP.leaving=true; mpSend({t:'bye'}); setTimeout(()=>{ if(MP.leaving&&MP.st!=='idle') mpFinishLeave(); },2500); }
+function mpCancel(){ mpTeardown(); MP.st='idle'; MP.role=null; render(); }
+function mpFinishLeave(){ mpDrainLocal(); const net=MP.sessNet, played=MP.charged; mpTeardown();
+  Object.assign(MP,{st:'idle',role:null,R:null,prevR:null,me:null,code:'',sess:'',err:'',why:'',sessNet:0,leaving:false,charged:false,retry:0,closeArm:0});
+  if(S&&played){ toast(`🌐 Online session: ${net>=0?'+':''}${money(net)}.`); news(`Online casino session: ${net>=0?'+':''}${money(net)}`); if(net<-100) addTilt(8); S.lastLog=[`🌐 You got home from the online casino ${net>=0?'up':'down'} ${money(Math.abs(net))}.`].concat(S.lastLog||[]).slice(0,4); save(); }
+  U.mpv='lobby'; go(S&&!S.ended?(U.mpFrom==='casino'&&U.cs?'casino':'hub'):'title'); }
+window.addEventListener('pagehide',()=>{ try{ if(MP.role==='host'&&MP.H&&!MP.H.closed){ MP.H.close('The host left. Table closed.'); mpDrainLocal(); } }catch(e){} });
+// ===================== MULTIPLAYER: SCREENS =====================
+const MP_TNAME={lobby:'🛋️ Lobby',bj:'🂡 Blackjack',cr:'🎲 Craps',rl:'🎡 Roulette',sb:'📺 Sportsbook'};
+const MP_TSHORT={lobby:'🛋️ Lobby',bj:'🂡 BJ',cr:'🎲 Craps',rl:'🎡 Wheel',sb:'📺 Book'};
+const MP_TDESC={bj:'5 seats, turn timer, S17, 3:2',cr:'Shared shooter, full bets',rl:'One wheel, everyone\'s chips',sb:'Shared slate + live sweat'};
+const MP_SEATX=[.1,.3,.5,.7,.9];
+const MP_WHEEL=[0,28,9,26,30,11,7,20,32,17,5,22,34,15,3,24,36,13,1,37,27,10,25,29,12,8,19,31,18,6,21,33,16,4,23,35,14,2];
+function mpP(id){ return MP.R&&MP.R.players.find(p=>p.id===id); }
+function mpName(id){ const p=mpP(id); return p?esc(p.name):'?'; }
+function mpDot(c){ return `<span class="mpdot" style="background:${mpColor(c)}"></span>`; }
+function mpRemNow(rem){ return Math.max(0,(rem||0)-(Date.now()-MP.rAt)); }
+function mpSec(rem){ return Math.ceil(mpRemNow(rem)/1000)+'s'; }
+function mpCanvasTall(on){ const cv=SC.cv; if(!cv) return; if(cv.classList.contains('tall')!==on){ cv.classList.toggle('tall',on); scResize(); } }
+// ---------- entry points ----------
+function mpOpen(from){ U.mpFrom=from||'title'; if(MP.st==='error'){ MP.st='idle'; } MP.err=''; go('mp'); }
+function mpAutoJoin(raw){ const code=mpNormCode(raw); U.mpFrom='link'; U.mpCode=code; const st=mpStore(); if(code&&(st.name||load())){ if(!st.name){ const sv=load(); mpStoreSet({name:sv.name,color:st.color||MP_COLORS[1+Math.floor(Math.random()*(MP_COLORS.length-1))]}); } go('mp'); mpJoinStart(code); } else go('mp'); }
+function mpTopRow(){ if(!MP.code||(MP.st!=='in'&&MP.st!=='reconnecting')) return ''; const open=mpOpenTotal(), n=MP.sessNet;
+  return `<div class="small" style="margin-top:3px">🌐 <b class="b">DEGEN-${esc(MP.code)}</b> · ${MP.role==='host'?'👑 hosting':'guest'} · session <b class="${n>=0?'g':'r'}">${n>=0?'+':''}${money(n)}</b>${open>0?` · <span class="a">${money(open)} riding</span>`:''}${MP.st==='reconnecting'?' · <b class="r">reconnecting…</b>':''}</div>`; }
+function renderMPSafe(){ if(U.screen==='mp') renderMP(false); }
+function renderMP(full){ mpCanvasTall(true); if(!MP.uiTick) MP.uiTick=setInterval(mpUiTick,250);
+  const st=MP.st; if((st==='in'||st==='reconnecting')&&MP.R) return mpRenderRoom(full);
+  scene('casino',[{id:'me',x:.5,color:mpColor(U.mpCol),label:String(U.mpName||'YOU').toUpperCase().slice(0,9),hat:'cap',hatc:mpColor(U.mpCol),pose:(st==='connecting'||st==='loading'||st==='in')?'phone':'idle',held:'phone'},{id:'d',x:.8,hat:'visor',label:'DEALER DEB',pose:'deal',color:'#ffd9a0'}],{caption:'🌐 ONLINE CASINO'});
+  if(st==='in'){ setMain('<div class="panel">🪑 Pulling up a chair…</div>'); return; }
+  if(st==='loading'||st==='connecting'||st==='reconnecting'){ setMain(`<h2>🌐 ONLINE CASINO</h2><div class="panel">⏳ ${st==='loading'?'Loading the multiplayer guts and opening a table…':`Connecting to <b>DEGEN-${esc(MP.code)}</b>…`}<div class="small dim">Peer-to-peer over WebRTC. If this hangs for 15s, your network may be blocking it.</div></div><button class="btn c" onclick="mpCancel()">✖ Cancel</button>`); return; }
+  if(st==='closed'){ setMain(`<div class="paper"><div class="hl">🔒 TABLE CLOSED</div><p>${esc(MP.why)}</p><p>Session: <b>${MP.sessNet>=0?'+':''}${money(MP.sessNet)}</b>. Your bankroll lives in your save: ${money(S?S.cash:0)}.</p></div><button class="btn big go" onclick="mpFinishLeave()">⬅ Back</button>`); return; }
+  setMain(mpSetupHtml()); }
+function mpSetupHtml(){ const st=mpStore(); const sv=(S&&!S.ended)?S:load(); const live=!!(sv&&!sv.ended);
+  if(U.mpName==null) U.mpName=st.name||(live?sv.name:'')||('Degen'+(100+Math.floor(Math.random()*900)));
+  if(!U.mpCol) U.mpCol=st.color||MP_COLORS[1+Math.floor(Math.random()*(MP_COLORS.length-1))];
+  const open=live&&sv.mp&&sv.mp.open?Object.values(sv.mp.open).reduce((a,b)=>a+b,0):0;
+  let h=`<h2>🌐 ONLINE CASINO <span class="small dim">play with friends · peer-to-peer</span></h2>`;
+  if(MP.err) h+=`<div class="panel r">⚠️ ${esc(MP.err)}</div>`;
+  h+=`<div class="panel small">${live?`💵 Your online bankroll <b>is your save</b>: <b class="g">${money(sv.cash)}</b> (${esc(sv.name)}, day ${sv.day}). Win online and your run gets richer. Lose and Big Sal gets… concerned. A session costs ⚡1 (if you have any); the day doesn't advance while you're online.`:'🆕 No run in progress. Hosting or joining starts a fresh run: $50 in your pocket, $10,000 owed to Big Sal. Your friends will laugh.'}</div>`;
+  if(open>0){ const rc=mpNormCode(sv.mp.room); h+=`<div class="panel a small">⏳ You have ${money(open)} riding on unsettled online bets from room DEGEN-${esc(rc||'?')}. Rejoin to collect; if that table is gone it gets refunded automatically.</div>${rc?`<button class="btn gold" onclick="mpSaveIdent();mpJoinStart('${rc}')">🔁 Rejoin DEGEN-${rc}</button>`:''}`; }
+  h+=`<label class="small dim">Display name</label><input type="text" id="mpnm" maxlength="14" value="${esc(U.mpName)}" oninput="U.mpName=this.value">`;
+  h+=`<div class="small dim" style="margin-top:6px">Stick-figure color</div><div class="row">${MP_COLORS.map(c=>`<button class="mpsw ${U.mpCol===c?'on':''}" style="background:${c}" onclick="mpSetColor('${c}')" aria-label="color ${c}"></button>`).join('')}</div>`;
+  h+=`<button class="btn big go" onclick="mpGoHost()">🏠 HOST A TABLE<small style="text-align:center">Get a room code + invite link. Your browser runs the dealer, so keep this tab open.</small></button>`;
+  h+=`<div class="panel"><label class="small dim">Got a code from a friend?</label><div class="row"><input type="text" id="mpcode" placeholder="DEGEN-AB12" value="${U.mpCode?'DEGEN-'+esc(U.mpCode):''}" style="flex:1;text-transform:uppercase" autocomplete="off"><button class="btn c go" style="width:auto;margin:0" onclick="mpGoJoin()">🚪 JOIN</button></div></div>`;
+  h+=`<div class="small dim">2–5 players. Blackjack, craps, roulette and a shared sportsbook. Needs a network that allows WebRTC (most home Wi-Fi and phones do; some strict corporate/cellular networks don't).</div><button class="btn c" onclick="mpBack()">⬅ Back</button>`; return h; }
+function mpSaveIdent(){ const el=document.getElementById('mpnm'); const name=mpCleanText(el?el.value:U.mpName,14)||'Degen'; U.mpName=name; U.mpCol=mpColor(U.mpCol); mpStoreSet({name,color:U.mpCol}); }
+function mpGoHost(){ mpSaveIdent(); mpHostStart(); }
+function mpGoJoin(){ mpSaveIdent(); const el=document.getElementById('mpcode'); const v=el?el.value:U.mpCode; U.mpCode=mpNormCode(v); mpJoinStart(v); }
+function mpSetColor(c){ const el=document.getElementById('mpnm'); if(el) U.mpName=el.value; U.mpCol=mpColor(c); renderMP(); }
+function mpBack(){ MP.err=''; if(MP.st==='error') MP.st='idle'; go(S&&!S.ended?(U.mpFrom==='casino'&&U.cs?'casino':'hub'):'title'); }
+// ---------- room shell ----------
+function mpRenderRoom(full){ if(full||!document.getElementById('mpv')){ setMain(`<div id="mpbar"></div><div id="mpv"></div>${mpChatShell()}`); MP.chatShown=-1; mpSyncScene(true); } else mpSyncScene(false);
+  document.getElementById('mpbar').innerHTML=mpBarHtml(); document.getElementById('mpv').innerHTML=mpViewHtml(); mpRenderChat(); renderTop(); }
+function mpBarHtml(){ const R=MP.R; return `${MP.st==='reconnecting'?'<div class="panel r small">📡 Connection lost — reconnecting… (your bets are safe with the host)</div>':''}<div class="tabs mptabs">${MP_TABLES.map(t=>`<button class="tab ${U.mpv===t?'on':''}" onclick="mpGo('${t}')">${MP_TSHORT[t]}<br><span class="small">${t==='lobby'?R.players.length+'/'+MPC.MAXP:R.players.filter(p=>p.table===t).length+' 🧍'}</span></button>`).join('')}</div>`; }
+function mpViewHtml(){ const R=MP.R; try{ switch(U.mpv){ case 'bj': return mpBJHtml(R); case 'cr': return mpCrHtml(R); case 'rl': return mpRlHtml(R); case 'sb': return mpSbHtml(R); default: return mpLobbyHtml(R); } }catch(e){ console.error(e); return `<div class="panel r">Render glitch: ${esc(e.message)}</div>`; } }
+function mpGo(tb){ if(!MP_TABLES.includes(tb)||!MP.R) return; if(U.mpv==='bj'&&tb!=='bj'){ const B=MP.R.bj, X=B.hands[MP.me]; if(X&&B.phase==='play'&&!X.done){ toast('✋ Finish your blackjack hand first.'); return; } }
+  if(U.mpv===tb) return; U.mpv=tb; mpSend({t:'go',table:tb}); sfx.click(); window.scrollTo(0,0); mpRenderRoom(false); }
+function mpChatShell(){ return `<div class="panel mpchat"><div class="log mplog" id="mpclog"></div><div class="mpemo">${MP_EMOJI.map((e,i)=>`<button class="tab" onclick="mpEmote(${100+i})">${e}</button>`).join('')}</div><div class="mpemo">${MP_TALK.map((t,i)=>`<button class="mptalk" onclick="mpEmote(${i})">${esc(t)}</button>`).join('')}</div><form class="row" onsubmit="mpChatSend();return false"><input type="text" id="mpmsg" maxlength="${MPC.CHATLEN}" placeholder="Talk trash (max ${MPC.CHATLEN} chars)" autocomplete="off" style="flex:1;min-width:0"><button class="btn c" style="width:auto;margin:0;min-width:66px">Send</button></form></div>`; }
+function mpRenderChat(){ const el=document.getElementById('mpclog'); if(!el||!MP.R) return; const ch=MP.R.chat||[]; const last=ch.length?ch[ch.length-1].i:0; if(last===MP.chatShown) return; MP.chatShown=last;
+  el.innerHTML=ch.map(m=>m.sys?`<div class="dim small">${esc(m.txt)}</div>`:`<div><b style="color:${mpColor(m.color)}">${esc(m.name)}:</b> ${m.em?`<span class="p">${esc(m.txt)}</span>`:esc(m.txt)}</div>`).join('')||'<div class="dim small">No trash talk yet. Be the change.</div>'; el.scrollTop=el.scrollHeight; }
+function mpChatSend(){ const el=document.getElementById('mpmsg'); if(!el) return; const v=mpCleanText(el.value,MPC.CHATLEN); if(!v) return; mpSend({t:'chat',txt:v}); el.value=''; }
+function mpEmote(i){ mpSend({t:'chat',em:i}); sfx.click(); }
+function mpCopy(){ const u=mpLink(); try{ if(navigator.clipboard&&window.isSecureContext){ navigator.clipboard.writeText(u).then(()=>toast('📋 Invite link copied. Go recruit some degenerates.'),()=>mpCopyFallback(u)); return; } }catch(e){} mpCopyFallback(u); }
+function mpCopyFallback(u){ const ta=document.createElement('textarea'); ta.value=u; ta.style.position='fixed'; ta.style.opacity='0'; document.body.appendChild(ta); ta.select(); let ok=false; try{ ok=document.execCommand('copy'); }catch(e){} ta.remove(); toast(ok?'📋 Invite link copied.':'Copy this link: '+esc(u)); }
+function mpShare(){ const u=mpLink(); if(navigator.share){ navigator.share({title:'DEGEN: The Road to Whale',text:`Pull up to my degenerate casino table. Room DEGEN-${MP.code}`,url:u}).catch(()=>{}); } else mpCopy(); }
+// ---------- state arrival: fx + re-render ----------
+function mpOnState(){ if(!MP.R) return; try{ mpStateFx(MP.R,MP.prevR); }catch(e){ console.warn('mp fx',e); }
+  if(U.screen!=='mp'||MP.rT) return; MP.rT=setTimeout(()=>{ MP.rT=0; if(U.screen==='mp') renderMP(false); },30); }
+function mpStateFx(R,P){ const me=MP.me, tb=U.mpv;
+  const ch=R.chat||[]; for(const m of ch){ if(m.i>(MP.lastChatI||0)&&P&&!m.sys){ say('mp_'+m.id,String(m.txt),3500); if(m.id!==me) beep(880,.03,'square',.015); } } MP.lastChatI=ch.length?ch[ch.length-1].i:0;
+  if(!P) return;
+  if(R.bj.turn===me&&P.bj.turn!==me&&R.bj.phase==='play'){ sfx.coin(); if(tb!=='bj') toast('🂡 Your turn at blackjack!'); }
+  if(tb==='bj'){ if(R.bj.handNo!==P.bj.handNo) pose('dealer','deal',900,'deal');
+    if(P.bj.phase!=='done'&&R.bj.phase==='done') for(const id in R.bj.hands){ const n=R.bj.hands[id].net; pose('mp_'+id,n>0?'celebrate':n<0?'facepalm':'shrug',2200,'idle'); } }
+  if(tb==='cr'){ if(R.cr.phase==='roll'&&P.cr.phase!=='roll'){ pose('mp_'+R.cr.shooter,'throw',900,'idle'); sfx.dice(); }
+    if(R.cr.rollNo>P.cr.rollNo&&R.cr.last){ const L=R.cr.last; rollDiceAnim([L.d1,L.d2]); setTimeout(()=>{ for(const id in (L.res||{})){ const n=L.res[id].net; pose('mp_'+id,n>0?'cheer':n<0?(L.event==='sevenout'?'facepalm':'groan'):'idle',1600,'idle'); } },900); } }
+  if(R.rl.phase==='spin'&&P.rl.phase!=='spin'){ MP.rlT0=SC.t; MP.rlDur=Math.max(.5,(R.rl.spinRem||3000)/1000); if(tb==='rl') sfx.dice(); }
+  if(tb==='rl'&&R.rl.phase==='done'&&P.rl.phase!=='done') for(const id in R.rl.res){ const n=R.rl.res[id].net; pose('mp_'+id,n>0?'celebrate':n<0?'facepalm':'idle',2000,'idle'); }
+  if(tb==='sb'&&R.sb.ticker.length&&P.sb.ticker.length){ const a=R.sb.ticker[R.sb.ticker.length-1], b=P.sb.ticker[P.sb.ticker.length-1]; if(a.txt!==b.txt&&a.cls==='big'){ const here=R.players.filter(p=>p.table==='sb'); if(here.length) pose('mp_'+pick(here).id,rnd()<.5?'cheer':'groan',1400,'sit'); } } }
+function mpUiTick(){ if(U.screen!=='mp'||!MP.R) return; for(const el of document.querySelectorAll('[data-cd]')){ const k=el.getAttribute('data-cd'); const o=MP.R[k]; if(o) el.textContent=mpSec(o.rem); } }
+// ---------- canvas scenes ----------
+function mpActor(p,i,extra){ return Object.assign({id:'mp_'+p.id,x:.5,s:.7,color:mpColor(p.color),label:String(p.name||'?').toUpperCase().slice(0,9),lc:p.id===MP.me?'#5dff8a':'#ffc24a',hat:p.host?'crown':['cap','beanie','visor','bald','cap'][i%5],hatc:mpColor(p.color),pose:'idle',ph:i*.7},extra||{}); }
+function mpSceneFor(tb){ const R=MP.R; if(!R) return null; const ps=R.players; const actors=[]; let bg; const opts={caption:''};
+  if(tb==='bj'){ bg='mpbj'; actors.push({id:'dealer',x:.5,y:.45,s:.62,hat:'visor',color:'#ffd9a0',label:'DEALER DEB',pose:'deal'}); R.bj.seats.forEach((id,i)=>{ const p=id&&mpP(id); if(p) actors.push(mpActor(p,i,{x:MP_SEATX[i],s:.58})); }); opts.over=mpOverBJ; opts.caption='🂡 DEGEN-'+MP.code; }
+  else if(tb==='cr'){ bg='craps'; ps.filter(p=>p.table==='cr').forEach((p,i)=>actors.push(mpActor(p,i,{x:.1+i*.17,y:.52,s:.66}))); actors.push({id:'stick',x:.93,y:.52,s:.7,pose:'deal',hat:'visor',color:'#ffd9a0',label:'STICKMAN'}); opts.point=R.cr.point; opts.caption='🎲 DEGEN-'+MP.code; }
+  else if(tb==='rl'){ bg='mprl'; ps.filter(p=>p.table==='rl').forEach((p,i)=>actors.push(mpActor(p,i,{x:[.1,.9,.25,.75,.4][i],s:.55}))); opts.over=mpOverRL; opts.caption='🎡 DEGEN-'+MP.code; }
+  else if(tb==='sb'){ bg='book'; ps.filter(p=>p.table==='sb').forEach((p,i)=>actors.push(mpActor(p,i,{x:.14+i*.18,s:.7,pose:'sit',held:'phone'}))); opts.games=R.sb.games; opts.caption='📺 DEGEN-'+MP.code; }
+  else { bg='casino'; ps.forEach((p,i)=>actors.push(mpActor(p,i,{x:.12+i*.19,s:.72,pose:p.table==='lobby'?'idle':'phone',held:p.table==='lobby'?'beer':'phone'}))); opts.caption='🌐 THE BACK ROOM · DEGEN-'+MP.code; }
+  return {bg,actors,opts}; }
+function mpSyncScene(force){ const tb=U.mpv, d=mpSceneFor(tb); if(!d) return;
+  if(force||!SC.cur||SC.cur.mpTb!==tb){ scene(d.bg,d.actors,Object.assign(d.opts,{mpTb:tb})); return; }
+  const old={}; for(const a of SC.cur.actors) old[a.id]=a;
+  SC.cur.actors=d.actors.map(a=>{ const o=old[a.id]; if(!o) return Object.assign({pose:'idle',x:.5,s:1,color:'#f2efe4'},a); Object.assign(o,{x:a.x,y:a.y,s:a.s,color:a.color,label:a.label,lc:a.lc,hat:a.hat,hatc:a.hatc}); return o; });
+  Object.assign(SC.cur,d.opts); }
+function mpCardsDraw(c,cards,cx,cy,s){ const w=15*s,h=21*s,off=9*s,n=cards.length; let x=cx-((n-1)*off+w)/2;
+  for(const cd of cards){ const hid=!cd||cd.h; c.fillStyle=hid?'#a33':'#fbf7ec'; c.strokeStyle='#333'; c.lineWidth=1; c.fillRect(x,cy-h/2,w,h); c.strokeRect(x,cy-h/2,w,h);
+    if(!hid){ c.fillStyle=(cd.s===1||cd.s===2)?'#c41d1d':'#111'; c.font=`bold ${Math.max(7,Math.round(7.5*s))}px monospace`; c.textAlign='left'; c.textBaseline='top'; c.fillText((RANKS[cd.r]||'?')+(SUITS[cd.s]||''),x+1.5,cy-h/2+1.5); } x+=off; } }
+function mpOverBJ(c,W,H){ const R=MP.R; if(!R) return; const B=R.bj, sc=H/190; c.textAlign='center'; c.textBaseline='middle';
+  if(B.dealer.length){ mpCardsDraw(c,B.dealer,W*.5,H*.54,sc); if(B.dv){ c.font='bold 11px monospace'; c.textAlign='center'; c.textBaseline='middle'; c.fillStyle='#fff'; c.fillText(String(B.dv),W*.5+((B.dealer.length-1)*9*sc+15*sc)/2+12,H*.54); } }
+  B.seats.forEach((id,i)=>{ if(!id) return; const xf=MP_SEATX[i], x=W*xf; const cy=H*(.47+.42*Math.sqrt(Math.max(0,1-((xf-.5)/.5)**2))*.5); const X=B.hands[id];
+    c.textAlign='center'; c.textBaseline='middle';
+    if(B.phase==='play'&&B.turn===id){ c.strokeStyle='#ffc24a'; c.lineWidth=2; c.beginPath(); c.ellipse(x,H*.95,15*sc,4*sc,0,0,7); c.stroke(); c.fillStyle='#ffc24a'; c.font='bold 11px monospace'; c.fillText(Math.ceil(mpRemNow(B.rem)/1000)+'s',x,cy-17*sc); }
+    if(X){ const n=X.hs.length; X.hs.forEach((hd,j)=>{ const hx=n>1?x+(j-(n-1)/2)*W*.09:x; mpCardsDraw(c,hd.cards,hx,cy,sc*.8); const v=handVal(hd.cards).t; c.font='bold 9px monospace'; c.textAlign='center'; c.textBaseline='middle'; c.fillStyle=v>21?'#ff5d5d':'#fff'; c.fillText(v>21?'BUST':String(v),hx,cy+12*sc); });
+      if(X.net!=null){ c.font='bold 11px monospace'; c.fillStyle=X.net>0?'#5dff8a':X.net<0?'#ff5d5d':'#ddd'; c.fillText(X.net>0?'+'+money(X.net):X.net<0?money(X.net):'PUSH',x,cy-17*sc); } }
+    else if(B.phase==='bet'&&B.bets[id]){ const a=B.bets[id]; c.fillStyle='#ffc24a'; c.beginPath(); c.arc(x,cy,9*sc,0,7); c.fill(); c.strokeStyle='#fff'; c.setLineDash([3,2]); c.stroke(); c.setLineDash([]); c.fillStyle='#111'; c.font=`bold ${Math.round(7*sc)}px monospace`; c.fillText(a>=1000?(a/1000)+'k':String(a),x,cy); } }); }
+function mpOverRL(c,W,H,t){ const R=MP.R; if(!R) return; const T=R.rl, N=38, seg=Math.PI*2/N; const cx=W*.5, cy=H*.42, rad=Math.min(W*.3,H*.34); const spin=T.phase==='spin'; let rot, ba;
+  if(spin){ const k=clamp((t-(MP.rlT0||t))/(MP.rlDur||3),0,1); rot=t*(4*(1-k)+.3); ba=-t*(10*(1-k)+.4); } else { const idx=Math.max(0,MP_WHEEL.indexOf(T.n!=null?T.n:0)); rot=-Math.PI/2-(idx+.5)*seg; ba=-Math.PI/2; }
+  c.fillStyle='#5a3a1a'; c.beginPath(); c.arc(cx,cy,rad+8,0,7); c.fill();
+  for(let i=0;i<N;i++){ const a0=rot+i*seg, n=MP_WHEEL[i]; c.fillStyle={rd:'#a51e1e',bk:'#1b1b1b',gr:'#167a2f'}[rlColor(n)]; c.beginPath(); c.moveTo(cx,cy); c.arc(cx,cy,rad,a0,a0+seg+.003); c.closePath(); c.fill();
+    if(rad>60){ const am=a0+seg/2; c.save(); c.translate(cx+Math.cos(am)*rad*.86,cy+Math.sin(am)*rad*.86); c.rotate(am+Math.PI/2); c.fillStyle='#fff'; c.font='bold 7px monospace'; c.textAlign='center'; c.textBaseline='middle'; c.fillText(rlLabel(n),0,0); c.restore(); } }
+  c.fillStyle='#3a2414'; c.beginPath(); c.arc(cx,cy,rad*.58,0,7); c.fill(); c.fillStyle='#c9a36a'; c.beginPath(); c.arc(cx,cy,rad*.16,0,7); c.fill();
+  c.fillStyle='#fff'; c.beginPath(); c.arc(cx+Math.cos(ba)*rad*.68,cy+Math.sin(ba)*rad*.68,3.5,0,7); c.fill();
+  c.textAlign='center'; c.textBaseline='middle';
+  if(!spin&&T.n!=null&&T.spinNo>0){ const col={rd:'#e03030',bk:'#ddd',gr:'#3ad070'}[rlColor(T.n)]; c.font='bold 20px monospace'; c.lineWidth=4; c.strokeStyle='#000'; c.strokeText(rlLabel(T.n),cx,cy); c.fillStyle=col; c.fillText(rlLabel(T.n),cx,cy); }
+  if(spin){ c.font='bold 11px monospace'; c.fillStyle='#ffc24a'; c.fillText('NO MORE BETS',cx,cy+rad+16); } }
+// ---------- views ----------
+function mpLeaderHtml(R){ const ps=R.players.slice().sort((a,b)=>b.net-a.net); return `<h3>🏆 Room leaderboard</h3><div class="panel">${ps.map((p,i)=>`<div class="kv"><span>${['🥇','🥈','🥉','4.','5.'][i]||i+1+'.'} ${mpDot(p.color)}${esc(p.name)}${p.id===MP.me?' <span class="g small">(you)</span>':''}</span><b class="${p.net>=0?'g':'r'}">${p.net>=0?'+':''}${money(p.net)}</b></div>`).join('')}</div>`; }
+function mpLobbyHtml(R){ const url=mpLink();
+  let h=`<h2>🌐 THE BACK ROOM <span class="small dim">${R.players.length}/${MPC.MAXP} degenerates</span></h2><div class="panel" style="text-align:center"><div class="small dim">Room code — send it to your friends</div><div class="mpcode">DEGEN-${esc(MP.code)}</div><div class="grid2"><button class="btn c" onclick="mpCopy()">📋 Copy invite link</button><button class="btn c" onclick="mpShare()">📤 Share</button></div><div class="small dim" style="word-break:break-all">${esc(url)}</div></div>`;
+  h+=`<h3>🪑 Who's here</h3><table><tr><th>Degen</th><th>At</th><th>Bankroll</th><th>Session</th></tr>${R.players.map(p=>`<tr><td>${mpDot(p.color)}<b>${esc(p.name)}</b>${p.host?' 👑':''}${p.id===MP.me?' <span class="g small">(you)</span>':''}${p.conn?'':' <span class="r small">📵</span>'}</td><td>${MP_TSHORT[p.table]||''}</td><td>${money(p.bal)}</td><td class="${p.net>=0?'g':'r'}">${p.net>=0?'+':''}${money(p.net)}</td></tr>`).join('')}</table>`;
+  h+=`<h3>🎰 Tables</h3><div class="grid2">${['bj','cr','rl','sb'].map(t=>`<button class="btn" onclick="mpGo('${t}')">${MP_TNAME[t]}<small>${MP_TDESC[t]} · ${R.players.filter(p=>p.table===t).length} here</small></button>`).join('')}</div>`;
+  h+=mpLeaderHtml(R)+`<div class="small dim">Your online bankroll is your single-player save (${money(S?S.cash:0)}). Wins & losses write back to your run. The day doesn't advance while you're here.</div>`;
+  h+=`<button class="btn c ${MP.role==='host'?'bad':''}" onclick="mpLeave()">${MP.role==='host'?'🔒 Close the table (kicks everyone)':'🚪 Leave the room'}</button>`; return h; }
+function mpChipsAdd(vals,fn,max){ return `<div class="row">${vals.map(v=>`<button class="chip" ${v>max?'disabled':''} onclick="${fn}(${v})">+$${v>=1000?(v/1000)+'k':v}</button>`).join('')}</div>`; }
+function mpBJHtml(R){ const B=R.bj, me=MP.me, myP=mpP(me)||{bal:0}, seat=B.seats.indexOf(me); let st;
+  if(B.phase==='bet') st=Object.keys(B.bets).length?`⏳ Bets close in <b data-cd="bj">${mpSec(B.rem)}</b>`:'💤 Waiting for somebody to bet…';
+  else if(B.phase==='play') st=B.turn===me?`<b class="a">🎯 YOUR TURN</b> · <b data-cd="bj">${mpSec(B.rem)}</b> before auto-stand`:`🎯 ${mpName(B.turn)}'s turn · <span data-cd="bj">${mpSec(B.rem)}</span>`;
+  else if(B.phase==='dealer') st='🃏 Dealer is playing…'; else st=`🏁 ${esc(B.msg||'')} Next hand in a sec.`;
+  let h=`<h2>🂡 BLACKJACK <span class="small dim">#${B.handNo} · $${MPC.BJ_MIN}–${money(MPC.BJ_MAX)} · S17 · BJ 3:2 · ${B.left} cards left</span></h2><div class="panel small">${st}${B.phase==='play'&&B.msg?`<br><span class="dim">${esc(B.msg)}</span>`:''}</div>`;
+  h+=`<div class="small dim">Dealer ${B.dv?'('+B.dv+(B.dealer.some(c=>c&&c.h)?' showing':'')+')':''}</div><div class="cards sm">${B.dealer.map(c=>c&&c.h?cardHtml(null,true):cardHtml(c)).join('')||'<span class="dim small">—</span>'}</div><div class="mpseats">`;
+  B.seats.forEach((id,i)=>{ if(!id){ h+=`<div class="mpseat dim small">Seat ${i+1}: empty</div>`; return; } const p=mpP(id)||{name:'?',color:'#999'}, X=B.hands[id], on=B.phase==='play'&&B.turn===id;
+    h+=`<div class="mpseat ${on?'on':''} ${id===me?'me':''}"><div class="small">${mpDot(p.color)}<b>${esc(p.name)}</b>${id===me?' (you)':''}${p.conn===false?' 📵':''}</div>`;
+    if(X){ X.hs.forEach((hd,j)=>{ const v=handVal(hd.cards); h+=`<div class="small ${on&&X.act===j?'a':'dim'}">${X.hs.length>1?'H'+(j+1)+' · ':''}${v.soft&&v.t<21?'soft ':''}${v.t} · ${money(hd.bet)}${hd.dbl?' ×2':''}${hd.res?` · <b class="${hd.ret>hd.bet?'g':hd.ret===hd.bet?'':'r'}">${esc(hd.res)}</b>`:''}</div><div class="cards sm">${hd.cards.map(c=>cardHtml(c)).join('')}</div>`; });
+      if(X.net!=null) h+=`<div class="small ${X.net>0?'g':X.net<0?'r':''}"><b>${X.net>0?'+':''}${money(X.net)}</b></div>`; }
+    else if(B.phase==='bet') h+=`<div class="small">${B.bets[id]?`💵 Bet <b class="a">${money(B.bets[id])}</b>`:'<span class="dim">deciding…</span>'}</div>`;
+    else h+=`<div class="small dim">sitting this one out</div>`;
+    h+=`</div>`; });
+  h+=`</div>`;
+  if(seat<0) h+=`<div class="panel small">${B.seats.includes(null)?'🪑 Grabbing you a seat…':'🪑 Table full. You\'re watching (and heckling).'}</div>`;
+  else if(B.phase==='bet'){ const my=B.bets[me]||0, last=B.last[me]; h+=`<div class="small">Your bet: <b class="a">${money(my)}</b> · bankroll ${money(myP.bal)}</div>${mpChipsAdd([5,10,25,100,250,500,1000],'mpBjChip',Math.min(myP.bal-my,MPC.BJ_MAX-my))}<div class="grid2"><button class="btn c" onclick="mpBjClear()" ${my?'':'disabled'}>✖ Clear bet</button><button class="btn c" onclick="mpBjRebet()" ${last&&!my&&last<=myP.bal?'':'disabled'}>↻ Rebet ${last?money(last):''}</button></div>`; }
+  else if(B.phase==='play'&&B.turn===me){ const X=B.hands[me], hd=X.hs[X.act]; const cd=hd.cards.length===2&&myP.bal>=hd.bet, cs=X.hs.length===1&&hd.cards.length===2&&cval(hd.cards[0])===cval(hd.cards[1])&&myP.bal>=hd.bet;
+    h+=`<div class="grid2"><button class="btn c big" onclick="mpBjAct('hit')">👆 HIT</button><button class="btn c big" onclick="mpBjAct('stand')">✋ STAND</button><button class="btn c" ${cd?'':'disabled'} onclick="mpBjAct('double')">💰 DOUBLE</button><button class="btn c" ${cs?'':'disabled'} onclick="mpBjAct('split')">✂️ SPLIT</button></div>`; }
+  return h; }
+function mpBjChip(v){ mpSend({t:'bj.add',v}); sfx.click(); }
+function mpBjClear(){ mpSend({t:'bj.bet',amt:0}); }
+function mpBjRebet(){ const l=MP.R&&MP.R.bj.last[MP.me]; if(l) mpSend({t:'bj.bet',amt:l}); }
+function mpBjAct(a){ mpSend({t:'bj.act',a}); sfx.click(); }
+function mpCrHtml(R){ const T=R.cr, me=MP.me, myP=mpP(me)||{bal:0}; const mine=T.bets[me]||{bets:newCraps().bets,comes:[],dcs:[],on:0}; const b=mine.bets, on=T.point!==null, lock=T.phase!=='bet', iShoot=T.shooter===me; U.mpCrChip=U.mpCrChip||5;
+  const amt=v=>v?`<span class="amt">$${v}</span>`:''; const OD={4:'2:1',10:'2:1',5:'3:2',9:'3:2',6:'6:5',8:'6:5'};
+  const btn=(k,n,label,sub,cls,dis)=>`<button class="cb ${cls||''}" ${dis||lock?'disabled':''} onclick="mpCrBet('${k}',${n==null?'null':n})"><b>${label}</b>${sub?`<span style="font-size:10px">${sub}</span>`:''}${amt(k==='place'?b.place[n]:k==='hard'?b.hard[n]:b[k])}</button>`;
+  let h=`<h2>🎲 CRAPS <span class="small dim">Point: ${on?`<b class="a">${T.point}</b> (ON)`:'OFF (come-out)'}</span></h2>`;
+  h+=`<div class="panel small">🎯 Shooter: <b>${T.shooter?mpName(T.shooter):'nobody yet'}</b>${iShoot?' <b class="a">(YOU! roll when ready)</b>':''} · rolls ${T.sRolls} · ${T.phase==='roll'?`<b class="a">🎲 ${esc(T.thrower)} throws…</b>`:T.rem?`auto-roll in <span data-cd="cr">${mpSec(T.rem)}</span>`:'waiting for bets'}<br>Recent: ${T.hist.slice(0,10).join(' · ')||'—'}</div>`;
+  if(T.last){ const L=T.last, r=L.res&&L.res[me]; h+=`<div class="log" style="max-height:150px"><div class="big">🎲 ${L.d1} + ${L.d2} = ${L.sum} — ${esc(L.talk)}</div>${r?r.lines.map(l=>l.w===1?`<div class="g">✔ ${esc(l.what)}: +${money(l.win)}</div>`:l.w===2?`<div class="dim">↩ ${esc(l.what)}: ${money(l.amt)} back</div>`:`<div class="r">✘ ${esc(l.what)}: −${money(l.amt)}</div>`).join(''):''}${Object.entries(L.res||{}).filter(([id])=>id!==me).map(([id,x])=>`<div class="small dim">${mpName(id)}: <span class="${x.net>0?'g':x.net<0?'r':''}">${x.net>0?'+':''}${money(x.net)}</span></div>`).join('')}</div>`; }
+  h+=`<div class="craps">`; for(const n of [4,5,6,8,9,10]) h+=btn('place',n,`PLACE ${n}`,{4:'9:5',10:'9:5',5:'7:5',9:'7:5',6:'7:6',8:'7:6'}[n],T.point===n?'pt':'');
+  h+=btn('come',null,'COME','1:1','wide3',!on)+btn('dc',null,"DON'T COME",'1:1 · bar 12','wide3',!on)+btn('field',null,'FIELD  2·3·4·9·10·11·12','1:1 · 2 pays 2:1 · 12 pays 3:1','wide6');
+  for(const n of [4,6,8,10]) h+=btn('hard',n,`HARD ${n}`,`${HARD_PAY[n]}:1`); h+=btn('any7',null,'ANY 7','4:1')+btn('anyCraps',null,'ANY CRAPS','7:1');
+  h+=btn('pass',null,'PASS LINE','1:1','wide3',on)+btn('dp',null,"DON'T PASS",'1:1 · bar 12','wide3',on)+btn('passOdds',null,'PASS ODDS',on?`${OD[T.point]} · max ${MAX_ODDS[T.point]}x`:'after point','wide3',!on||!b.pass)+btn('dpOdds',null,'LAY ODDS',on?'true odds':'after point','wide3',!on||!b.dp)+`</div>`;
+  if(mine.comes.length||mine.dcs.length){ h+=`<div class="panel small">`; mine.comes.forEach((c,i)=>{ h+=`<div class="row" style="justify-content:space-between"><span>🟢 Come on <b>${c.n}</b>: $${c.amt}${c.odds?` + odds $${c.odds}`:''}</span><button class="tab" style="flex:0 0 auto" ${lock?'disabled':''} onclick="mpCrBet('comeOdds',${i})">+ odds</button></div>`; });
+    mine.dcs.forEach((c,i)=>{ h+=`<div class="row" style="justify-content:space-between"><span>⚫ Don't Come on <b>${c.n}</b>: $${c.amt}${c.odds?` + lay $${c.odds}`:''}</span><button class="tab" style="flex:0 0 auto" ${lock?'disabled':''} onclick="mpCrBet('dcOdds',${i})">+ lay</button></div>`; }); h+=`</div>`; }
+  h+=chips([1,5,25,100,500],U.mpCrChip,'mpCrChip')+`<div class="small">On the felt: <b class="a">${money(mine.on)}</b> · Bankroll ${money(myP.bal)}</div>`;
+  h+=`<div class="grid2"><button class="btn big go" ${iShoot&&!lock?'':'disabled'} onclick="mpCrRoll()">🎲 ROLL 'EM${iShoot?'':'<small style="text-align:center">not your dice</small>'}</button><button class="btn c" ${lock?'disabled':''} onclick="mpCrDown()">↩ Take down bets<small>(not Pass/Come flats)</small></button></div>`;
+  const others=Object.entries(T.bets).filter(([id,x])=>id!==me&&x.on>0); if(others.length) h+=`<div class="small dim">On the felt: ${others.map(([id,x])=>`${mpName(id)} ${money(x.on)}`).join(' · ')}</div>`; return h; }
+function mpCrChip(v){ U.mpCrChip=v; mpRenderRoom(false); }
+function mpCrBet(k,n){ mpSend({t:'cr.bet',k,n,v:U.mpCrChip||5}); sfx.click(); }
+function mpCrRoll(){ mpSend({t:'cr.roll'}); say('mp_'+MP.me,pick(['Daddy needs rent!','COME ON BABY','No sevens no sevens','For Big Sal!']),1200); }
+function mpCrDown(){ mpSend({t:'cr.down'}); }
+function mpRlHtml(R){ const T=R.rl, me=MP.me, myP=mpP(me)||{bal:0}, mine=T.bets[me]||{}, lock=T.phase!=='bet'; U.mpRlChip=U.mpRlChip||5; let tot=0; for(const k in mine) tot+=mine[k];
+  const oth={}; for(const id in T.bets) if(id!==me) for(const k in T.bets[id]) oth[k]=(oth[k]||0)+T.bets[id][k];
+  const nb=(k,l,cls)=>`<button class="rn ${cls}" ${lock?'disabled':''} onclick="mpRlBet('${k}')">${l}${mine[k]?`<span class="amt">$${mine[k]}</span>`:''}${oth[k]?'<span class="oth">●</span>':''}</button>`;
+  const ready=T.ready.includes(me); let st;
+  if(T.phase==='bet') st=T.rem?`⏳ Wheel spins in <b data-cd="rl">${mpSec(T.rem)}</b> (or when every bettor taps Ready)`:'Drop chips to start the countdown.'; else if(T.phase==='spin') st='🎡 Spinning… NO MORE BETS.'; else st=`🏁 ${rlLabel(T.n)} ${rlColor(T.n)==='rd'?'RED':rlColor(T.n)==='bk'?'BLACK':'GREEN'}!`;
+  let h=`<h2>🎡 ROULETTE <span class="small dim">American 0/00 · max ${money(MPC.TMAX)}/spot</span></h2><div class="panel small">${st}<br>Recent: ${T.hist.map(n=>`<span class="badge ${rlColor(n)==='rd'?'l':rlColor(n)==='gr'?'w':'p'}">${rlLabel(n)}</span>`).join(' ')||'—'}</div>`;
+  if(T.phase==='done'&&Object.keys(T.res).length) h+=`<div class="panel small">${Object.entries(T.res).map(([id,x])=>`<div class="kv"><span>${mpName(id)}${id===me?' (you)':''}</span><b class="${x.net>0?'g':x.net<0?'r':''}">${x.net>0?'+':''}${money(x.net)}</b></div>`).join('')}</div>`;
+  h+=chips([1,5,25,100,500],U.mpRlChip,'mpRlChip')+`<div class="rlt" style="grid-template-columns:1fr 1fr;margin-bottom:3px">${nb('n0','0','gr')}${nb('n37','00','gr')}</div><div class="rlt">`;
+  for(let n=1;n<=36;n++) h+=nb('n'+n,n,rlColor(n));
+  h+=`</div><div class="rlt" style="margin-top:3px">${nb('low','1-18','bk')}${nb('even','EVEN','bk')}${nb('red','RED','rd')}${nb('black','BLK','bk')}${nb('odd','ODD','bk')}${nb('high','19-36','bk')}${nb('d1','1st 12','bk')}${nb('d2','2nd 12','bk')}${nb('d3','3rd 12','bk')}${nb('c1','Col 1','bk')}${nb('c2','Col 2','bk')}${nb('c3','Col 3','bk')}</div>`;
+  h+=`<div class="small">Your chips: <b class="a">${money(tot)}</b> · Bankroll ${money(myP.bal)} · <span class="b">●</span> = someone else is on it</div><div class="grid2"><button class="btn big go" ${tot&&!lock&&!ready?'':'disabled'} onclick="mpRlReady()">${ready?'✅ Ready':'✅ I\'m ready'}</button><button class="btn c" ${tot&&!lock?'':'disabled'} onclick="mpRlClear()">✖ Clear my chips</button></div>`;
+  const bet=Object.entries(T.bets); if(bet.length) h+=`<div class="small dim">${bet.map(([id,B])=>`${mpName(id)} ${money(Object.values(B).reduce((a,b)=>a+b,0))}${T.ready.includes(id)?' ✅':''}`).join(' · ')}</div>`; return h; }
+function mpRlChip(v){ U.mpRlChip=v; mpRenderRoom(false); }
+function mpRlBet(k){ mpSend({t:'rl.bet',k,v:U.mpRlChip||5}); sfx.click(); }
+function mpRlClear(){ mpSend({t:'rl.clear'}); }
+function mpRlReady(){ mpSend({t:'rl.ready'}); }
+function mpLegLabel(g,l){ const fl=v=>v>0?'+'+v:''+v; if(l.mkt==='sp') return `${g[l.side].ab} ${fl(l.side==='h'?g.L.spread:-g.L.spread)}`; if(l.mkt==='ml') return `${g[l.side].ab} ML`; return `${g.a.ab}/${g.h.ab} ${l.side==='o'?'Over':'Under'} ${g.L.total}`; }
+function mpLegOdds(g,l){ const L=g.L; return l.mkt==='sp'?(l.side==='h'?L.spH:L.spA):l.mkt==='ml'?(l.side==='h'?L.mlH:L.mlA):(l.side==='o'?L.tO:L.tU); }
+function mpSbHtml(R){ const T=R.sb, me=MP.me, myP=mpP(me)||{bal:0}; if(!T.day) return `<h2>📺 SPORTSBOOK</h2><div class="panel">📋 The host is printing tonight's slate…</div>`;
+  const games=T.games.filter(g=>/^[a-z0-9]+$/i.test(g.id)); U.mpSlip=(U.mpSlip||[]).filter(l=>T.phase==='bet'&&games.some(g=>g.id===l.gid)); U.mpSbStake=U.mpSbStake||10; const amHost=MP.role==='host', bet=T.phase==='bet';
+  let st; if(bet) st=`${T.rem?`⏳ Games start in <b data-cd="sb">${mpSec(T.rem)}</b> (or when everyone at the book is Ready).`:'Place bets — the clock starts with the first bet.'}`; else if(T.phase==='live') st=`🔴 LIVE — sweating together<div class="hpbar"><i style="width:${clamp(T.t*100,0,100)}%;background:linear-gradient(90deg,#3ad070,#ffc24a)"></i></div>`; else st=`🏁 FINAL. Next slate in <span data-cd="sb">${mpSec(T.rem)}</span>.`;
+  let h=`<h2>📺 SPORTSBOOK <span class="small dim">Room slate · day ${T.day} · DraftQueens lines · max ${money(MPC.TMAX)}</span></h2><div class="panel small">${st}</div>`;
+  if(bet) h+=`<div class="grid2"><button class="btn c" ${T.ready.includes(me)?'disabled':''} onclick="mpSend({t:'sb.ready'})">${T.ready.includes(me)?'✅ Ready':'✅ I\'m ready'}</button>${amHost?`<button class="btn c gold" ${T.bets.some(b=>b.status==='open')?'':'disabled'} onclick="mpSend({t:'sb.start'})">▶ Start games now</button>`:'<div></div>'}</div>`;
+  if(T.phase==='final'&&amHost) h+=`<button class="btn c gold" onclick="mpSend({t:'sb.next'})">📋 Next slate now</button>`;
+  const fl=v=>v>0?'+'+v:''+v;
+  for(const g of games){ const L=g.L, sc=g.fin||g.live; const ob=(mkt,side,top)=>{ const sel=U.mpSlip.some(l=>l.gid===g.id&&l.mkt===mkt&&l.side===side); return `<button class="ob ${sel?'sel':''}" ${bet?'':'disabled'} onclick="mpSbLeg('${g.id}','${mkt}','${side}')">${top}<span class="o">${fmtAm(mpLegOdds(g,{mkt,side}))}</span></button>`; };
+    h+=`<div class="game"><div class="gh"><span>${(SPORTS[g.sp]||{}).icon||''} ${esc(g.slot)}</span><span>${sc?`<b class="${(sc.fin||g.fin)?'a':'g'}">${esc(g.a.ab)} ${sc.sa} – ${sc.sh} ${esc(g.h.ab)}${(g.fin||sc.fin)?' F'+(sc.ot?'/'+esc(sc.ot):''):' ●'}</b>`:''}</span></div><div class="tm" style="grid-template-columns:1.25fr 1fr 1fr 1fr"><div class="hdr"></div><div class="hdr">Spread</div><div class="hdr">Total</div><div class="hdr">ML</div>
+      <div class="nm"><b>${esc(g.a.ab)}</b><small>${esc(g.a.nm)}</small></div>${ob('sp','a',fl(-L.spread))}${ob('tot','o','O '+L.total)}${ob('ml','a','')}
+      <div class="nm"><b>${esc(g.h.ab)}</b><small>${esc(g.h.nm)}</small></div>${ob('sp','h',fl(L.spread))}${ob('tot','u','U '+L.total)}${ob('ml','h','')}</div></div>`; }
+  if(U.mpSlip.length){ const legs=U.mpSlip.map(l=>{ const g=games.find(x=>x.id===l.gid); return {g,l,odds:mpLegOdds(g,l)}; }); const dec=legs.reduce((d,x)=>d*amToDec(x.odds),1), odds=legs.length===1?legs[0].odds:decToAm(dec), st=U.mpSbStake;
+    h+=`<div class="slip"><b>🎟️ ${legs.length===1?'Single':legs.length+'-leg parlay'} ${fmtAm(odds)}</b>${legs.map(x=>`<div class="small">• ${esc(mpLegLabel(x.g,x.l))} <span class="a">${fmtAm(x.odds)}</span></div>`).join('')}${chips([5,10,25,50,100,250,500],st,'mpSbStakeSet')}
+      <div class="grid2"><button class="btn go c" ${st<=myP.bal?'':'disabled'} onclick="mpSbPlace()">PLACE ${money(st)} → win ${money(r2(st*(dec-1)))}</button><button class="btn c" onclick="U.mpSlip=[];mpRenderRoom(false)">✖ Clear slip</button></div></div>`; }
+  h+=`<div class="log" style="max-height:170px">${T.ticker.slice().reverse().map(x=>`<div class="${x.cls==='big'?'big':x.cls==='roast'?'roast':''}">${esc(x.txt)}</div>`).join('')}</div>`;
+  h+=`<h3>🧾 Everybody's betslips</h3>`; if(!T.bets.length) h+=`<div class="small dim">No bets yet. Somebody be brave.</div>`;
+  for(const b of T.bets){ const p=mpP(b.pid); const legs=b.legs.map((l,i)=>{ const g=games.find(x=>x.id===l.gid); let s=b.res?b.res[i]:''; if(!s&&g&&g.live){ const v=legValue(l,g.live.sa,g.live.sh,{}); s=v>0?'W':v===0?'P':'L'; } const ic={w:'✅',l:'❌',p:'↩️',W:'🟢',L:'🔴',P:'🟡'}[s]||'⏳'; return `<div class="small">${ic} ${esc(l.label)} <span class="a">${fmtAm(l.odds)}</span></div>`; }).join('');
+    const badge=b.status==='open'?'<span class="badge o">OPEN</span>':b.status==='won'?`<span class="badge w">WON +${money(b.net)}</span>`:b.status==='lost'?`<span class="badge l">LOST ${money(b.net)}</span>`:b.status==='void'?'<span class="badge p">VOID</span>':'<span class="badge p">PUSH</span>';
+    h+=`<div class="panel ${b.pid===me?'mpmine':''}"><div class="row" style="justify-content:space-between"><span>${mpDot(p?p.color:'#999')}<b>${esc(b.name)}</b> · ${b.legs.length>1?b.legs.length+'-leg':'single'} ${fmtAm(b.odds)} · ${money(b.stake)}</span>${badge}</div>${legs}</div>`; }
+  const ss=Object.entries(T.stats); if(ss.length) h+=`<h3>📈 Book leaderboard</h3><div class="panel">${ss.sort((a,b)=>b[1].net-a[1].net).map(([id,s])=>`<div class="kv"><span>${mpName(id)} <span class="dim small">${s.w}-${s.l}-${s.p}</span></span><b class="${s.net>=0?'g':'r'}">${s.net>=0?'+':''}${money(s.net)}</b></div>`).join('')}</div>`;
+  return h; }
+function mpSbLeg(gid,mkt,side){ U.mpSlip=U.mpSlip||[]; const i=U.mpSlip.findIndex(l=>l.gid===gid); if(i>=0&&U.mpSlip[i].mkt===mkt&&U.mpSlip[i].side===side) U.mpSlip.splice(i,1); else { if(i>=0) U.mpSlip.splice(i,1); if(U.mpSlip.length>=4) toast('Max 4 legs. This isn\'t a lottery. (It is.)'); else U.mpSlip.push({gid,mkt,side}); } sfx.click(); mpRenderRoom(false); }
+function mpSbStakeSet(v){ U.mpSbStake=v; mpRenderRoom(false); }
+function mpSbPlace(){ if(!U.mpSlip||!U.mpSlip.length) return; mpSend({t:'sb.bet',legs:U.mpSlip.map(l=>({gid:l.gid,mkt:l.mkt,side:l.side})),stake:U.mpSbStake||10}); U.mpSlip=[]; sfx.coin(); mpRenderRoom(false); }
 // ===================== BACK ALLEY: POKER + MONTE =====================
 // ---------- poker hand evaluation (r: 2..14) ----------
 const PR=['','','2','3','4','5','6','7','8','9','10','J','Q','K','A'];
@@ -1588,13 +2163,14 @@ function evChoose(i){ const {ev}=U.ev; const c=ev.choices[i]; if(c.req&&!c.req()
 // ===================== UI SHELL =====================
 function setMain(h){ const m=document.getElementById('main'); m.innerHTML=h; }
 function bar(v,max,col){ return `<div class="bar"><i style="width:${clamp(v/max*100,0,100)}%;background:${col}"></i></div>`; }
-function renderTop(){ const t=document.getElementById('top'); if(!t) return; if(!S||U.screen==='title'||U.screen==='create'){ t.innerHTML=`<div class="r1"><b>DEGEN: The Road to Whale</b><span class="dim">a crude gambling RPG</span></div>`; return; }
+function renderTop(){ const t=document.getElementById('top'); if(!t) return; if(!S||U.screen==='title'||U.screen==='create'||(U.screen==='mp'&&MP.st!=='in'&&MP.st!=='reconnecting')){ t.innerHTML=`<div class="r1"><b>DEGEN: The Road to Whale</b><span class="dim">a crude gambling RPG</span></div>`; return; }
   const dl=S.whaleMode?`🐋 Goal ${money(WHALE_GOAL)} by day ${WHALE_DAY}`:`🦈 Debt <span class="debt">${money(S.debt)}</span>`;
   const due=S.whaleMode?`Tax Sun: ${money(dueLeft())}`:`Due ${dueDay()>=fdy()?'<b class="r">FINAL</b>':DOW[(dueDay()-1)%7]} d${dueDay()}: <b class="${dueLeft()>S.cash?'r':'g'}">${money(dueLeft())}</b>`;
   t.innerHTML=`<div class="r1"><span>📅 <b>Day ${S.day}</b> ${DOW[(S.day-1)%7]}</span><span class="cash">💵 ${money(S.cash)}</span><span>${dl}</span><span>${due}</span><span>${'⚡'.repeat(S.energy)}<span class="dim">${'·'.repeat(Math.max(0,energyMax()-S.energy))}</span></span><span class="dim small">Lv${S.lvl}</span></div>
-  <div class="meters"><div class="meter">😤 Tilt ${S.tilt}${bar(S.tilt,100,S.tilt>=85?'#ff3030':S.tilt>=60?'#ff9030':'#d0a030')}</div><div class="meter">❤️ HP ${S.hp}/${maxHp()}${bar(S.hp,maxHp(),'#3ad070')}</div><div class="meter">🍺 Buzz ${S.buzz}${bar(S.buzz,100,S.buzz>75?'#c050ff':'#e0b040')}</div></div>`; }
+  <div class="meters"><div class="meter">😤 Tilt ${S.tilt}${bar(S.tilt,100,S.tilt>=85?'#ff3030':S.tilt>=60?'#ff9030':'#d0a030')}</div><div class="meter">❤️ HP ${S.hp}/${maxHp()}${bar(S.hp,maxHp(),'#3ad070')}</div><div class="meter">🍺 Buzz ${S.buzz}${bar(S.buzz,100,S.buzz>75?'#c050ff':'#e0b040')}</div></div>${U.screen==='mp'?mpTopRow():''}`; }
 function go(s){ U.screen=s; window.scrollTo(0,0); render(); }
-function render(){ renderTop(); const s=U.screen; try{
+function render(){ const s=U.screen; mpCanvasTall(s==='mp'); renderTop(); try{
+  if(s==='mp') return renderMP(true);
   if(s==='title') return renderTitle(); if(s==='create') return renderCreate(); if(s==='hub') return renderHub(); if(s==='book'){ scene('book',[youActor({x:.5,pose:'phone',held:'phone'})],{caption:'THE SPORTSBOOK'}); return renderBook(); }
   if(s==='live') return renderLive(); if(s==='casino') return renderCasino(); if(s==='alley') return renderAlley(); if(s==='fight') return renderFight(); if(s==='event') return renderEvent();
   if(s==='char') return renderChar(); if(s==='shop') return renderShop(); if(s==='sal') return renderSal(); if(s==='jobs') return renderJobs(); if(s==='bar') return renderBar(); if(s==='ach') return renderAch(); if(s==='morning') return renderMorning(); if(s==='ending') return renderEnding(); if(s==='help') return renderHelp(); if(s==='final') return renderFinal();
@@ -1611,6 +2187,7 @@ function renderTitle(){ scene('title',[{id:'a',x:.2,pose:'celebrate',hat:'cap',h
   setMain(`<div class="title"><pre class="ascii">${ASCII_TITLE}</pre><div class="t1">THE ROAD TO WHALE</div><div class="t2">A crude stick-figure gambling RPG. You have $50. You owe Big Sal $10,000. You have 4 weeks.</div></div>
   ${live?`<button class="btn big go" onclick="continueGame()">▶ CONTINUE<small style="text-align:center">${esc(sv.name)} · Day ${sv.day} · ${money(sv.cash)} cash · ${money(sv.debt)} debt</small></button>`:''}
   <button class="btn big ${live?'':'go'}" onclick="go('create')">🆕 NEW RUN</button>
+  <button class="btn big gold" data-nomk="1" onclick="mpOpen('title')">🌐 ONLINE CASINO<small style="text-align:center">Host or join a table with friends: blackjack, craps, roulette, sportsbook</small></button>
   <div class="grid2"><button class="btn c" onclick="go('help')">📖 How to play</button><button class="btn c" onclick="U.achMeta=true;go('ach')">🏆 Achievements (${Object.keys(META.ach).length}/${Object.keys(ACHS).length})</button></div>
   <button class="btn c" onclick="SND.on=!SND.on;renderTitle()">🔊 Sound: ${SND.on?'ON':'OFF'}</button>
   <div class="small dim" style="text-align:center;margin-top:8px">Runs: ${META.runs} · Best score: ${META.best.toLocaleString()} · Endings found: ${Object.keys(META.endings).length}/6<br>All teams, books, people and gambling are fictional. Please don't actually do this.</div>`); }
@@ -1666,6 +2243,7 @@ function renderHub(){
    <button class="btn" ${E1} onclick="go('jobs')">💼 Side Hustle<small>⚡1 · Safe-ish money</small></button>
    <button class="btn" ${E1} onclick="enterBar()">🍺 Hangover Tavern<small>⚡1 · Drinks, karaoke, trouble</small></button>
    <button class="btn" ${E1} onclick="touchGrass()">🌳 Touch Grass<small>⚡1 · −30 tilt, +HP</small></button>
+   <button class="btn gold" data-nomk="1" onclick="mpOpen('hub')">🌐 Online Casino<small>⚡1 · Play friends with your real bankroll</small></button>
    <button class="btn" onclick="go('sal')">🦈 Big Sal's Deli<small>Pay debt / borrow more</small></button>
    <button class="btn" onclick="go('shop')">⛽ Speedy-Mart & Pawn<small>Buy junk / pawn junk</small></button>
    <button class="btn" onclick="go('char')">🧍 Character<small>Stats, perks, inventory</small></button>
@@ -1794,7 +2372,9 @@ function renderHelp(){ scene('title',[{id:'a',x:.5,pose:'point',hat:'cap',hatc:'
   <button class="btn c" onclick="go(S&&!S.ended?'hub':'title')">⬅ Back</button>`); }
 // ---------- boot ----------
 function boot(){ scInit(); window.addEventListener('error',e=>{ console.error('ERR',e.message); }); document.addEventListener('pointerdown',()=>actx(),{once:true});
-  if(location.hash.includes('nosound')) SND.on=false; go('title'); if(window.__autoBoot) window.__autoBoot(); }
+  if(location.hash.includes('nosound')) SND.on=false; go('title');
+  let room=null; try{ room=new URLSearchParams(location.search).get('room'); }catch(e){} if(room) mpAutoJoin(room);
+  if(window.__autoBoot) window.__autoBoot(); }
 // ===================== TEST HOOKS (only active with #monkey / #sim in URL) =====================
 window.__errs=[]; (function(){ const ce=console.error; console.error=function(){ window.__errs.push([...arguments].map(String).join(' ')); ce.apply(console,arguments); }; window.addEventListener('error',e=>window.__errs.push('onerror: '+e.message)); })();
 function monkey(opts){ opts=opts||{}; window.__mute=true; const M=window.__mk={clicks:0,daysPlayed:0,runs:0,endings:{},stuck:[],lastClickable:Date.now(),screens:{},maxDay:0,done:false,log:[]}; SND.on=false; U.silent=!!opts.silent;
@@ -1802,7 +2382,7 @@ function monkey(opts){ opts=opts||{}; window.__mute=true; const M=window.__mk={c
   const iv=setInterval(()=>{ try{
     if(M.done){ clearInterval(iv); return; }
     if(U.live&&!U.live.done&&rnd()<.04) U.live.speed=4;
-    const els=[...document.querySelectorAll('#main [onclick]')].filter(e=>!e.disabled&&e.offsetParent!==null);
+    const els=[...document.querySelectorAll('#main [onclick]')].filter(e=>!e.disabled&&e.offsetParent!==null&&!e.closest('[data-nomk]'));
     M.screens[U.screen]=(M.screens[U.screen]||0)+1;
     if(S&&S.day!==lastDay){ if(S.day>lastDay) M.daysPlayed+=lastDay?S.day-lastDay:0; lastDay=S.day; M.maxDay=Math.max(M.maxDay,S.day); }
     if(M.daysPlayed>=maxDays){ M.done=true; return; }
