@@ -121,6 +121,7 @@ pre.ascii{color:var(--green);font-size:11px;line-height:1.1;overflow-x:auto;marg
 @media (min-width:640px){.scene.tall{height:300px}}
 .mpcode{font-size:30px;font-weight:900;color:var(--amber);letter-spacing:3px;margin:4px 0;font-family:ui-monospace,Menlo,monospace}
 .mpdot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:5px;border:1px solid #0008;vertical-align:middle}
+.mploanbtn{margin:2px 0 0 6px;padding:3px 9px;font-size:12px;min-width:0;width:auto}.mploan h3{margin-top:0}
 .mpsw{width:34px;height:34px;border-radius:50%;border:3px solid transparent;cursor:pointer;margin:2px}
 .mpsw.on{border-color:#fff;box-shadow:0 0 0 2px var(--amber)}
 .mpseats{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin:5px 0}
@@ -1351,9 +1352,11 @@ function crResolve(d1,d2){ const C=S.craps; const pt=C.point; const res=crapsRol
 // client applies to its OWN single-player save (the bankroll lives in the save, the host tracks a mirror).
 const MPC = { VER:1, MAXP:5, SEATS:5, BJ_MIN:5, BJ_MAX:1000, TMAX:500, SB_MAXBETS:12,
   BET_MS:15000, TURN_MS:20000, DEAL_MS:650, DONE_MS:5000, RL_MS:20000, RL_SPIN_MS:3200, RL_DONE_MS:4500,
-  CR_MS:25000, CR_ROLL_MS:700, SB_MS:90000, SB_LIVE_MS:45000, SB_FINAL_MS:25000, DC_MS:60000, MAXCASH:1e8, CHATLEN:120 };
+  CR_MS:25000, CR_ROLL_MS:700, SB_MS:90000, SB_LIVE_MS:45000, SB_FINAL_MS:25000, DC_MS:60000, MAXCASH:1e8, CHATLEN:120, LOANS:[250,500,1000,2500], LOAN_GAP:2000 };
 const MP_COLORS=['#f2efe4','#ff6b6b','#6fc3ff','#5dff8a','#ffc24a','#ff7ad9','#b78bff','#ff9a3c','#3ee6d0'];
 const MP_TALK=["Hit on 16, you coward","Dealer's rigged","Sal is gonna kill me","LET IT RIDE","That was MY card","Bro is down BAD","Easy money 💰","I'm calling my mom","Nice hit, nerd","Who touched the dice?!","Seven out? GET OUT.","Drinks on me (lie)","Pray for me 🙏","gg go next","Sir, this is a Wendy's"];
+// in-session loans: same menu/terms as Big Sal's deli (borrow()/loanCap() in 30_core.js); announced in chat
+const MP_LOAN_TALK=["🥪 {n} just borrowed {a} from Big Sal's cousin at the deli.","🦈 {n} took {a} from Big Sal. Kneecaps are the collateral.","💸 {n} re-upped {a} on Sal's tab. Mom's gonna hear about this.","🥪 {n} went for a pastrami on rye and came back with {a} and a pinky-finger clause.","📞 {n} called Sal for {a}. Sal said \"last time\" for the 9th time.","🧾 {n} signed for {a} on a deli napkin. Legally binding in Big Sal's courtroom."];
 const MP_EMOJI=['😂','💀','🤡','🔥','🐋','💩','🍺','😭'];
 const MP_TABLES=['lobby','bj','cr','rl','sb'];
 const RL_KEYS=new Set(['red','black','odd','even','low','high','d1','d2','d3','c1','c2','c3']);
@@ -1379,7 +1382,7 @@ function mpHostCreate(io){ // io: {send(cid,msg), now(), room, sess}
   const dirty=()=>{ H.dirty=true; };
   const rej=(p,why)=>{ if(p) io.send(p.cid,{t:'rej',why}); return false; };
   function sys(txt){ H.chat.push({i:++H.chatN,sys:1,txt:String(txt).slice(0,200)}); if(H.chat.length>60) H.chat.splice(0,H.chat.length-60); dirty(); }
-  function led(p,w,d,out,why,net){ if(!p) return; d=r2(d); p.seq++; const e={seq:p.seq,w,d,out:r2(Math.max(0,out)),why:String(why||'').slice(0,90)}; if(net!=null) e.net=r2(net);
+  function led(p,w,d,out,why,net,x){ if(!p) return; d=r2(d); p.seq++; const e={seq:p.seq,w,d,out:r2(Math.max(0,out)),why:String(why||'').slice(0,90)}; if(net!=null) e.net=r2(net); if(x) Object.assign(e,x);
     p.bal=r2(p.bal+d); p.led.push(e); if(p.led.length>400) p.led.splice(0,p.led.length-400); if(H.P[p.cid]&&p.conn) io.send(p.cid,{t:'led',e:[e]}); dirty(); return e; }
   const atTable=tb=>H.order.filter(c=>H.P[c].table===tb);
   // ---------------- join / leave ----------------
@@ -1406,6 +1409,7 @@ function mpHostCreate(io){ // io: {send(cid,msg), now(), room, sess}
   H.msg=function(cid,m){ const p=H.P[cid]; if(!p||!m||typeof m!=='object'||H.closed) return; try{ switch(m.t){
     case 'ack': { const a=mpInt(m.seq,0,1e9); if(a!=null&&a<=p.seq){ p.acked=Math.max(p.acked,a); p.led=p.led.filter(e=>e.seq>p.acked); } return; }
     case 'go': return go(p,m.table);
+    case 'loan': return loan(p,m);
     case 'chat': return chat(p,m);
     case 'bye': remove(cid,'left the room',true); io.send(cid,{t:'byeok'}); return;
     case 'bj.bet': return bjBet(p,mpInt(m.amt,0,MPC.BJ_MAX));
@@ -1426,6 +1430,20 @@ function mpHostCreate(io){ // io: {send(cid,msg), now(), room, sess}
   function chat(p,m){ const t=now(); if(t-p.lastChat<700){ if(++p.chatBurst>4) return rej(p,'Easy on the trash talk. (rate limit)'); } else p.chatBurst=0; p.lastChat=t;
     let txt, em=false; if(m.em!=null){ const i=mpInt(m.em,0,200); if(i==null) return; txt=i>=100?MP_EMOJI[i-100]:MP_TALK[i]; if(!txt) return; em=true; } else { txt=mpCleanText(m.txt,MPC.CHATLEN); if(!txt) return; }
     H.chat.push({i:++H.chatN,id:p.id,name:p.name,color:p.color,txt,em}); if(H.chat.length>60) H.chat.splice(0,H.chat.length-60); dirty(); }
+  // ---------------- LOANS (re-up without leaving) ----------------
+  // The client reports its save's lvl/debt; the host re-runs Sal's loanCap() rule on them, and never lets the
+  // effective debt go below what this session already lent (debt can't be paid down while online), so a
+  // client can't lie its way past the single-player credit limit. No loans while your own money is mid-hand.
+  function loanBusy(c){ return (bj.hands[c]&&(bj.phase==='play'||bj.phase==='dealer'))||(rl.phase==='spin'&&!!rl.bets[c]); }
+  function loan(p,m){ const amt=mpInt(m.amt,1,1e6); if(amt==null||!MPC.LOANS.includes(amt)) return rej(p,'Sal only does $250, $500, $1k or $2.5k.');
+    if(m.whale) return rej(p,"Sal doesn't lend to his business partners.");
+    if(loanBusy(p.cid)) return rej(p,'✋ No re-upping mid-hand. Finish the hand first.');
+    const t=now(); if(t-(p.lastLoan||-1e12)<MPC.LOAN_GAP) return rej(p,'Slow down, Sal is still counting the last stack.');
+    const lvl=mpInt(m.lvl,1,99)||1, debt=Math.max(mpInt(m.debt,0,1e9)||0,p.minDebt||0), cap=Math.max(0,2500+lvl*500-Math.max(0,debt-10000));
+    if(amt>cap) return rej(p,cap>=MPC.LOANS[0]?`Sal says your credit's good for ${money(cap)}, tops.`:"Sal says you're tapped. No more credit.");
+    p.lastLoan=t; p.minDebt=debt+amt; p.loaned=r2((p.loaned||0)+amt); p.loanN=(p.loanN||0)+1; p.start=r2(p.start+amt); // loans don't count as session winnings
+    led(p,'loan'+p.loanN,amt,0,`Loan from Big Sal: ${money(amt)}`,null,{loan:amt});
+    sys(pick(MP_LOAN_TALK).replace('{n}',p.name).replace('{a}',money(amt))); }
   const sumObj=o=>{ let t=0; for(const k in o) t+=o[k]; return r2(t); };
   // ---------------- BLACKJACK ----------------
   function draw(){ if(H.rig.cards&&H.rig.cards.length) return H.rig.cards.shift(); if(!bj.shoe.cards.length) bj.shoe=newShoe(); return bj.shoe.cards.pop(); }
@@ -1550,7 +1568,7 @@ function mpHostCreate(io){ // io: {send(cid,msg), now(), room, sess}
     H.closed=true; for(const c of H.order) if(H.P[c].conn) io.send(c,{t:'close',why:why||'The host closed the table.'}); };
   // ---------------- public snapshot (no shoe, no hole card, no secret ids) ----------------
   H.view=function(){ const t=now(), rem=d=>d?Math.max(0,d-t):0; const byId=o=>{ const r={}; for(const c in o){ const id=idOf(c); if(id) r[id]=o[c]; } return r; };
-    const players=H.order.map(c=>{ const p=H.P[c]; return {id:p.id,name:p.name,color:p.color,table:p.table,bal:p.bal,net:r2(p.bal-p.start),conn:p.conn,host:p.isHost}; });
+    const players=H.order.map(c=>{ const p=H.P[c]; return {id:p.id,name:p.name,color:p.color,table:p.table,bal:p.bal,net:r2(p.bal-p.start),conn:p.conn,host:p.isHost,loaned:p.loaned||0}; });
     const hands={}; for(const c of bj.order){ const X=bj.hands[c], id=idOf(c); if(id) hands[id]={hs:X.hs.map(h=>({cards:h.cards,bet:h.bet,dbl:h.dbl,split:h.split,done:h.done,res:h.res||null,ret:h.ret})),act:X.act,done:X.done,net:X.net}; }
     const crb={}; for(const c in cr.C){ const id=idOf(c), C=cr.C[c]; if(id) crb[id]={bets:C.bets,comes:C.comes,dcs:C.dcs,on:crapsTotalOnTable(C)}; }
     return { v:MPC.VER, room:H.room, players, chat:H.chat.slice(-30),
@@ -1573,6 +1591,11 @@ function mpStoreSet(patch){ const o=Object.assign(mpStore(),patch); try{ localSt
 function mpNormCode(s){ s=String(s||'').toUpperCase(); const m=s.match(/ROOM=([A-Z0-9-]+)/); if(m) s=m[1]; s=s.replace(/[^A-Z0-9]/g,''); if(s.startsWith('DEGEN')) s=s.slice(5); return /^[A-Z0-9]{4}$/.test(s)?s:''; }
 function mpLink(code){ return location.origin+location.pathname+'?room=DEGEN-'+(code||MP.code); }
 let _peerLoad=null;
+// ICE servers. NOTE: PeerJS's own default TURN hosts (eu-0/us-0.turn.peerjs.com) no longer resolve in DNS, and
+// no reputable no-signup public TURN exists right now, so strict/corporate networks can't be relayed. To add one,
+// paste its entry into MP_TURN, e.g. {urls:['turns:relay.example.com:443?transport=tcp'],username:'u',credential:'p'}.
+const MP_TURN=[];
+function mpPeerOpts(){ return {debug:0,config:{iceServers:[{urls:'stun:stun.l.google.com:19302'},{urls:'stun:stun.cloudflare.com:3478'},...MP_TURN]}}; }
 function mpLoadPeer(){ if(window.Peer) return Promise.resolve(); if(_peerLoad) return _peerLoad;
   const srcs=['https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js','https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js'];
   _peerLoad=new Promise((res,rej)=>{ let i=0; const next=()=>{ if(i>=srcs.length){ _peerLoad=null; rej(new Error('Could not load the multiplayer library. Are you offline?')); return; }
@@ -1587,10 +1610,19 @@ function mpOpenTotal(){ if(!S||!S.mp||!S.mp.open) return 0; let t=0; for(const w
 function mpVoidOpen(why){ const t=mpOpenTotal(); if(S&&S.mp){ if(t>0){ addCash(t); MP.sessNet=r2(MP.sessNet+t); toast(`↩ ${money(t)} of open online bets refunded (${esc(why)}).`); } S.mp.open={}; save(); } return t; }
 function mpBindSess(sess){ if(!S) return; S.mp=S.mp||{}; if(S.mp.sess!==sess){ if(mpOpenTotal()>0) mpVoidOpen('old table is gone'); S.mp={sess,room:MP.code,lastSeq:0,open:{}}; } else S.mp.room=MP.code; save(); }
 function mpApply(list){ if(!S||!S.mp||!Array.isArray(list)) return; const es=list.filter(e=>e&&typeof e.seq==='number').sort((a,b)=>a.seq-b.seq); let any=false;
-  for(const e of es){ if(e.seq<=S.mp.lastSeq) continue; S.mp.lastSeq=e.seq; any=true; const d=Number(e.d); if(Number.isFinite(d)&&d!==0){ addCash(d); MP.sessNet=r2(MP.sessNet+d); }
+  for(const e of es){ if(e.seq<=S.mp.lastSeq) continue; S.mp.lastSeq=e.seq; any=true; const d=Number(e.d); if(e.loan!=null&&d>0&&Number(e.loan)===d) mpLoanApply(d); else if(Number.isFinite(d)&&d!==0){ addCash(d); MP.sessNet=r2(MP.sessNet+d); }
     const w=String(e.w||'').slice(0,20), out=Number(e.out)||0; if(out>0) S.mp.open[w]=r2(out); else delete S.mp.open[w];
     if(e.net!=null&&Number.isFinite(Number(e.net))) mpResultFx(Number(e.net),String(e.why||'')); }
   if(any){ save(); renderTop(); } mpSend({t:'ack',seq:S.mp.lastSeq}); }
+// A loan the host approved: exactly Sal's deli borrow() (fee 10% +5% per prior loan, debt += amt+fee, loans++ -> higher weekly rate), +5 tilt like the deli.
+function mpLoanApply(amt){ const fee=borrow(amt); addTilt(5); U.mpLoanPend=0; U.mpLoan=false; MP.loaned=r2((MP.loaned||0)+amt); sfx.coin(); fx.money(10);
+  toast(`🥪 Sal's cousin slides you ${money(amt)} under a pastrami. Fee ${money(fee)}. You now owe ${money(S.debt)}.`); setTimeout(renderMPSafe,0); }
+function mpBorrow(v){ if(MP.st!=='in'||!S) return; v=Number(v); if(!MPC.LOANS.includes(v)) return;
+  if(S.whaleMode) return toast("🐋 Sal doesn't lend to his business partners.");
+  if(v>loanCap()) return toast(`🦈 Sal says your credit's good for ${money(loanCap())}, tops.`);
+  if(mpMyHandBusy()) return toast('✋ No re-upping mid-hand. Finish the hand first.');
+  if(U.mpLoanPend) return; U.mpLoanPend=v; mpSend({t:'loan',amt:v,lvl:S.lvl,debt:S.debt,loans:S.loans,whale:!!S.whaleMode}); renderMPSafe();
+  setTimeout(()=>{ if(U.mpLoanPend===v){ U.mpLoanPend=0; renderMPSafe(); } },8000); }
 function mpResultFx(net,why){ if(net>0){ addTilt(-Math.min(6,2+net/Math.max(20,S.cash)*10)); gainXp(2+Math.min(25,net/40)); sfx.win(); fx.text('+'+money(net),'#5dff8a'); if(/BLACKJACK/.test(why)) unlock('bj'); if(net>=500) fx.money(20); }
   else if(net<0){ addTilt(Math.min(10,2+(-net)/Math.max(20,S.cash)*20)); gainXp(1); sfx.lose(); fx.text(money(net),'#ff5d5d'); } }
 // ---------- sending ----------
@@ -1602,7 +1634,7 @@ function mpHostSend(cid,msg){ if(cid===mpStore().cid) return mpLocalDeliver(msg)
 // ---------- HOST ----------
 async function mpHostStart(){ if(MP.st!=='idle'&&MP.st!=='error') return; mpEnsureSave(); MP.err=''; MP.st='loading'; MP.role='host'; render();
   try{ await mpLoadPeer(); }catch(e){ return mpFail(e.message); }
-  let tries=0; const attempt=()=>{ const code=mpRid(4,MP_ALPH); const peer=new Peer(MP_PREFIX+code.toLowerCase(),{debug:0}); MP.peer=peer;
+  let tries=0; const attempt=()=>{ const code=mpRid(4,MP_ALPH); const peer=new Peer(MP_PREFIX+code.toLowerCase(),mpPeerOpts()); MP.peer=peer;
     peer.on('open',()=>{ if(MP.peer!==peer) return; MP.code=code; MP.sess=mpRid(10); MP.H=mpHostCreate({send:mpHostSend,now:()=>Date.now(),room:code,sess:MP.sess});
       MP.tick=setInterval(()=>{ if(MP.H){ MP.H.tick(); MP.H.flush(); } },250);
       const st=mpStore(); const r=MP.H.join(st.cid,{key:st.key,name:st.name,color:st.color,cash:S.cash,sess:S.mp.sess,lastSeq:S.mp.lastSeq},true); if(r&&r.err) return mpFail(r.err); mpFlushSoon(); });
@@ -1629,7 +1661,7 @@ function mpHostConn(conn){ let cid=null; conn.on('data',d=>{ if(!MP.H||!d||typeo
 async function mpJoinStart(code){ if(MP.st!=='idle'&&MP.st!=='error') return; code=mpNormCode(code); if(!code){ MP.err='That room code looks wrong. It should look like DEGEN-AB12.'; MP.st='error'; render(); return; }
   mpEnsureSave(); MP.err=''; MP.code=code; MP.role='client'; MP.st='connecting'; MP.retry=0; render();
   try{ await mpLoadPeer(); }catch(e){ return mpFail(e.message); }
-  const peer=new Peer({debug:0}); MP.peer=peer;
+  const peer=new Peer(mpPeerOpts()); MP.peer=peer;
   peer.on('open',()=>{ if(MP.peer===peer) mpConnect(); });
   peer.on('disconnected',()=>{ if(MP.peer===peer&&!MP.leaving&&!peer.destroyed) setTimeout(()=>{ try{ if(peer.disconnected&&!peer.destroyed) peer.reconnect(); }catch(e){} },1500); });
   peer.on('error',e=>{ if(MP.peer!==peer) return; const ty=e&&e.type;
@@ -1642,7 +1674,7 @@ function mpConnect(){ if(!MP.peer||MP.peer.destroyed) return; const conn=MP.peer
   conn.on('data',d=>{ if(MP.conn===conn) mpRecv(d); });
   conn.on('close',()=>{ clearTimeout(to); if(MP.conn===conn&&opened) mpConnLost(); });
   conn.on('error',()=>{}); }
-function mpConnFail(){ if(MP.st==='connecting') return mpFail(`Couldn't connect to DEGEN-${MP.code}. WebRTC may be blocked on this network (strict NAT / no TURN), or the host's tab is asleep.`); if(MP.st==='reconnecting') mpRetry(); }
+function mpConnFail(){ if(MP.st==='connecting') return mpFail(`Couldn't connect to DEGEN-${MP.code}. This network is probably blocking peer-to-peer connections (common on office/school Wi-Fi and VPNs), or the host's tab went to sleep. Try switching one of you to a phone hotspot or home Wi-Fi (and turn off any VPN), make sure the host's tab is open, then join again.`); if(MP.st==='reconnecting') mpRetry(); }
 function mpConnLost(){ if(MP.leaving||MP.st==='closed'||MP.st==='idle') return; MP.st='reconnecting'; renderMPSafe(); mpRetry(); }
 function mpRetry(){ if(MP.st!=='reconnecting') return; if(++MP.retry>8) return mpClosed('Lost connection to the table. If the host is still there, rejoin with the code to collect anything owed to you.',false);
   setTimeout(()=>{ if(MP.st!=='reconnecting') return; try{ if(MP.peer.disconnected&&!MP.peer.destroyed) MP.peer.reconnect(); }catch(e){} mpConnect(); }, 2500); }
@@ -1655,7 +1687,7 @@ function mpRecv(d){ if(!d||typeof d!=='object') return;
     case 'deny': return mpFail(String(d.why||'Denied.'));
     case 'st': if(!d.s||typeof d.s!=='object') return; MP.prevR=MP.R; MP.R=d.s; MP.rAt=Date.now(); return mpOnState();
     case 'led': return mpApply(d.e);
-    case 'rej': toast('🚫 '+esc(String(d.why||'Nope.')).slice(0,160)); return;
+    case 'rej': if(U.mpLoanPend){ U.mpLoanPend=0; renderMPSafe(); } toast('🚫 '+esc(String(d.why||'Nope.')).slice(0,160)); return;
     case 'close': return mpClosed(String(d.why||'The host closed the table.'),true);
     case 'byeok': return mpFinishLeave();
   } }
@@ -1693,7 +1725,7 @@ function mpCanvasTall(on){ const cv=SC.cv; if(!cv) return; if(cv.classList.conta
 function mpOpen(from){ U.mpFrom=from||'title'; if(MP.st==='error'){ MP.st='idle'; } MP.err=''; go('mp'); }
 function mpAutoJoin(raw){ const code=mpNormCode(raw); U.mpFrom='link'; U.mpCode=code; const st=mpStore(); if(code&&(st.name||load())){ if(!st.name){ const sv=load(); mpStoreSet({name:sv.name,color:st.color||MP_COLORS[1+Math.floor(Math.random()*(MP_COLORS.length-1))]}); } go('mp'); mpJoinStart(code); } else go('mp'); }
 function mpTopRow(){ if(!MP.code||(MP.st!=='in'&&MP.st!=='reconnecting')) return ''; const open=mpOpenTotal(), n=MP.sessNet;
-  return `<div class="small" style="margin-top:3px">🌐 <b class="b">DEGEN-${esc(MP.code)}</b> · ${MP.role==='host'?'👑 hosting':'guest'} · session <b class="${n>=0?'g':'r'}">${n>=0?'+':''}${money(n)}</b>${open>0?` · <span class="a">${money(open)} riding</span>`:''}${MP.st==='reconnecting'?' · <b class="r">reconnecting…</b>':''}</div>`; }
+  return `<div class="small" style="margin-top:3px">🌐 <b class="b">DEGEN-${esc(MP.code)}</b> · ${MP.role==='host'?'👑 hosting':'guest'} · session <b class="${n>=0?'g':'r'}">${n>=0?'+':''}${money(n)}</b>${open>0?` · <span class="a">${money(open)} riding</span>`:''}${MP.st==='reconnecting'?' · <b class="r">reconnecting…</b>':''} <button class="chip mploanbtn" onclick="mpLoanOpen()" ${MP.st==='in'?'':'disabled'}>💰 Get a Loan / Re-up</button></div>`; }
 function renderMPSafe(){ if(U.screen==='mp') renderMP(false); }
 function renderMP(full){ mpCanvasTall(true); if(!MP.uiTick) MP.uiTick=setInterval(mpUiTick,250);
   const st=MP.st; if((st==='in'||st==='reconnecting')&&MP.R) return mpRenderRoom(full);
@@ -1724,7 +1756,20 @@ function mpBack(){ MP.err=''; if(MP.st==='error') MP.st='idle'; go(S&&!S.ended?(
 function mpRenderRoom(full){ if(full||!document.getElementById('mpv')){ setMain(`<div id="mpbar"></div><div id="mpv"></div>${mpChatShell()}`); MP.chatShown=-1; mpSyncScene(true); } else mpSyncScene(false);
   document.getElementById('mpbar').innerHTML=mpBarHtml(); document.getElementById('mpv').innerHTML=mpViewHtml(); mpRenderChat(); renderTop(); }
 function mpBarHtml(){ const R=MP.R; return `${MP.st==='reconnecting'?'<div class="panel r small">📡 Connection lost — reconnecting… (your bets are safe with the host)</div>':''}<div class="tabs mptabs">${MP_TABLES.map(t=>`<button class="tab ${U.mpv===t?'on':''}" onclick="mpGo('${t}')">${MP_TSHORT[t]}<br><span class="small">${t==='lobby'?R.players.length+'/'+MPC.MAXP:R.players.filter(p=>p.table===t).length+' 🧍'}</span></button>`).join('')}</div>`; }
-function mpViewHtml(){ const R=MP.R; try{ switch(U.mpv){ case 'bj': return mpBJHtml(R); case 'cr': return mpCrHtml(R); case 'rl': return mpRlHtml(R); case 'sb': return mpSbHtml(R); default: return mpLobbyHtml(R); } }catch(e){ console.error(e); return `<div class="panel r">Render glitch: ${esc(e.message)}</div>`; } }
+function mpLoanOpen(){ if(!MP.R||U.screen!=='mp') return; U.mpLoan=!U.mpLoan; sfx.click(); window.scrollTo(0,0); mpRenderRoom(false); }
+function mpBroke(){ const me=mpP(MP.me); return !!(me&&S&&me.bal<MPC.BJ_MIN&&!S.whaleMode); }
+// Same menu, fees and limits as Big Sal's deli (renderSal/salBorrow), but approved by the host and synced to the table.
+function mpLoanHtml(){ if(!S) return '';
+  if(!U.mpLoan){ if(!mpBroke()) return ''; const cap=loanCap(); return `<div class="panel r">💸 <b>You're tapped out</b> (${money(mpP(MP.me).bal)} — can't cover the $${MPC.BJ_MIN} minimum). ${cap>=MPC.LOANS[0]?`Big Sal's cousin is working the deli counter in the back room…`:`Sal's cut you off. Time to go home and work a shift.`}${cap>=MPC.LOANS[0]?`<button class="btn gold" onclick="mpLoanOpen()">🥪 Get a loan / re-up</button>`:''}</div>`; }
+  const busy=mpMyHandBusy(), cap=loanCap(), pend=U.mpLoanPend||0;
+  let h=`<div class="panel mploan"><h3>🥪 BIG SAL'S COUSIN · DELI COUNTER <button class="chip" style="float:right" onclick="mpLoanOpen()">✖</button></h3>`;
+  if(S.whaleMode) return h+`<div class="small">Sal: "You're my <i>partner</i> now, kid. Partners don't borrow. Partners EARN."</div></div>`;
+  h+=`<div class="kv"><span>You owe Big Sal</span><b class="r">${money(S.debt)}</b></div><div class="kv"><span>Weekly interest</span><b>${(interestRate()*100).toFixed(1)}% → ${((interestRate()+.015*(has('smooth')?.6:1))*100).toFixed(1)}% after a loan</b></div><div class="kv"><span>Credit left</span><b class="${cap>=MPC.LOANS[0]?'g':'r'}">${money(cap)}</b></div>`;
+  h+=`<div class="small dim">Same deal as the deli: fee 10% +5% per loan you've already taken, and every loan bumps your weekly rate. Cash lands in your save and on the table right away.</div>`;
+  if(busy) h+=`<div class="small a">✋ Finish your hand / let the spin land first. No re-upping mid-hand.</div>`;
+  h+=`<div class="grid2">${MPC.LOANS.map(v=>{ const fee=Math.round(v*(.1+.05*S.loans)); return `<button class="btn" ${v<=cap&&!busy&&!pend?'':'disabled'} onclick="mpBorrow(${v})">${pend===v?'⏳ Counting…':'Borrow '+money(v)}<small>+${money(v+fee)} debt</small></button>`; }).join('')}</div></div>`; return h; }
+function mpViewHtml(){ const R=MP.R; try{ return mpLoanHtml()+mpTableHtml(R); }catch(e){ console.error(e); return `<div class="panel r">Render glitch: ${esc(e.message)}</div>`; } }
+function mpTableHtml(R){ { switch(U.mpv){ case 'bj': return mpBJHtml(R); case 'cr': return mpCrHtml(R); case 'rl': return mpRlHtml(R); case 'sb': return mpSbHtml(R); default: return mpLobbyHtml(R); } } }
 function mpGo(tb){ if(!MP_TABLES.includes(tb)||!MP.R) return; if(U.mpv==='bj'&&tb!=='bj'){ const B=MP.R.bj, X=B.hands[MP.me]; if(X&&B.phase==='play'&&!X.done){ toast('✋ Finish your blackjack hand first.'); return; } }
   if(U.mpv===tb) return; U.mpv=tb; mpSend({t:'go',table:tb}); sfx.click(); window.scrollTo(0,0); mpRenderRoom(false); }
 function mpChatShell(){ return `<div class="panel mpchat"><div class="log mplog" id="mpclog"></div><div class="mpemo">${MP_EMOJI.map((e,i)=>`<button class="tab" onclick="mpEmote(${100+i})">${e}</button>`).join('')}</div><div class="mpemo">${MP_TALK.map((t,i)=>`<button class="mptalk" onclick="mpEmote(${i})">${esc(t)}</button>`).join('')}</div><form class="row" onsubmit="mpChatSend();return false"><input type="text" id="mpmsg" maxlength="${MPC.CHATLEN}" placeholder="Talk trash (max ${MPC.CHATLEN} chars)" autocomplete="off" style="flex:1;min-width:0"><button class="btn c" style="width:auto;margin:0;min-width:66px">Send</button></form></div>`; }
@@ -1736,7 +1781,7 @@ function mpCopy(){ const u=mpLink(); try{ if(navigator.clipboard&&window.isSecur
 function mpCopyFallback(u){ const ta=document.createElement('textarea'); ta.value=u; ta.style.position='fixed'; ta.style.opacity='0'; document.body.appendChild(ta); ta.select(); let ok=false; try{ ok=document.execCommand('copy'); }catch(e){} ta.remove(); toast(ok?'📋 Invite link copied.':'Copy this link: '+esc(u)); }
 function mpShare(){ const u=mpLink(); if(navigator.share){ navigator.share({title:'DEGEN: The Road to Whale',text:`Pull up to my degenerate casino table. Room DEGEN-${MP.code}`,url:u}).catch(()=>{}); } else mpCopy(); }
 // ---------- state arrival: fx + re-render ----------
-function mpOnState(){ if(!MP.R) return; try{ mpStateFx(MP.R,MP.prevR); }catch(e){ console.warn('mp fx',e); }
+function mpOnState(){ if(!MP.R) return; if(mpBroke()&&!mpMyHandBusy()&&!mpOpenTotal()){ if(!MP.bustSeen){ MP.bustSeen=true; if(loanCap()>=MPC.LOANS[0]) U.mpLoan=true; } } else if(!mpBroke()) MP.bustSeen=false; try{ mpStateFx(MP.R,MP.prevR); }catch(e){ console.warn('mp fx',e); }
   if(U.screen!=='mp'||MP.rT) return; MP.rT=setTimeout(()=>{ MP.rT=0; if(U.screen==='mp') renderMP(false); },30); }
 function mpStateFx(R,P){ const me=MP.me, tb=U.mpv;
   const ch=R.chat||[]; for(const m of ch){ if(m.i>(MP.lastChatI||0)&&P&&!m.sys){ say('mp_'+m.id,String(m.txt),3500); if(m.id!==me) beep(880,.03,'square',.015); } } MP.lastChatI=ch.length?ch[ch.length-1].i:0;
@@ -1789,7 +1834,7 @@ function mpOverRL(c,W,H,t){ const R=MP.R; if(!R) return; const T=R.rl, N=38, seg
 function mpLeaderHtml(R){ const ps=R.players.slice().sort((a,b)=>b.net-a.net); return `<h3>🏆 Room leaderboard</h3><div class="panel">${ps.map((p,i)=>`<div class="kv"><span>${['🥇','🥈','🥉','4.','5.'][i]||i+1+'.'} ${mpDot(p.color)}${esc(p.name)}${p.id===MP.me?' <span class="g small">(you)</span>':''}</span><b class="${p.net>=0?'g':'r'}">${p.net>=0?'+':''}${money(p.net)}</b></div>`).join('')}</div>`; }
 function mpLobbyHtml(R){ const url=mpLink();
   let h=`<h2>🌐 THE BACK ROOM <span class="small dim">${R.players.length}/${MPC.MAXP} degenerates</span></h2><div class="panel" style="text-align:center"><div class="small dim">Room code — send it to your friends</div><div class="mpcode">DEGEN-${esc(MP.code)}</div><div class="grid2"><button class="btn c" onclick="mpCopy()">📋 Copy invite link</button><button class="btn c" onclick="mpShare()">📤 Share</button></div><div class="small dim" style="word-break:break-all">${esc(url)}</div></div>`;
-  h+=`<h3>🪑 Who's here</h3><table><tr><th>Degen</th><th>At</th><th>Bankroll</th><th>Session</th></tr>${R.players.map(p=>`<tr><td>${mpDot(p.color)}<b>${esc(p.name)}</b>${p.host?' 👑':''}${p.id===MP.me?' <span class="g small">(you)</span>':''}${p.conn?'':' <span class="r small">📵</span>'}</td><td>${MP_TSHORT[p.table]||''}</td><td>${money(p.bal)}</td><td class="${p.net>=0?'g':'r'}">${p.net>=0?'+':''}${money(p.net)}</td></tr>`).join('')}</table>`;
+  h+=`<h3>🪑 Who's here</h3><table><tr><th>Degen</th><th>At</th><th>Bankroll</th><th>Session</th></tr>${R.players.map(p=>`<tr><td>${mpDot(p.color)}<b>${esc(p.name)}</b>${p.host?' 👑':''}${p.id===MP.me?' <span class="g small">(you)</span>':''}${p.conn?'':' <span class="r small">📵</span>'}</td><td>${MP_TSHORT[p.table]||''}</td><td>${money(p.bal)}${p.loaned?` <span class="small a" title="borrowed from Sal this session">🥪${money(p.loaned)}</span>`:''}</td><td class="${p.net>=0?'g':'r'}">${p.net>=0?'+':''}${money(p.net)}</td></tr>`).join('')}</table>`;
   h+=`<h3>🎰 Tables</h3><div class="grid2">${['bj','cr','rl','sb'].map(t=>`<button class="btn" onclick="mpGo('${t}')">${MP_TNAME[t]}<small>${MP_TDESC[t]} · ${R.players.filter(p=>p.table===t).length} here</small></button>`).join('')}</div>`;
   h+=mpLeaderHtml(R)+`<div class="small dim">Your online bankroll is your single-player save (${money(S?S.cash:0)}). Wins & losses write back to your run. The day doesn't advance while you're here.</div>`;
   h+=`<button class="btn c ${MP.role==='host'?'bad':''}" onclick="mpLeave()">${MP.role==='host'?'🔒 Close the table (kicks everyone)':'🚪 Leave the room'}</button>`; return h; }
