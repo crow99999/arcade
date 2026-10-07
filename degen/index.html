@@ -186,6 +186,30 @@ pre.ascii{color:var(--green);font-size:11px;line-height:1.1;overflow-x:auto;marg
 @media (prefers-reduced-motion:reduce){.lifebar .lbm{animation:none;padding-left:6px}}
 .lifetbl{overflow-x:auto}.lifetbl table{width:100%}.lifetbl td,.lifetbl th{white-space:nowrap}.lifetbl td:first-child{white-space:normal}
 .wnpop{border-color:#5dff8a;animation:wnpop .45s cubic-bezier(.2,1.6,.4,1)}@keyframes wnpop{from{transform:scale(.7) rotate(-2deg);opacity:0}to{transform:none;opacity:1}}
+
+/* live session leaderboard (online) */
+.lbstrip{border:2px solid #ffc24a;border-radius:6px;background:#15130a;margin:6px 0;box-shadow:0 2px 0 #000}
+.lbhead{display:flex;width:100%;gap:6px;align-items:center;background:linear-gradient(#2c2410,#1a1608);color:var(--txt);border:0;padding:6px 8px;font:inherit;font-size:12.5px;cursor:pointer;text-align:left;min-height:36px;border-radius:4px}
+.lbhead .lbsum{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:right}.lbcar{flex:0 0 auto;color:#ffc24a}
+.lbbody{display:none;padding:2px 6px 6px}.lbstrip.open .lbbody{display:block}
+.lbscope .chip,.lbtabs .chip{min-height:30px;padding:4px 8px;font-size:12px}
+.lbrow{position:relative;border-bottom:1px dotted #444;padding:3px 2px;border-radius:4px}
+.lbl1{display:flex;align-items:center;gap:5px;font-size:13px}.lbrk{flex:0 0 auto;min-width:30px;font-weight:bold;color:#ffc24a}.lbnm{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.lbnet{flex:0 0 auto}
+.lbl2{padding-left:35px;line-height:1.3}
+.lbme{background:#1c2a17}.lbleft{opacity:.62}.lbking .lbrk{font-size:14px}.lbclown{background:#2a1414}
+.lbmv{font-size:11px;font-weight:bold;padding:0 3px;border-radius:3px;animation:lbmv 1s ease-in-out 3}.lbmv.up{color:#5dff8a}.lbmv.dn{color:#ff6b6b}
+@keyframes lbmv{50%{transform:scale(1.35)}}
+.lbwrap{overflow-x:auto;padding:4px}.lbtbl td,.lbtbl th{white-space:nowrap;padding:3px 5px}.lbtbl td:nth-child(2){white-space:normal;min-width:110px}
+.lbfinal .lbpod{display:flex;gap:6px;justify-content:center;align-items:flex-end;margin:8px 0}
+.lbp{flex:1;max-width:150px;text-align:center;border:2px solid #555;border-radius:6px;padding:6px 4px;background:#0003}.lbp0{border-color:#ffc24a;padding-top:14px}.lbp1{border-color:#ccc}.lbp2{border-color:#c97a3a}
+.lbpm{font-size:22px}.lbfinal .lbme{background:#e3efc4}.lbfinal .g{color:#17803a}.lbfinal .r{color:#b8321f}.lbfinal .a{color:#a86a00}.lbfinal .dim{color:#6b6556}.lbfinal td,.lbfinal th{white-space:nowrap}.lbfinal td:nth-child(2){white-space:normal}.lbaw div{margin:3px 0}
+@media (min-width:1040px){
+  body.lbside #app{margin:0 auto 0 max(8px,calc(50vw - 520px))}
+  body.lbside #mplbx{position:fixed;top:10px;left:calc(max(8px,50vw - 520px) + 770px);width:262px;max-height:calc(100vh - 20px);overflow-y:auto;z-index:15}
+  body.lbside #mplbx .lbbody{display:block}body.lbside #mplbx .lbcar{display:none}body.lbside #mplbx .lbhead{cursor:default;pointer-events:none}
+  body.lbside #mplbx .lbhead .lbsum{display:none}
+}
+@media (prefers-reduced-motion:reduce){.lbmv{animation:none}}
 </style>
 </head>
 <body>
@@ -1742,11 +1766,28 @@ const MPC = { VER:1, MAXP:5, SEATS:5, BJ_MIN:5, BJ_MAX:1000, TMAX:500, SB_MAXBET
   BET_MS:15000, TURN_MS:20000, DEAL_MS:650, DONE_MS:5000, RL_MS:20000, RL_SPIN_MS:3200, RL_DONE_MS:4500,
   CR_MS:25000, CR_ROLL_MS:700, SB_MS:90000, SB_LIVE_MS:45000, SB_FINAL_MS:25000, DC_MS:60000, MAXCASH:1e8, CHATLEN:120, LOANS:[250,500,1000,2500], LOAN_GAP:2000,
   F7_BUYS:[25,100,500], F7_LOBBY_MS:20000, F7_SB_MS:12000, F7_DONE_MS:10000, F7_SBV:[0,5,10,25,50], F7_TURN_MS:20000,
-  KN_MAX:25, KN_BETS:[1,2,5,10,25], KN_RACES:[1,2,5,10], KN_MS:15000, KN_NEXT_MS:6000, KN_BALL_MS:180, KN_DONE_MS:4000 };
+  KN_MAX:25, KN_BETS:[1,2,5,10,25], KN_RACES:[1,2,5,10], KN_MS:15000, KN_NEXT_MS:6000, KN_BALL_MS:180, KN_DONE_MS:4000, VICE_GAP:2500, NIC_CD:20000, NIC_WIN:600000, CIGAR_NET:250 };
 const MP_COLORS=['#f2efe4','#ff6b6b','#6fc3ff','#5dff8a','#ffc24a','#ff7ad9','#b78bff','#ff9a3c','#3ee6d0'];
 const MP_TALK=["Hit on 16, you coward","Dealer's rigged","Sal is gonna kill me","LET IT RIDE","That was MY card","Bro is down BAD","Easy money 💰","I'm calling my mom","Nice hit, nerd","Who touched the dice?!","Seven out? GET OUT.","Drinks on me (lie)","Pray for me 🙏","gg go next","Sir, this is a Wendy's"];
 // in-session loans: same menu/terms as Big Sal's deli (borrow()/loanCap() in 30_core.js); announced in chat
 const MP_LOAN_TALK=["🥪 {n} just borrowed {a} from Big Sal's cousin at the deli.","🦈 {n} took {a} from Big Sal. Kneecaps are the collateral.","💸 {n} re-upped {a} on Sal's tab. Mom's gonna hear about this.","🥪 {n} went for a pastrami on rye and came back with {a} and a pinky-finger clause.","📞 {n} called Sal for {a}. Sal said \"last time\" for the 9th time.","🧾 {n} signed for {a} on a deli napkin. Legally binding in Big Sal's courtroom."];
+// TILT RELIEF at the tables: same numbers as the single-player bar (draft beer / Fireball shot) where they exist.
+// Cash moves through the host ledger (validated like loans); tilt/buzz/HP land in each player's own save.
+const MP_VICE={ beer:{n:'Cheap beer',ic:'🍺',cost:5,buzz:20,tilt:-8,hp:0,booze:1,d:'+20 buzz · −8 tilt'},
+  whiskey:{n:'Well whiskey',ic:'🥃',cost:8,buzz:35,tilt:-15,hp:-5,booze:1,d:'+35 buzz · −15 tilt · −5 HP'},
+  energy:{n:'Energy drink',ic:'⚡',cost:6,buzz:-10,tilt:-5,hp:-2,d:'−10 buzz · −5 tilt · −2 HP (heart goes brrr)'},
+  cig:{n:'Cigarette',ic:'🚬',cost:10,buzz:0,tilt:-12,hp:-3,nic:1,d:'−12 tilt · −3 HP'},
+  vape:{n:'Vape rip',ic:'💨',cost:3,buzz:0,tilt:-6,hp:-1,nic:1,d:'−6 tilt · −1 HP · smells like blue razz'},
+  pouch:{n:'Nicotine pouch',ic:'🫙',cost:4,buzz:0,tilt:-8,hp:-1,nic:1,d:'−8 tilt · −1 HP · lip tuck'},
+  cigar:{n:'Victory cigar',ic:'🏆',cost:50,buzz:5,tilt:-25,hp:-4,nic:1,win:1,d:'−25 tilt · −4 HP · only if you\'re up $250+'} };
+const MP_NIC_DIM=[1,.6,.35,.2]; // nicotine: each hit in the last 10 min works less (plus a 20s cooldown)
+const MP_VICE_TALK={ beer:["🍺 {n} cracked a warm cheap beer. Peak performance incoming.","🍺 {n} ordered a cheap beer and tipped in loose change.","🍺 {n} is double-fisting cheap beer. The pit boss took notes."],
+  whiskey:["🥃 {n} slammed a well whiskey and is now emotionally available for a split on 10s.","🥃 {n} took a well whiskey to the face. Bottom-shelf courage acquired.","🥃 {n} ordered a well whiskey, neat, like a divorced cowboy."],
+  energy:["⚡ {n} chugged an energy drink. Heart rate: parlay.","⚡ {n} cracked an energy drink at the table. Pupils the size of poker chips."],
+  cig:["🚬 {n} stepped out for a cig and came back smelling like a bus station.","🚬 {n} lit a cigarette. The surgeon general just shook his head."],
+  vape:["💨 {n} ripped the vape. The table now smells like blue razz and bad decisions.","💨 {n} hit the vape so hard the smoke alarm considered it."],
+  pouch:["🫙 {n} tucked a nicotine pouch. Lip bulge of a man with a system.","🫙 {n} threw in a pouch and started explaining 'expected value' to nobody."],
+  cigar:["🏆 {n} lit a VICTORY CIGAR. Insufferable. Earned, but insufferable.","🏆 {n} is puffing a fat victory cigar like they own the place. They don't. Sal does."] };
 const MP_EMOJI=['😂','💀','🤡','🔥','🐋','💩','🍺','😭'];
 const MP_TABLES=['lobby','bj','cr','rl','sb','f7','kn'];
 const RL_KEYS=new Set(['red','black','odd','even','low','high','d1','d2','d3','c1','c2','c3']);
@@ -1759,9 +1800,18 @@ function mpRoomS(){ const ach={}; for(const k in ACHS) ach[k]=1; return {v:1,nam
   league:null,slate:null,jefe:{w:0,l:0},whaleMode:false,buzz:0,peak:0,weekPeak:0,lowWater:0,lvl:1,xp:0}; }
 function mpWithS(tmp,fn){ const oS=S, oN=U.noSave, oQ=U.silent; S=tmp; U.noSave=true; U.silent=true; try{ return fn(); } finally{ S=oS; U.noSave=oN; U.silent=oQ; } }
 
+// ---- LIVE SESSION LEADERBOARD helpers (pure; the host ranks, clients only render) ----
+const MP_LB_TB=['bj','cr','rl','sb','f7','kn'];
+function mpLbTable(w){ const m=String(w||'').match(/^(bj|cr|rl|sb|f7|kn)/); return m?m[1]:null; }
+function mpLbKey(r,tb){ return tb==='all'?r.net:((r.t&&r.t[tb])||{}).net||0; }
+// rank by session net (loans excluded), ties -> more action (wagered), then name; a per-table board lists who played or sits there
+function mpLbRank(rows,tb){ const w=r=>tb==='all'?r.w:((r.t&&r.t[tb])||{}).w||0;
+  return rows.filter(r=>tb==='all'||(r.t&&r.t[tb])||(!r.left&&r.table===tb)).sort((a,b)=>(mpLbKey(b,tb)-mpLbKey(a,tb))||(w(b)-w(a))||(a.name<b.name?-1:a.name>b.name?1:0)||(a.id<b.id?-1:1)).map(r=>r.id); }
+function mpLbStreak(X,n){ if(n>0) X.st=X.st>0?X.st+1:1; else if(n<0) X.st=X.st<0?X.st-1:-1; if(X.st>X.bst) X.bst=X.st; }
+
 function mpHostCreate(io){ // io: {send(cid,msg), now(), room, sess}
   const now=()=>io.now();
-  const H={ room:io.room, sess:io.sess, P:{}, order:[], ghost:{}, chat:[], chatN:0, pn:0, dirty:true, rig:{}, closed:false, rs:mpRoomS(), rt:{w:0,r:0,n:0} };
+  const H={ room:io.room, sess:io.sess, P:{}, order:[], ghost:{}, chat:[], chatN:0, pn:0, dirty:true, rig:{}, closed:false, rs:mpRoomS(), rt:{w:0,r:0,n:0}, lbv:0, lbLead:null, fin:null, t0:io.now() };
   const bj=H.bj={ phase:'bet', seats:Array(MPC.SEATS).fill(null), shoe:newShoe(), dealer:[], hole:true, hands:{}, bets:{}, last:{}, order:[], turn:null, deadline:0, handNo:0, msg:'Place your bets.', doneAt:0, nextDraw:0, needDraw:false };
   const cr=H.cr={ point:null, shooter:null, C:{}, phase:'bet', rollAt:0, deadline:0, last:null, rollNo:0, hist:[], dice:null, thrower:'', sRolls:0 };
   const rl=H.rl={ phase:'bet', bets:{}, ready:{}, deadline:0, n:null, spinAt:0, doneAt:0, spinNo:0, hist:[], res:{} };
@@ -1774,8 +1824,20 @@ function mpHostCreate(io){ // io: {send(cid,msg), now(), room, sess}
   function sys(txt){ H.chat.push({i:++H.chatN,sys:1,txt:String(txt).slice(0,200)}); if(H.chat.length>60) H.chat.splice(0,H.chat.length-60); dirty(); }
   function led(p,w,d,out,why,net,x){ if(!p) return; d=r2(d); p.seq++; const e={seq:p.seq,w,d,out:r2(Math.max(0,out)),why:String(why||'').slice(0,90)}; if(net!=null) e.net=r2(net); if(x) Object.assign(e,x);
     if(e.lf){ for(const [s,r] of e.lf){ p.rw=r2((p.rw||0)+s); p.rr=r2((p.rr||0)+r); H.rt.w=r2(H.rt.w+s); H.rt.r=r2(H.rt.r+r); H.rt.n++; } }
-    p.bal=r2(p.bal+d); p.led.push(e); if(p.led.length>400) p.led.splice(0,p.led.length-400); if(H.P[p.cid]&&p.conn) io.send(p.cid,{t:'led',e:[e]}); dirty(); return e; }
+    p.bal=r2(p.bal+d); if(e.out>0) p.open[w]=e.out; else delete p.open[w]; if(e.net!=null) lbRec(p,w,e); p.led.push(e); if(p.led.length>400) p.led.splice(0,p.led.length-400); if(H.P[p.cid]&&p.conn) io.send(p.cid,{t:'led',e:[e]}); dirty(); return e; }
   const atTable=tb=>H.order.filter(c=>H.P[c].table===tb);
+  // ---------------- LIVE SESSION LEADERBOARD (updated on every settlement; rides along in every broadcast view) ----------------
+  function lbRec(p,w,e){ const tb=mpLbTable(w); if(!tb) return; const lf=e.lf||[]; if(tb==='cr'&&!lf.length) return; // a craps roll that decided nothing isn't a "hand"
+    const n=e.net, S=p.lb, T=S.t[tb]||(S.t[tb]={n:0,net:0,w:0,big:0,st:0,bst:0});
+    for(const X of [S,T]){ X.n++; if(n>X.big) X.big=r2(n); mpLbStreak(X,n); } if(n<S.worst) S.worst=r2(n);
+    T.net=r2(T.net+n); T.w=r2(T.w+lf.reduce((a,x)=>a+x[0],0)); H.lbv++;
+    const rows=lbRows(), ord=mpLbRank(rows,'all'), top=rows.find(r=>r.id===ord[0]);
+    if(rows.length>1&&top&&top.net>0&&ord[0]!==H.lbLead){ if(H.lbLead) sys(`👑 ${top.name} takes the chip lead at ${lifeSigned(top.net)}.`); H.lbLead=ord[0]; } }
+  const lbNet=p=>{ let o=0; for(const k in p.open) o+=p.open[k]; return r2(p.bal+o-p.start); }; // settled session net: money riding isn't lost yet, loans aren't profit
+  function lbRows(){ const all=H.order.map(c=>H.P[c]).concat(Object.values(H.ghost)); return all.map(p=>{ const S=p.lb, ride=r2(Object.values(p.open).reduce((a,b)=>a+b,0));
+    return {id:p.id,name:p.name,color:p.color,net:lbNet(p),bal:p.bal,ride,w:p.rw||0,r:p.rr||0,n:S.n,big:S.big,worst:S.worst,st:S.st,bst:S.bst,loan:p.loaned||0,loanN:p.loanN||0,tab:p.tab||0,
+      left:!H.P[p.cid],conn:!!(H.P[p.cid]&&p.conn),host:p.isHost,table:H.P[p.cid]?p.table:null,t:JSON.parse(JSON.stringify(S.t))}; }); }
+  H.lb=function(){ const rows=lbRows(), ord={all:mpLbRank(rows,'all')}; for(const tb of MP_LB_TB) ord[tb]=mpLbRank(rows,tb); return {v:H.lbv,rows,ord}; };
   // ---------------- join / leave ----------------
   H.join=function(cid,m,isHost){ if(H.closed) return {err:'Table is closing.'}; cid=String(cid||'').slice(0,40); if(!cid) return {err:'bad hello'};
     const key=String((m&&m.key)||'').slice(0,40), name=mpCleanText(m&&m.name,14)||'Degen', color=mpColor(m&&m.color);
@@ -1787,7 +1849,7 @@ function mpHostCreate(io){ // io: {send(cid,msg), now(), room, sess}
       const back=!!H.ghost[cid]; delete H.ghost[cid]; H.P[cid]=p; if(!H.order.includes(cid)) H.order.push(cid); p.conn=true; p.dcAt=0; p.leaving=false; p.name=name; p.color=color; if(back) p.table='lobby';
       io.send(cid,{t:'welcome',id:p.id,room:H.room,sess:H.sess,bal:p.bal}); if(pend.length) io.send(cid,{t:'led',e:pend}); sys(`🔌 ${name} reconnected.`); return {ok:1,p}; }
     if(H.order.length>=MPC.MAXP) return {err:`Room is full (${MPC.MAXP} degenerates max).`};
-    p={cid,key,id:'p'+(++H.pn),name,color,bal:cash,start:cash,table:'lobby',conn:true,dcAt:0,seq:0,led:[],acked:0,lastChat:0,chatBurst:0,isHost:!!isHost,leaving:false};
+    p={cid,key,id:'p'+(++H.pn),name,color,bal:cash,start:cash,table:'lobby',conn:true,dcAt:0,seq:0,led:[],acked:0,lastChat:0,chatBurst:0,isHost:!!isHost,leaving:false,open:{},lb:{n:0,big:0,worst:0,st:0,bst:0,t:{}}};
     H.P[cid]=p; H.order.push(cid); io.send(cid,{t:'welcome',id:p.id,room:H.room,sess:H.sess,bal:p.bal});
     sys(isHost?`🏠 ${name} opened the table with ${money(cash)}.`:`👋 ${name} pulled up a chair with ${money(cash)}.`); return {ok:1,p}; };
   H.drop=function(cid){ const p=H.P[cid]; if(!p||!p.conn) return; p.conn=false; p.dcAt=now(); sys(`📵 ${p.name} lost connection…`); };
@@ -1805,6 +1867,7 @@ function mpHostCreate(io){ // io: {send(cid,msg), now(), room, sess}
     case 'ack': { const a=mpInt(m.seq,0,1e9); if(a!=null&&a<=p.seq){ p.acked=Math.max(p.acked,a); p.led=p.led.filter(e=>e.seq>p.acked); } return; }
     case 'go': return go(p,m.table);
     case 'loan': return loan(p,m);
+    case 'vice': return vice(p,String(m.k||''));
     case 'chat': return chat(p,m);
     case 'bye': remove(cid,'left the room',true); io.send(cid,{t:'byeok'}); return;
     case 'bj.bet': return bjBet(p,mpInt(m.amt,0,MPC.BJ_MAX));
@@ -1849,6 +1912,17 @@ function mpHostCreate(io){ // io: {send(cid,msg), now(), room, sess}
     p.lastLoan=t; p.minDebt=debt+amt; p.loaned=r2((p.loaned||0)+amt); p.loanN=(p.loanN||0)+1; p.start=r2(p.start+amt); // loans don't count as session winnings
     led(p,'loan'+p.loanN,amt,0,`Loan from Big Sal: ${money(amt)}`,null,{loan:amt});
     sys(pick(MP_LOAN_TALK).replace('{n}',p.name).replace('{a}',money(amt))); }
+  // ---------------- TILT RELIEF (cocktail waitress / smoke break) ----------------
+  // Allowed mid-hand: it never touches a placed bet (cost must fit in the free bankroll, bets are already out of it).
+  function vice(p,k){ const V=Object.prototype.hasOwnProperty.call(MP_VICE,k)?MP_VICE[k]:null; if(!V) return rej(p,'The waitress has never heard of that.'); const t=now();
+    if(t-(p.lastVice||-1e12)<MPC.VICE_GAP) return rej(p,'🍸 The waitress is still walking over. Patience, champ.');
+    if(V.win&&lbNet(p)<MPC.CIGAR_NET) return rej(p,`🏆 Victory cigars are for people up ${money(MPC.CIGAR_NET)}+. You're ${lifeSigned(lbNet(p))}. Have a vape.`);
+    if(V.nic&&t-(p.lastNic||-1e12)<MPC.NIC_CD) return rej(p,`🚬 Easy, Marlboro Man. Next nicotine in ${Math.ceil((MPC.NIC_CD-(t-p.lastNic))/1000)}s.`);
+    if(V.cost>p.bal+1e-9) return rej(p,"🍸 Cash only, hon. Your chips on the felt don't count.");
+    let tilt=V.tilt, dim=0; if(V.nic){ p.nicT=(p.nicT||[]).filter(x=>t-x<MPC.NIC_WIN); const f=MP_NIC_DIM[Math.min(p.nicT.length,MP_NIC_DIM.length-1)]; tilt=Math.round(V.tilt*f); dim=f<1?1:0; p.nicT.push(t); p.lastNic=t; }
+    p.lastVice=t; p.viceN=(p.viceN||0)+1; p.tab=r2((p.tab||0)+V.cost); H.lbv++; // the bar tab is real money: the board (net) changes
+    led(p,'vice'+p.viceN,-V.cost,0,`${V.ic} ${V.n} at the table`,null,{vice:{k,tilt,buzz:V.buzz||0,hp:V.hp||0,dim}});
+    sys(pick(MP_VICE_TALK[k]).replace('{n}',p.name)); H.vfx={n:(H.vfx?H.vfx.n:0)+1,id:p.id,k}; dirty(); return true; }
   const sumObj=o=>{ let t=0; for(const k in o) t+=o[k]; return r2(t); };
   const LF=pairs=>({lf:pairs.filter(([s,r])=>s>0||r>0).map(([s,r])=>[r2(s),r2(r)])}); // decided [stake, payout] pairs for lifetime stats + room totals
   // ---------------- BLACKJACK ----------------
@@ -2081,14 +2155,15 @@ function mpHostCreate(io){ // io: {send(cid,msg), now(), room, sess}
       for(const c in f7.sbNext) led(all(c),f7SbW(),f7SbTot(f7.sbNext[c]),0,'Table closed: Flip 7 side bets returned');
       for(const c in f7.sbLive) led(all(c),'f7s'+f7.gameNo+'.'+f7.G.round,f7SbTot(f7.sbLive[c]),0,'Table closed: Flip 7 side bets returned'); f7.phase='closed'; }
     for(const c in kn.tickets){ const T=kn.tickets[c]; if(T.left>0) led(all(c),T.w,r2(T.left*T.bet),0,'Table closed: keno ticket refunded'); } kn.tickets={};
-    H.closed=true; for(const c of H.order) if(H.P[c].conn) io.send(c,{t:'close',why:why||'The host closed the table.'}); };
+    H.fin=Object.assign(H.lb(),{room:H.room,mins:Math.max(1,Math.round((now()-H.t0)/60000)),bets:H.rt.n,w:H.rt.w,r:H.rt.r});
+    H.closed=true; for(const c of H.order) if(H.P[c].conn) io.send(c,{t:'close',why:why||'The host closed the table.',fin:H.fin}); };
   // ---------------- public snapshot (no shoe, no hole card, no secret ids) ----------------
   H.view=function(){ const t=now(), rem=d=>d?Math.max(0,d-t):0; const byId=o=>{ const r={}; for(const c in o){ const id=idOf(c); if(id) r[id]=o[c]; } return r; };
     const players=H.order.map(c=>{ const p=H.P[c]; return {id:p.id,name:p.name,color:p.color,table:p.table,bal:p.bal,net:r2(p.bal-p.start),conn:p.conn,host:p.isHost,loaned:p.loaned||0,rw:p.rw||0,rr:p.rr||0}; });
     const gone=Object.values(H.ghost).filter(p=>p.rw||p.rr).map(p=>({name:p.name,color:p.color,rw:p.rw||0,rr:p.rr||0}));
     const hands={}; for(const c of bj.order){ const X=bj.hands[c], id=idOf(c); if(id) hands[id]={hs:X.hs.map(h=>({cards:h.cards,bet:h.bet,dbl:h.dbl,split:h.split,done:h.done,res:h.res||null,ret:h.ret})),act:X.act,done:X.done,net:X.net}; }
     const crb={}; for(const c in cr.C){ const id=idOf(c), C=cr.C[c]; if(id) crb[id]={bets:C.bets,comes:C.comes,dcs:C.dcs,on:crapsTotalOnTable(C)}; }
-    return { v:MPC.VER, room:H.room, players, chat:H.chat.slice(-30), rt:{w:H.rt.w,r:H.rt.r,n:H.rt.n,gone},
+    return { v:MPC.VER, room:H.room, players, chat:H.chat.slice(-30), rt:{w:H.rt.w,r:H.rt.r,n:H.rt.n,gone}, lb:H.lb(), vfx:H.vfx||null,
       bj:{phase:bj.phase,seats:bj.seats.map(c=>c?idOf(c):null),dealer:bj.dealer.map((c,i)=>bj.hole&&i===1?{h:1}:c),dv:bj.dealer.length?(bj.hole?cval(bj.dealer[0]):handVal(bj.dealer).t):0,
         turn:idOf(bj.turn),rem:rem(bj.deadline),hands,bets:byId(bj.bets),last:byId(bj.last),handNo:bj.handNo,msg:bj.msg,left:bj.shoe.cards.length},
       cr:{point:cr.point,shooter:idOf(cr.shooter),phase:cr.phase,rem:rem(cr.deadline),last:cr.last,rollNo:cr.rollNo,hist:cr.hist,bets:crb,thrower:cr.phase==='roll'?cr.thrower:'',sRolls:cr.sRolls},
@@ -2139,8 +2214,14 @@ function mpApply(list){ if(!S||!S.mp||!Array.isArray(list)) return; const es=lis
   for(const e of es){ if(e.seq<=S.mp.lastSeq) continue; S.mp.lastSeq=e.seq; any=true; const d=Number(e.d); if(e.loan!=null&&d>0&&Number(e.loan)===d) mpLoanApply(d); else if(Number.isFinite(d)&&d!==0){ addCash(d); MP.sessNet=r2(MP.sessNet+d); }
     const w=String(e.w||'').slice(0,20), out=Number(e.out)||0;
     if(Array.isArray(e.lf)&&e.lf.length<=60){ const sb=(w.match(/^(bj|cr|rl|sb|f7|kn)/)||[])[1]||''; for(const pr of e.lf) if(Array.isArray(pr)) lifeRec('online',pr[0],pr[1],String(e.why||'Online bet'),sb); } if(out>0) S.mp.open[w]=r2(out); else delete S.mp.open[w];
-    if(e.net!=null&&Number.isFinite(Number(e.net))) mpResultFx(Number(e.net),String(e.why||'')); }
+    if(e.net!=null&&Number.isFinite(Number(e.net))) mpResultFx(Number(e.net),String(e.why||''));
+    if(e.vice&&typeof e.vice==='object'&&d<0) mpViceApply(e.vice); }
   if(any){ save(); renderTop(); } mpSend({t:'ack',seq:S.mp.lastSeq}); }
+// A drink/smoke the host approved (cash already moved above): tilt/buzz/HP hit the save with single-player rules (Iron Liver = booze doesn't cost HP).
+function mpViceApply(v){ const V=Object.prototype.hasOwnProperty.call(MP_VICE,v.k)?MP_VICE[v.k]:null; if(!V||!S) return;
+  const tilt=clamp(Math.round(Number(v.tilt)||0),-40,0), buzz=clamp(Math.round(Number(v.buzz)||0),-20,40); let hp=clamp(Math.round(Number(v.hp)||0),-10,0); if(V.booze&&has('ironliver')) hp=0;
+  addTilt(tilt); if(buzz) addBuzz(buzz); if(hp) addHp(hp); if(V.nic) U.mpNicAt=Date.now(); U.mpVicePend=0; U.mpVice=false; sfx.coin(); pose('mp_'+MP.me,'drink',1500,'idle');
+  toast(`${V.ic} ${V.n}: ${tilt} tilt${buzz?` · ${buzz>0?'+':''}${buzz} buzz`:''}${hp?` · ${hp} HP`:''}${v.dim?' · nicotine is hitting less (diminishing returns)':''}${S.buzz>75?' · 🥴 you are SLOPPY now':''}`); setTimeout(renderMPSafe,0); }
 // A loan the host approved: exactly Sal's deli borrow() (fee 10% +5% per prior loan, debt += amt+fee, loans++ -> higher weekly rate), +5 tilt like the deli.
 function mpLoanApply(amt){ const fee=borrow(amt); addTilt(5); U.mpLoanPend=0; U.mpLoan=false; MP.loaned=r2((MP.loaned||0)+amt); sfx.coin(); fx.money(10);
   toast(`🥪 Sal's cousin slides you ${money(amt)} under a pastrami. Fee ${money(fee)}. You now owe ${money(S.debt)}.`); setTimeout(renderMPSafe,0); }
@@ -2214,15 +2295,15 @@ function mpRecv(d){ if(!d||typeof d!=='object') return;
     case 'deny': return mpFail(String(d.why||'Denied.'));
     case 'st': if(!d.s||typeof d.s!=='object') return; MP.prevR=MP.R; MP.R=d.s; MP.rAt=Date.now(); return mpOnState();
     case 'led': return mpApply(d.e);
-    case 'rej': if(U.mpLoanPend){ U.mpLoanPend=0; renderMPSafe(); } toast('🚫 '+esc(String(d.why||'Nope.')).slice(0,160)); return;
-    case 'close': return mpClosed(String(d.why||'The host closed the table.'),true);
+    case 'rej': if(U.mpLoanPend||U.mpVicePend){ U.mpLoanPend=0; U.mpVicePend=0; renderMPSafe(); } toast('🚫 '+esc(String(d.why||'Nope.')).slice(0,160)); return;
+    case 'close': return mpClosed(String(d.why||'The host closed the table.'),true,d.fin&&typeof d.fin==='object'?d.fin:null);
     case 'byeok': return mpFinishLeave();
   } }
 // ---------- leaving / failure ----------
 function mpTeardown(){ clearInterval(MP.tick); MP.tick=0; clearTimeout(MP.flushT); MP.flushT=0; const peer=MP.peer; MP.peer=null; MP.conn=null; MP.conns={}; MP.H=null; MP.rate={};
   if(peer) setTimeout(()=>{ try{ peer.destroy(); }catch(e){} },350); }
 function mpFail(msg){ mpTeardown(); MP.st='error'; MP.err=msg; MP.role=null; if(U.screen==='mp') render(); }
-function mpClosed(why,clean){ if(MP.st==='closed') return; mpDrainLocal(); MP.st='closed'; MP.why=why; if(mpOpenTotal()>0&&(clean||/host left/i.test(why))) mpVoidOpen('table closed'); mpTeardown(); if(U.screen==='mp') render(); }
+function mpClosed(why,clean,fin){ if(MP.st==='closed') return; mpDrainLocal(); MP.st='closed'; MP.why=why; MP.fin=fin||MP.fin||(/host left/i.test(why)&&MP.R&&MP.R.lb?Object.assign({room:MP.code},MP.R.lb):null); if(mpOpenTotal()>0&&(clean||/host left/i.test(why))) mpVoidOpen('table closed'); mpTeardown(); if(U.screen==='mp') render(); }
 function mpMyHandBusy(){ const R=MP.R; if(!R) return false; const X=R.bj.hands[MP.me]; if(X&&(R.bj.phase==='play'||R.bj.phase==='dealer')) return true; if(R.rl.phase==='spin'&&R.rl.bets[MP.me]) return true; if(R.cr.phase==='roll'&&R.cr.bets[MP.me]&&R.cr.bets[MP.me].on>0) return true;
   const F=R.f7; if(F&&F.phase==='play'&&F.G&&(F.G.phase==='deal'||F.G.phase==='turns')&&(F.G.players.some(q=>q.pid===MP.me&&!q.folded)||(F.live&&F.live[MP.me]))) return true;
   if(R.kn&&R.kn.phase==='draw'&&R.kn.inRace.includes(MP.me)) return true; return false; }
@@ -2230,14 +2311,14 @@ function mpLeave(){ if(MP.st==='closed'||MP.st==='error'||MP.st==='idle') return
   if(MP.st==='loading'||MP.st==='connecting') return mpCancel();
   if(MP.st==='in'&&mpMyHandBusy()){ toast('✋ Finish your hand / let the spin land first.'); return; }
   if(MP.role==='host'){ if(Date.now()-MP.closeArm>4000){ MP.closeArm=Date.now(); toast('⚠️ You are the host. Tap again to close the table for everyone.'); return; }
-    MP.leaving=true; if(MP.H){ MP.H.close('The host left. Table closed.'); } mpDrainLocal(); mpTeardown(); return mpFinishLeave(); }
+    MP.leaving=true; if(MP.H){ MP.H.close('The host left. Table closed.'); } mpDrainLocal(); if(MP.st==='closed') return; mpTeardown(); return mpFinishLeave(); } // host sees FINAL STANDINGS (via its own close message), then Back
   const F=MP.R&&MP.R.f7; if(F&&F.phase==='play'&&F.G&&F.G.players.some(q=>q.pid===MP.me&&!q.folded)&&Date.now()-MP.closeArm>4000){ MP.closeArm=Date.now(); toast(`⚠️ You're in a Flip 7 game. Leaving forfeits your ${money(F.buy)} buy-in. Tap again to walk.`); return; }
   MP.leaving=true; mpSend({t:'bye'}); setTimeout(()=>{ if(MP.leaving&&MP.st!=='idle') mpFinishLeave(); },2500); }
 function mpCancel(){ mpTeardown(); MP.st='idle'; MP.role=null; render(); }
 function mpFinishLeave(){ mpDrainLocal(); const net=MP.sessNet, played=MP.charged; mpTeardown();
-  Object.assign(MP,{st:'idle',role:null,R:null,prevR:null,me:null,code:'',sess:'',err:'',why:'',sessNet:0,leaving:false,charged:false,retry:0,closeArm:0});
+  Object.assign(MP,{st:'idle',role:null,R:null,prevR:null,me:null,code:'',sess:'',err:'',why:'',sessNet:0,leaving:false,charged:false,retry:0,closeArm:0,fin:null,lbMv:{},lbUpd:0});
   if(S&&played){ toast(`🌐 Online session: ${net>=0?'+':''}${money(net)}.`); news(`Online casino session: ${net>=0?'+':''}${money(net)}`); if(net<-100) addTilt(8); S.lastLog=[`🌐 You got home from the online casino ${net>=0?'up':'down'} ${money(Math.abs(net))}.`].concat(S.lastLog||[]).slice(0,4); save(); }
-  U.mpv='lobby'; go(S&&!S.ended?(U.mpFrom==='casino'&&U.cs?'casino':'hub'):'title'); }
+  U.mpv='lobby'; U.mpVice=false; U.mpVicePend=0; U.mpSlop=null; go(S&&!S.ended?(U.mpFrom==='casino'&&U.cs?'casino':'hub'):'title'); }
 window.addEventListener('pagehide',()=>{ try{ if(MP.role==='host'&&MP.H&&!MP.H.closed){ MP.H.close('The host left. Table closed.'); mpDrainLocal(); } }catch(e){} });
 // ===================== MULTIPLAYER: SCREENS =====================
 const MP_TNAME={lobby:'🛋️ Lobby',bj:'🂡 Blackjack',cr:'🎲 Craps',rl:'🎡 Roulette',sb:'📺 Sportsbook',f7:'7️⃣ Flip 7',kn:'🎱 Keno'};
@@ -2255,14 +2336,14 @@ function mpCanvasTall(on){ const cv=SC.cv; if(!cv) return; if(cv.classList.conta
 function mpOpen(from){ U.mpFrom=from||'title'; if(MP.st==='error'){ MP.st='idle'; } MP.err=''; go('mp'); }
 function mpAutoJoin(raw){ const code=mpNormCode(raw); U.mpFrom='link'; U.mpCode=code; const st=mpStore(); if(code&&(st.name||load())){ if(!st.name){ const sv=load(); mpStoreSet({name:sv.name,color:st.color||MP_COLORS[1+Math.floor(Math.random()*(MP_COLORS.length-1))]}); } go('mp'); mpJoinStart(code); } else go('mp'); }
 function mpTopRow(){ if(!MP.code||(MP.st!=='in'&&MP.st!=='reconnecting')) return ''; const open=mpOpenTotal(), n=MP.sessNet;
-  return `<div class="small" style="margin-top:3px">🌐 <b class="b">DEGEN-${esc(MP.code)}</b> · ${MP.role==='host'?'👑 hosting':'guest'} · session <b class="${n>=0?'g':'r'}">${n>=0?'+':''}${money(n)}</b>${open>0?` · <span class="a">${money(open)} riding</span>`:''}${MP.st==='reconnecting'?' · <b class="r">reconnecting…</b>':''} <button class="chip mploanbtn" onclick="mpLoanOpen()" ${MP.st==='in'?'':'disabled'}>💰 Get a Loan / Re-up</button></div>`; }
+  return `<div class="small" style="margin-top:3px">🌐 <b class="b">DEGEN-${esc(MP.code)}</b> · ${MP.role==='host'?'👑 hosting':'guest'} · session <b class="${n>=0?'g':'r'}">${n>=0?'+':''}${money(n)}</b>${open>0?` · <span class="a">${money(open)} riding</span>`:''}${MP.st==='reconnecting'?' · <b class="r">reconnecting…</b>':''} <button class="chip mploanbtn" onclick="mpLoanOpen()" ${MP.st==='in'?'':'disabled'}>💰 Get a Loan / Re-up</button><button class="chip mpvicebtn" onclick="mpViceOpen()" ${MP.st==='in'?'':'disabled'}>🍺 Cocktail Waitress / 🚬 Smoke</button></div>`; }
 function renderMPSafe(){ if(U.screen==='mp') renderMP(false); }
-function renderMP(full){ mpCanvasTall(true); if(!MP.uiTick) MP.uiTick=setInterval(mpUiTick,250);
+function renderMP(full){ mpCanvasTall(true); if(!((MP.st==='in'||MP.st==='reconnecting')&&MP.R)) document.body.classList.remove('lbside'); if(!MP.uiTick) MP.uiTick=setInterval(mpUiTick,250);
   const st=MP.st; if((st==='in'||st==='reconnecting')&&MP.R) return mpRenderRoom(full);
   scene('casino',[{id:'me',x:.5,color:mpColor(U.mpCol),label:String(U.mpName||'YOU').toUpperCase().slice(0,9),hat:'cap',hatc:mpColor(U.mpCol),pose:(st==='connecting'||st==='loading'||st==='in')?'phone':'idle',held:'phone'},{id:'d',x:.8,hat:'visor',label:'DEALER DEB',pose:'deal',color:'#ffd9a0'}],{caption:'🌐 ONLINE CASINO'});
   if(st==='in'){ setMain('<div class="panel">🪑 Pulling up a chair…</div>'); return; }
   if(st==='loading'||st==='connecting'||st==='reconnecting'){ setMain(`<h2>🌐 ONLINE CASINO</h2><div class="panel">⏳ ${st==='loading'?'Loading the multiplayer guts and opening a table…':`Connecting to <b>DEGEN-${esc(MP.code)}</b>…`}<div class="small dim">Peer-to-peer over WebRTC. If this hangs for 15s, your network may be blocking it.</div></div><button class="btn c" onclick="mpCancel()">✖ Cancel</button>`); return; }
-  if(st==='closed'){ setMain(`<div class="paper"><div class="hl">🔒 TABLE CLOSED</div><p>${esc(MP.why)}</p><p>Session: <b>${MP.sessNet>=0?'+':''}${money(MP.sessNet)}</b>. Your bankroll lives in your save: ${money(S?S.cash:0)}.</p></div><button class="btn big go" onclick="mpFinishLeave()">⬅ Back</button>`); return; }
+  if(st==='closed'){ setMain(`${MP.fin?mpFinalHtml(MP.fin):''}<div class="paper"><div class="hl">🔒 TABLE CLOSED</div><p>${MP.role==='host'&&MP.fin?'You closed the table. Everybody got their final standings.':esc(MP.why)}</p><p>Session: <b>${MP.sessNet>=0?'+':''}${money(MP.sessNet)}</b>. Your bankroll lives in your save: ${money(S?S.cash:0)}.</p></div><button class="btn big go" onclick="mpFinishLeave()">⬅ Back</button>`); return; }
   setMain(mpSetupHtml()); }
 function mpSetupHtml(){ const st=mpStore(); const sv=(S&&!S.ended)?S:load(); const live=!!(sv&&!sv.ended);
   if(U.mpName==null) U.mpName=st.name||(live?sv.name:'')||('Degen'+(100+Math.floor(Math.random()*900)));
@@ -2283,8 +2364,9 @@ function mpGoJoin(){ mpSaveIdent(); const el=document.getElementById('mpcode'); 
 function mpSetColor(c){ const el=document.getElementById('mpnm'); if(el) U.mpName=el.value; U.mpCol=mpColor(c); renderMP(); }
 function mpBack(){ MP.err=''; if(MP.st==='error') MP.st='idle'; go(S&&!S.ended?(U.mpFrom==='casino'&&U.cs?'casino':'hub'):'title'); }
 // ---------- room shell ----------
-function mpRenderRoom(full){ if(full||!document.getElementById('mpv')){ setMain(`<div id="mpbar"></div><div id="mpv"></div>${mpChatShell()}`); MP.chatShown=-1; mpSyncScene(true); } else mpSyncScene(false);
-  document.getElementById('mpbar').innerHTML=mpBarHtml(); document.getElementById('mpv').innerHTML=mpViewHtml(); mpRenderChat(); renderTop(); }
+function mpRenderRoom(full){ if(full||!document.getElementById('mpv')){ setMain(`<div id="mpbar"></div><div id="mplbx"></div><div id="mpv"></div>${mpChatShell()}`); MP.chatShown=-1; mpSyncScene(true); } else mpSyncScene(false);
+  const snap=mpLbSnap(); document.body.classList.toggle('lbside',U.mpv!=='lobby');
+  document.getElementById('mpbar').innerHTML=mpBarHtml(); document.getElementById('mplbx').innerHTML=U.mpv==='lobby'?'':mpLbStripHtml(MP.R); document.getElementById('mpv').innerHTML=mpViewHtml(); mpLbFlip(snap); mpRenderChat(); renderTop(); }
 function mpBarHtml(){ const R=MP.R; return `${MP.st==='reconnecting'?'<div class="panel r small">📡 Connection lost — reconnecting… (your bets are safe with the host)</div>':''}<div class="tabs mptabs">${MP_TABLES.map(t=>`<button class="tab ${U.mpv===t?'on':''}" onclick="mpGo('${t}')">${MP_TSHORT[t]}<br><span class="small">${t==='lobby'?R.players.length+'/'+MPC.MAXP:R.players.filter(p=>p.table===t).length+' 🧍'}</span></button>`).join('')}</div>`; }
 function mpLoanOpen(){ if(!MP.R||U.screen!=='mp') return; U.mpLoan=!U.mpLoan; sfx.click(); window.scrollTo(0,0); mpRenderRoom(false); }
 function mpBroke(){ const me=mpP(MP.me); return !!(me&&S&&me.bal<MPC.BJ_MIN&&!S.whaleMode); }
@@ -2298,10 +2380,10 @@ function mpLoanHtml(){ if(!S) return '';
   h+=`<div class="small dim">Same deal as the deli: fee 10% +5% per loan you've already taken, and every loan bumps your weekly rate. Cash lands in your save and on the table right away.</div>`;
   if(busy) h+=`<div class="small a">✋ Finish your hand / let the spin land first. No re-upping mid-hand.</div>`;
   h+=`<div class="grid2">${MPC.LOANS.map(v=>{ const fee=Math.round(v*(.1+.05*S.loans)); return `<button class="btn" ${v<=cap&&!busy&&!pend?'':'disabled'} onclick="mpBorrow(${v})">${pend===v?'⏳ Counting…':'Borrow '+money(v)}<small>+${money(v+fee)} debt</small></button>`; }).join('')}</div></div>`; return h; }
-function mpViewHtml(){ const R=MP.R; try{ return mpLoanHtml()+mpTableHtml(R); }catch(e){ console.error(e); return `<div class="panel r">Render glitch: ${esc(e.message)}</div>`; } }
+function mpViewHtml(){ const R=MP.R; try{ return mpSlopHtml()+mpViceHtml()+mpLoanHtml()+mpTableHtml(R); }catch(e){ console.error(e); return `<div class="panel r">Render glitch: ${esc(e.message)}</div>`; } }
 function mpTableHtml(R){ { switch(U.mpv){ case 'bj': return mpBJHtml(R); case 'cr': return mpCrHtml(R); case 'rl': return mpRlHtml(R); case 'sb': return mpSbHtml(R); case 'f7': return mpF7Html(R); case 'kn': return mpKnHtml(R); default: return mpLobbyHtml(R); } } }
 function mpGo(tb){ if(!MP_TABLES.includes(tb)||!MP.R) return; if(U.mpv==='bj'&&tb!=='bj'){ const B=MP.R.bj, X=B.hands[MP.me]; if(X&&B.phase==='play'&&!X.done){ toast('✋ Finish your blackjack hand first.'); return; } }
-  if(U.mpv===tb) return; U.mpv=tb; mpSend({t:'go',table:tb}); sfx.click(); window.scrollTo(0,0); mpRenderRoom(false); }
+  if(U.mpv===tb) return; U.mpSlop=null; U.mpv=tb; mpSend({t:'go',table:tb}); sfx.click(); window.scrollTo(0,0); mpRenderRoom(false); }
 function mpChatShell(){ return `<div class="panel mpchat"><div class="log mplog" id="mpclog"></div><div class="mpemo">${MP_EMOJI.map((e,i)=>`<button class="tab" onclick="mpEmote(${100+i})">${e}</button>`).join('')}</div><div class="mpemo">${MP_TALK.map((t,i)=>`<button class="mptalk" onclick="mpEmote(${i})">${esc(t)}</button>`).join('')}</div><form class="row" onsubmit="mpChatSend();return false"><input type="text" id="mpmsg" maxlength="${MPC.CHATLEN}" placeholder="Talk trash (max ${MPC.CHATLEN} chars)" autocomplete="off" style="flex:1;min-width:0"><button class="btn c" style="width:auto;margin:0;min-width:66px">Send</button></form></div>`; }
 function mpRenderChat(){ const el=document.getElementById('mpclog'); if(!el||!MP.R) return; const ch=MP.R.chat||[]; const last=ch.length?ch[ch.length-1].i:0; if(last===MP.chatShown) return; MP.chatShown=last;
   el.innerHTML=ch.map(m=>m.sys?`<div class="dim small">${esc(m.txt)}</div>`:`<div><b style="color:${mpColor(m.color)}">${esc(m.name)}:</b> ${m.em?`<span class="p">${esc(m.txt)}</span>`:esc(m.txt)}</div>`).join('')||'<div class="dim small">No trash talk yet. Be the change.</div>'; el.scrollTop=el.scrollHeight; }
@@ -2313,7 +2395,8 @@ function mpShare(){ const u=mpLink(); if(navigator.share){ navigator.share({titl
 // ---------- state arrival: fx + re-render ----------
 function mpOnState(){ if(!MP.R) return; if(mpBroke()&&!mpMyHandBusy()&&!mpOpenTotal()){ if(!MP.bustSeen){ MP.bustSeen=true; if(loanCap()>=MPC.LOANS[0]) U.mpLoan=true; } } else if(!mpBroke()) MP.bustSeen=false; try{ mpStateFx(MP.R,MP.prevR); }catch(e){ console.warn('mp fx',e); }
   if(U.screen!=='mp'||MP.rT) return; MP.rT=setTimeout(()=>{ MP.rT=0; if(U.screen==='mp') renderMP(false); },30); }
-function mpStateFx(R,P){ const me=MP.me, tb=U.mpv;
+function mpStateFx(R,P){ const me=MP.me, tb=U.mpv; mpLbMoves(R,P);
+  if(R.vfx&&P&&(!P.vfx||P.vfx.n!==R.vfx.n)&&R.vfx.id!==me&&MP_VICE[R.vfx.k]){ pose('mp_'+R.vfx.id,'drink',1600,'idle'); say('mp_'+R.vfx.id,MP_VICE[R.vfx.k].ic+' ahh',1400); }
   const ch=R.chat||[]; for(const m of ch){ if(m.i>(MP.lastChatI||0)&&P&&!m.sys){ say('mp_'+m.id,String(m.txt),3500); if(m.id!==me) beep(880,.03,'square',.015); } } MP.lastChatI=ch.length?ch[ch.length-1].i:0;
   if(!P) return;
   if(R.bj.turn===me&&P.bj.turn!==me&&R.bj.phase==='play'){ sfx.coin(); if(tb!=='bj') toast('🂡 Your turn at blackjack!'); }
@@ -2330,7 +2413,7 @@ function mpStateFx(R,P){ const me=MP.me, tb=U.mpv;
   if(tb==='kn'&&R.kn&&P.kn){ if(R.kn.phase==='draw'&&R.kn.shown.length>(P.kn.phase==='draw'?P.kn.shown.length:0)){ sfx.tick(); pose('kr','point',400,'idle'); }
     if(R.kn.phase==='done'&&P.kn.phase!=='done') for(const id in R.kn.res){ const n=R.kn.res[id].net; pose('mp_'+id,n>0?'celebrate':'facepalm',2000,'idle'); } }
   if(tb==='sb'&&R.sb.ticker.length&&P.sb.ticker.length){ const a=R.sb.ticker[R.sb.ticker.length-1], b=P.sb.ticker[P.sb.ticker.length-1]; if(a.txt!==b.txt&&a.cls==='big'){ const here=R.players.filter(p=>p.table==='sb'); if(here.length) pose('mp_'+pick(here).id,rnd()<.5?'cheer':'groan',1400,'sit'); } } }
-function mpUiTick(){ if(U.screen!=='mp'||!MP.R) return; for(const el of document.querySelectorAll('[data-cd]')){ const k=el.getAttribute('data-cd'); const o=MP.R[k]; if(o) el.textContent=mpSec(o.rem); } }
+function mpUiTick(){ if(U.screen!=='mp'||!MP.R) return; const tn=Date.now(); const ne=document.getElementById('mpnic'); if(ne){ const l=mpNicLeft(); if(l>0) ne.textContent=Math.ceil(l/1000); else renderMPSafe(); } for(const el of document.querySelectorAll('.lbmv[data-exp]')) if(+el.getAttribute('data-exp')<tn) el.remove(); for(const el of document.querySelectorAll('[data-cd]')){ const k=el.getAttribute('data-cd'); const o=MP.R[k]; if(o) el.textContent=mpSec(o.rem); } }
 // ---------- canvas scenes ----------
 function mpActor(p,i,extra){ return Object.assign({id:'mp_'+p.id,x:.5,s:.7,color:mpColor(p.color),label:String(p.name||'?').toUpperCase().slice(0,9),lc:p.id===MP.me?'#5dff8a':'#ffc24a',hat:p.host?'crown':['cap','beanie','visor','bald','cap'][i%5],hatc:mpColor(p.color),pose:'idle',ph:i*.7},extra||{}); }
 function mpSceneFor(tb){ const R=MP.R; if(!R) return null; const ps=R.players; const actors=[]; let bg; const opts={caption:''};
@@ -2374,12 +2457,11 @@ function mpOverRL(c,W,H,t){ const R=MP.R; if(!R) return; const T=R.rl, N=38, seg
   if(!spin&&T.n!=null&&T.spinNo>0){ const col={rd:'#e03030',bk:'#ddd',gr:'#3ad070'}[rlColor(T.n)]; c.font='bold 20px monospace'; c.lineWidth=4; c.strokeStyle='#000'; c.strokeText(rlLabel(T.n),cx,cy); c.fillStyle=col; c.fillText(rlLabel(T.n),cx,cy); }
   if(spin){ c.font='bold 11px monospace'; c.fillStyle='#ffc24a'; c.fillText('NO MORE BETS',cx,cy+rad+16); } }
 // ---------- views ----------
-function mpLeaderHtml(R){ const ps=R.players.slice().sort((a,b)=>b.net-a.net); return `<h3>🏆 Room leaderboard</h3><div class="panel">${ps.map((p,i)=>`<div class="kv"><span>${['🥇','🥈','🥉','4.','5.'][i]||i+1+'.'} ${mpDot(p.color)}${esc(p.name)}${p.id===MP.me?' <span class="g small">(you)</span>':''}</span><b class="${p.net>=0?'g':'r'}">${p.net>=0?'+':''}${money(p.net)}</b></div>`).join('')}</div>`; }
 function mpLobbyHtml(R){ const url=mpLink();
   let h=`<h2>🌐 THE BACK ROOM <span class="small dim">${R.players.length}/${MPC.MAXP} degenerates</span></h2><div class="panel" style="text-align:center"><div class="small dim">Room code — send it to your friends</div><div class="mpcode">DEGEN-${esc(MP.code)}</div><div class="grid2"><button class="btn c" onclick="mpCopy()">📋 Copy invite link</button><button class="btn c" onclick="mpShare()">📤 Share</button></div><div class="small dim" style="word-break:break-all">${esc(url)}</div></div>`;
   h+=`<h3>🪑 Who's here</h3><table><tr><th>Degen</th><th>At</th><th>Bankroll</th><th>Session</th></tr>${R.players.map(p=>`<tr><td>${mpDot(p.color)}<b>${esc(p.name)}</b>${p.host?' 👑':''}${p.id===MP.me?' <span class="g small">(you)</span>':''}${p.conn?'':' <span class="r small">📵</span>'}</td><td>${MP_TSHORT[p.table]||''}</td><td>${money(p.bal)}${p.loaned?` <span class="small a" title="borrowed from Sal this session">🥪${money(p.loaned)}</span>`:''}</td><td class="${p.net>=0?'g':'r'}">${p.net>=0?'+':''}${money(p.net)}</td></tr>`).join('')}</table>`;
   h+=`<h3>🎰 Tables</h3><div class="grid2">${['bj','cr','rl','sb','f7','kn'].map(t=>`<button class="btn" onclick="mpGo('${t}')">${MP_TNAME[t]}<small>${MP_TDESC[t]} · ${R.players.filter(p=>p.table===t).length} here</small></button>`).join('')}</div>`;
-  h+=mpRoomTotHtml(R)+mpLeaderHtml(R)+`<div class="small dim">Your online bankroll is your single-player save (${money(S?S.cash:0)}). Wins & losses write back to your run. The day doesn't advance while you're here.</div>`;
+  h+=mpLbFullHtml(R)+mpRoomTotHtml(R)+`<div class="small dim">Your online bankroll is your single-player save (${money(S?S.cash:0)}). Wins & losses write back to your run. The day doesn't advance while you're here.</div>`;
   h+=`<button class="btn c ${MP.role==='host'?'bad':''}" onclick="mpLeave()">${MP.role==='host'?'🔒 Close the table (kicks everyone)':'🚪 Leave the room'}</button>`; return h; }
 function mpChipsAdd(vals,fn,max){ return `<div class="row">${vals.map(v=>`<button class="chip" ${v>max?'disabled':''} onclick="${fn}(${v})">+$${v>=1000?(v/1000)+'k':v}</button>`).join('')}</div>`; }
 function mpBJHtml(R){ const B=R.bj, me=MP.me, myP=mpP(me)||{bal:0}, seat=B.seats.indexOf(me); let st;
@@ -2399,12 +2481,14 @@ function mpBJHtml(R){ const B=R.bj, me=MP.me, myP=mpP(me)||{bal:0}, seat=B.seats
   if(seat<0) h+=`<div class="panel small">${B.seats.includes(null)?'🪑 Grabbing you a seat…':'🪑 Table full. You\'re watching (and heckling).'}</div>`;
   else if(B.phase==='bet'){ const my=B.bets[me]||0, last=B.last[me]; h+=`<div class="small">Your bet: <b class="a">${money(my)}</b> · bankroll ${money(myP.bal)}</div>${mpChipsAdd([5,10,25,100,250,500,1000],'mpBjChip',Math.min(myP.bal-my,MPC.BJ_MAX-my))}<div class="grid2"><button class="btn c" onclick="mpBjClear()" ${my?'':'disabled'}>✖ Clear bet</button><button class="btn c" onclick="mpBjRebet()" ${last&&!my&&last<=myP.bal?'':'disabled'}>↻ Rebet ${last?money(last):''}</button></div>`; }
   else if(B.phase==='play'&&B.turn===me){ const X=B.hands[me], hd=X.hs[X.act]; const cd=hd.cards.length===2&&myP.bal>=hd.bet, cs=X.hs.length===1&&hd.cards.length===2&&cval(hd.cards[0])===cval(hd.cards[1])&&myP.bal>=hd.bet;
-    h+=`<div class="grid2"><button class="btn c big" onclick="mpBjAct('hit')">👆 HIT</button><button class="btn c big" onclick="mpBjAct('stand')">✋ STAND</button><button class="btn c" ${cd?'':'disabled'} onclick="mpBjAct('double')">💰 DOUBLE</button><button class="btn c" ${cs?'':'disabled'} onclick="mpBjAct('split')">✂️ SPLIT</button></div>`; }
+    const rm=!!(S&&has('rainman')), blur=rm&&S.buzz>60, hint=rm&&!blur&&B.dealer[0]&&!B.dealer[0].h?basicStrategy(hd.cards,B.dealer[0]):null, hl=k=>hint===k?' gold':'';
+    if(blur) h+=`<div class="small a">🥴 Buzz ${S.buzz}: the Rain Man count is a blur. No strategy hints until you sober up a bit.</div>`;
+    h+=`<div class="grid2"><button class="btn c big${hl('H')}" onclick="mpBjAct('hit')">👆 HIT</button><button class="btn c big${hl('S')}" onclick="mpBjAct('stand')">✋ STAND</button><button class="btn c${hl('D')}" ${cd?'':'disabled'} onclick="mpBjAct('double')">💰 DOUBLE</button><button class="btn c${hl('P')}" ${cs?'':'disabled'} onclick="mpBjAct('split')">✂️ SPLIT</button></div>`; }
   return h; }
 function mpBjChip(v){ mpSend({t:'bj.add',v}); sfx.click(); }
 function mpBjClear(){ mpSend({t:'bj.bet',amt:0}); }
 function mpBjRebet(){ const l=MP.R&&MP.R.bj.last[MP.me]; if(l) mpSend({t:'bj.bet',amt:l}); }
-function mpBjAct(a){ mpSend({t:'bj.act',a}); sfx.click(); }
+function mpBjAct(a){ mpDrunk({hit:'HIT',stand:'STAND',double:'DOUBLE DOWN',split:'SPLIT'}[a]||a,()=>{ mpSend({t:'bj.act',a}); sfx.click(); }); }
 function mpCrHtml(R){ const T=R.cr, me=MP.me, myP=mpP(me)||{bal:0}; const mine=T.bets[me]||{bets:newCraps().bets,comes:[],dcs:[],on:0}; const b=mine.bets, on=T.point!==null, lock=T.phase!=='bet', iShoot=T.shooter===me; U.mpCrChip=U.mpCrChip||5;
   const amt=v=>v?`<span class="amt">$${v}</span>`:''; const OD={4:'2:1',10:'2:1',5:'3:2',9:'3:2',6:'6:5',8:'6:5'};
   const btn=(k,n,label,sub,cls,dis)=>`<button class="cb ${cls||''}" ${dis||lock?'disabled':''} onclick="mpCrBet('${k}',${n==null?'null':n})"><b>${label}</b>${sub?`<span style="font-size:10px">${sub}</span>`:''}${amt(k==='place'?b.place[n]:k==='hard'?b.hard[n]:b[k])}</button>`;
@@ -2422,7 +2506,8 @@ function mpCrHtml(R){ const T=R.cr, me=MP.me, myP=mpP(me)||{bal:0}; const mine=T
   const others=Object.entries(T.bets).filter(([id,x])=>id!==me&&x.on>0); if(others.length) h+=`<div class="small dim">On the felt: ${others.map(([id,x])=>`${mpName(id)} ${money(x.on)}`).join(' · ')}</div>`; return h; }
 function mpCrChip(v){ U.mpCrChip=v; mpRenderRoom(false); }
 function mpCrBet(k,n){ mpSend({t:'cr.bet',k,n,v:U.mpCrChip||5}); sfx.click(); }
-function mpCrRoll(){ mpSend({t:'cr.roll'}); say('mp_'+MP.me,pick(['Daddy needs rent!','COME ON BABY','No sevens no sevens','For Big Sal!']),1200); }
+function mpCrRoll(){ mpDrunk('ROLL THE DICE',mpCrRoll2); }
+function mpCrRoll2(){ mpSend({t:'cr.roll'}); say('mp_'+MP.me,pick(['Daddy needs rent!','COME ON BABY','No sevens no sevens','For Big Sal!']),1200); }
 function mpCrDown(){ mpSend({t:'cr.down'}); }
 function mpRlHtml(R){ const T=R.rl, me=MP.me, myP=mpP(me)||{bal:0}, mine=T.bets[me]||{}, lock=T.phase!=='bet'; U.mpRlChip=U.mpRlChip||5; let tot=0; for(const k in mine) tot+=mine[k];
   const oth={}; for(const id in T.bets) if(id!==me) for(const k in T.bets[id]) oth[k]=(oth[k]||0)+T.bets[id][k];
@@ -2494,7 +2579,7 @@ function mpF7Html(R){ const T=R.f7, me=MP.me, myP=mpP(me)||{bal:0}; U.mpF7=U.mpF
     G.players.forEach((q,i)=>{ if(!q.npc) return; const cur=(B.bust&&B.bust[i])||0; h+=`<div class="small">💥 <b>${esc(q.name)} busts</b> this round — pays <b>${F7_SIDE.bust[q.npc]}:1</b></div><div class="row">${MPC.F7_SBV.map(v=>`<button class="chip ${cur===v?'on':''}" ${v-cur>myP.bal?'disabled':''} onclick="mpF7Sb('bust',${i},${v})">${v?'$'+v:'none'}</button>`).join('')}</div>`; });
     h+=`</div>${inGame?`<button class="btn go" ${T.ready.includes(me)?'disabled':''} onclick="mpSend({t:'f7.ready'})">${T.ready.includes(me)?'✅ Ready':'🃏 Ready — deal it'}</button>`:''}`; }
   return h+mpF7Log(T); }
-function mpF7Act(a,to){ mpSend({t:'f7.act',a,to}); sfx.click(); }
+function mpF7Act(a,to){ mpDrunk(a==='hit'?'HIT':a==='stay'?'STAY':'PICK A TARGET',()=>{ mpSend({t:'f7.act',a,to}); sfx.click(); }); }
 function mpF7Sb(k,i,v){ mpSend({t:'f7.sb',k,i,v}); sfx.click(); }
 // ---------- KENO (online) ----------
 function mpKnHtml(R){ const T=R.kn, me=MP.me, myP=mpP(me)||{bal:0}, mine=T.tickets[me]; const K=U.mpKn=U.mpKn||{picks:[],bet:5,races:1};
@@ -2525,13 +2610,97 @@ function mpRoomTotHtml(R){ const T=R.rt||{w:0,r:0,n:0,gone:[]}, n=r2(T.r-T.w); c
   return `<h3>🧮 ROOM TOTALS <span class="small dim">this session · ${T.n} bets settled</span></h3><div class="panel roomtot"><div class="kv"><span>Everyone wagered</span><b>${money(T.w)}</b></div><div class="kv"><span>Everyone won (gross)</span><b>${money(T.r)}</b></div><div class="kv"><span>Room net vs the house</span><b class="${n>0?'g':n<0?'r':''}">${lifeSigned(n)}</b></div>
   <table class="small"><tr><th>Degen</th><th>Wagered</th><th>Won</th><th>Net</th></tr>${rows.map(p=>{ const pn=r2(p.rr-p.rw); return `<tr><td>${mpDot(p.color)}${esc(p.name)}${p.me?' <span class="g">(you)</span>':''}${p.left?' <span class="dim">(left)</span>':''}</td><td>${money(p.rw)}</td><td>${money(p.rr)}</td><td class="${pn>0?'g':pn<0?'r':''}">${lifeSigned(pn)}</td></tr>`; }).join('')}</table>
   <div class="small dim">${n<0?pick(['The house is eating good tonight.','Collectively donating to the casino. Beautiful teamwork.']):n>0?'The room is UP. Somebody check the dealer\'s pulse.':'Dead even. Suspicious.'}</div></div>`; }
+
+// ---------- LIVE SESSION LEADERBOARD (host-computed, broadcast after every settlement; clients only render) ----------
+// Ranked by session net. Loans (🥪) are shown separately and never count as profit. Players who left stay listed.
+const MP_LB_CLOWN="🤡 Sal's favorite customer";
+function mpLbData(R){ const L=R&&R.lb; return L&&Array.isArray(L.rows)&&L.ord?L:{v:0,rows:[],ord:{all:[]}}; }
+function mpLbList(L,tb){ return ((L.ord&&L.ord[tb])||[]).map(id=>L.rows.find(r=>r.id===id)).filter(Boolean); }
+function mpLbS(r,tb){ if(tb==='all') return r; const T=(r.t&&r.t[tb])||{n:0,net:0,w:0,big:0,st:0,bst:0}; return Object.assign({},r,{net:T.net,w:T.w,n:T.n,big:T.big,st:T.st,bst:T.bst}); }
+function mpLbTag(list,i,tb){ if(!list.length) return ''; if(i===0) return '👑'; if(i===list.length-1&&list.length>1&&mpLbKey(list[i],tb)<mpLbKey(list[0],tb)) return '🤡'; return ''; }
+function mpLbStk(s){ return s>=2?`<span class="a">🔥${s}</span>`:s<=-3?`<span class="b">🥶${-s}</span>`:''; }
+function mpLbMvHtml(id){ const m=MP.lbMv&&MP.lbMv[id]; if(!m||Date.now()-m.t>6000) return ''; return `<span class="lbmv ${m.d>0?'up':'dn'}" data-exp="${m.t+6000}">${m.d>0?'▲':'▼'}${Math.abs(m.d)}</span>`; }
+function mpLbMoves(R,P){ const L=mpLbData(R), PL=P?mpLbData(P):null; if(!PL||L.v===PL.v) return; MP.lbUpd=(MP.lbUpd||0)+1; MP.lbMv=MP.lbMv||{};
+  const a=L.ord.all||[], b=PL.ord.all||[]; a.forEach((id,i)=>{ const j=b.indexOf(id); if(j>=0&&j!==i) MP.lbMv[id]={d:j-i,t:Date.now()}; });
+  if(a.length>1&&a[0]===MP.me&&b[0]!==MP.me){ toast('👑 You took the chip lead. Act humble. (You won\'t.)'); sfx.coin(); }
+  else if(a.length>1&&a[a.length-1]===MP.me&&b[b.length-1]!==MP.me&&b.includes(MP.me)) toast("🤡 Dead last. You're Sal's favorite customer now."); }
+const MP_LB_TABS=['all','bj','cr','rl','sb','f7','kn'];
+function mpLbName(r){ return `${mpDot(r.color)}<b>${esc(r.name)}</b>${r.host?' 🏠':''}${r.id===MP.me?' <span class="g small">(you)</span>':''}${r.left?' <span class="dim small">(left)</span>':r.conn===false?' <span class="r small">📵</span>':''}`; }
+function mpLbFullHtml(R){ const L=mpLbData(R), tb=MP_LB_TABS.includes(U.lbTb)?U.lbTb:'all', list=mpLbList(L,tb);
+  let h=`<h3>🏆 LIVE LEADERBOARD <span class="small dim">ranked by session net · updates after every settled bet</span></h3><div class="row lbtabs">${MP_LB_TABS.map(t=>`<button class="chip ${t===tb?'on':''}" onclick="mpLbSet('${t}')">${t==='all'?'🌐 All tables':MP_TSHORT[t]}</button>`).join('')}</div>`;
+  if(!list.length) return h+`<div class="panel small dim">${tb==='all'?'Nobody has settled a bet yet.':'Nobody has played '+MP_TNAME[tb]+' yet.'} Somebody be brave.</div>`;
+  h+=`<div class="panel lbwrap" data-lbk="full"><table class="lbtbl"><tr><th>#</th><th>Degen</th><th>Net</th><th>Bankroll</th><th>Wagered</th><th>Hands</th><th>Best win</th><th>Streak</th><th>🥪 Loans</th></tr>`;
+  list.forEach((r0,i)=>{ const r=mpLbS(r0,tb), tag=mpLbTag(list,i,tb);
+    h+=`<tr data-lbid="${esc(r.id)}" class="${r.id===MP.me?'lbme':''} ${r.left?'lbleft':''}"><td>${i+1}${tag?' '+tag:''} ${mpLbMvHtml(r.id)}</td><td>${mpLbName(r)}${tag==='🤡'?`<div class="small r">${MP_LB_CLOWN}</div>`:''}</td><td class="${r.net>0?'g':r.net<0?'r':''}"><b>${lifeSigned(r.net)}</b></td><td>${money(r.bal)}${r.ride>0?`<div class="small a">+${money(r.ride)} riding</div>`:''}</td><td>${money(r.w)}</td><td>${r.n}</td><td class="${r.big>0?'g':'dim'}">${r.big>0?'+'+money(r.big):'—'}</td><td>${mpLbStk(r.st)||'—'}${r.bst>=2?` <span class="small dim">best ${r.bst}</span>`:''}</td><td>${r.loan?`<span class="a">🥪 ${money(r.loan)}</span>${r.loanN>1?` <span class="small dim">×${r.loanN}</span>`:''}`:'<span class="dim">—</span>'}</td></tr>`; });
+  return h+`</table><div class="small dim">Net = bankroll + money still riding − what you sat down with − 🥪 loans. Borrowing from Sal isn't winning, no matter what you tell your mom.</div></div>`; }
+function mpLbSet(t){ U.lbTb=t; sfx.click(); mpRenderRoom(false); }
+function mpLbOpen(){ return U.lbOpen!=null?U.lbOpen:(window.innerWidth||800)>=640; }
+function mpLbToggle(){ U.lbOpen=!mpLbOpen(); sfx.click(); mpRenderRoom(false); }
+function mpLbScope(v){ U.lbScope=v; sfx.click(); mpRenderRoom(false); }
+// compact strip: always on every online table (side dock on wide screens, collapsible one-liner on phones; never on top of cards/buttons)
+function mpLbStripHtml(R){ if(!R) return ''; const L=mpLbData(R), here=U.mpv, tb=U.lbScope==='table'&&MP_LB_TB.includes(here)?here:'all', list=mpLbList(L,tb), open=mpLbOpen();
+  const mi=list.findIndex(r=>r.id===MP.me), me=mi>=0?mpLbS(list[mi],tb):null, top=list[0]?mpLbS(list[0],tb):null;
+  const sum=list.length?`${me?`<b>#${mi+1}</b>/${list.length} you <b class="${me.net>0?'g':me.net<0?'r':''}">${lifeSigned(me.net)}</b>`:''}${top&&top.id!==MP.me?` · 👑 ${esc(top.name)} <b class="${top.net>0?'g':top.net<0?'r':''}">${lifeSigned(top.net)}</b>`:me?' 👑':''}`:'<span class="dim">no hands yet</span>';
+  let h=`<div class="lbstrip ${open?'open':''}" data-lbk="strip"><button class="lbhead" onclick="mpLbToggle()" aria-expanded="${open}"><span>🏆 <b>LIVE</b> <span class="small dim">${tb==='all'?'all tables':MP_TSHORT[tb]}</span></span><span class="lbsum">${sum}</span><span class="lbcar">${open?'▴':'▾'}</span></button>`;
+  h+=`<div class="lbbody"><div class="row lbscope"><button class="chip ${tb==='all'?'on':''}" onclick="mpLbScope('all')">🌐 All tables</button>${MP_LB_TB.includes(here)?`<button class="chip ${tb===here?'on':''}" onclick="mpLbScope('table')">${MP_TSHORT[here]} only</button>`:''}</div>`;
+  if(!list.length) h+=`<div class="small dim">${tb==='all'?'No settled bets yet.':'Nobody has played here yet.'}</div>`;
+  list.forEach((r0,i)=>{ const r=mpLbS(r0,tb), tag=mpLbTag(list,i,tb);
+    h+=`<div class="lbrow ${r.id===MP.me?'lbme':''} ${r.left?'lbleft':''} ${tag==='👑'?'lbking':tag==='🤡'?'lbclown':''}" data-lbid="${esc(r.id)}"><div class="lbl1"><span class="lbrk">${i+1}${tag}</span><span class="lbnm">${mpLbName(r)}</span>${mpLbMvHtml(r.id)}<b class="lbnet ${r.net>0?'g':r.net<0?'r':''}">${lifeSigned(r.net)}</b></div>
+      <div class="lbl2 small dim">💵 ${money(r.bal)}${r.ride>0?` (+${money(r.ride)} riding)`:''} · 🎲 ${money(r.w)} wagered · 🃏 ${r.n} · best ${r.big>0?'+'+money(r.big):'—'} ${mpLbStk(r.st)}${r.loan?` · <span class="a">🥪 ${money(r.loan)}</span>`:''}${r.tab?` · 🍺 ${money(r.tab)} tab`:''}</div>${tag==='🤡'?`<div class="lbl2 small r">${MP_LB_CLOWN}</div>`:''}</div>`; });
+  return h+`</div></div>`; }
+// rank-change animation (FLIP): rows slide from their old slot to the new one
+function mpLbSnap(){ const o={}; document.querySelectorAll('[data-lbk]').forEach(c=>{ const ct=c.getBoundingClientRect().top; c.querySelectorAll('[data-lbid]').forEach(el=>{ const r=el.getBoundingClientRect(); if(r.height>0) o[c.getAttribute('data-lbk')+'|'+el.getAttribute('data-lbid')]=r.top-ct; }); }); return o; } // hidden (collapsed) rows have no position: skip them
+function mpLbFlip(b){ if(!b||(window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches)) return;
+  document.querySelectorAll('[data-lbk]').forEach(c=>{ const ct=c.getBoundingClientRect().top, k=c.getAttribute('data-lbk'); c.querySelectorAll('[data-lbid]').forEach(el=>{ const o=b[k+'|'+el.getAttribute('data-lbid')], r=el.getBoundingClientRect(); if(o==null||!r.height) return; const dy=o-(r.top-ct);
+    if(Math.abs(dy)>3&&el.animate){ el.animate([{transform:`translateY(${dy}px)`,background:'#3a3010'},{transform:'none'}],{duration:650,easing:'cubic-bezier(.2,.9,.3,1.15)'}); MP.lbAnims=(MP.lbAnims||0)+1; } }); }); }
+// END-OF-SESSION FINAL STANDINGS (host computes them as it closes the table and sends them with the close message)
+function mpFinalHtml(F){ const L=mpLbData({lb:F}), list=mpLbList(L,'all'); if(!list.length) return '';
+  const best=(f)=>list.slice().sort((a,b)=>f(b)-f(a))[0], big=best(r=>r.big), heat=best(r=>r.bst), loan=best(r=>r.loan), vol=best(r=>r.w), last=list[list.length-1];
+  let h=`<div class="paper lbfinal"><div class="hl">🏁 FINAL STANDINGS</div><div class="small dim">DEGEN-${esc(F.room||MP.code)} · ${Number(F.mins)||1} min · ${Number(F.bets)||0} bets settled · room wagered ${money(Number(F.w)||0)}</div><div class="lbpod">`;
+  list.slice(0,3).forEach((r,i)=>{ h+=`<div class="lbp lbp${i}"><div class="lbpm">${['🥇','🥈','🥉'][i]}${i===0?'👑':''}</div>${mpDot(r.color)}<b>${esc(r.name)}</b>${r.left?' <span class="small dim">(left)</span>':''}<div class="${r.net>0?'g':r.net<0?'r':''}"><b>${lifeSigned(r.net)}</b></div></div>`; });
+  h+=`</div><div class="lifetbl"><table><tr><th>#</th><th>Degen</th><th>Net</th><th>Bankroll</th><th>Wagered</th><th>Hands</th><th>Best win</th><th>🥪 Loans</th></tr>${list.map((r,i)=>`<tr class="${r.id===MP.me?'lbme':''}"><td>${i+1}${mpLbTag(list,i,'all')}</td><td>${mpLbName(r)}</td><td class="${r.net>0?'g':r.net<0?'r':''}"><b>${lifeSigned(r.net)}</b></td><td>${money(r.bal)}</td><td>${money(r.w)}</td><td>${r.n}</td><td>${r.big>0?'+'+money(r.big):'—'}</td><td>${r.loan?'🥪 '+money(r.loan):'—'}</td></tr>`).join('')}</table></div><div class="lbaw small">`;
+  if(big&&big.big>0) h+=`<div>🎯 <b>Biggest hit:</b> ${esc(big.name)} +${money(big.big)}</div>`;
+  if(heat&&heat.bst>=2) h+=`<div>🔥 <b>Longest heater:</b> ${esc(heat.name)}, ${heat.bst} straight wins</div>`;
+  if(vol&&vol.w>0) h+=`<div>🎲 <b>Most action:</b> ${esc(vol.name)}, ${money(vol.w)} wagered</div>`;
+  if(loan&&loan.loan>0) h+=`<div>🥪 <b>Big Sal's best customer:</b> ${esc(loan.name)} borrowed ${money(loan.loan)} (not counted as winnings)</div>`;
+  if(list.length>1&&mpLbKey(last,'all')<mpLbKey(list[0],'all')) h+=`<div class="r"><b>${MP_LB_CLOWN}:</b> ${esc(last.name)} ${lifeSigned(last.net)}. Sal is sending a fruit basket.</div>`;
+  return h+`</div></div>`; }
+
+// ---------- TILT RELIEF AT THE TABLE: 🍺 cocktail waitress / 🚬 smoke break (host-validated like loans) ----------
+function mpViceOpen(){ if(!MP.R||U.screen!=='mp') return; U.mpVice=!U.mpVice; sfx.click(); mpRenderRoom(false); if(U.mpVice) setTimeout(()=>{ const el=document.querySelector('.mpvice'); if(el){ const top=document.getElementById('top'); window.scrollTo(0,Math.max(0,el.getBoundingClientRect().top+scrollY-(top?top.offsetHeight:0)-6)); } },0); }
+function mpNicLeft(){ return Math.max(0,MPC.NIC_CD-(Date.now()-(U.mpNicAt||0))); }
+function mpViceHtml(){ if(!U.mpVice||!S||!MP.R) return ''; const me=mpP(MP.me)||{bal:0}, L=mpLbData(MP.R), row=L.rows.find(r=>r.id===MP.me), net=row?row.net:0, nic=mpNicLeft(), pend=U.mpVicePend;
+  const bz=S.buzz, bzTxt=bz>75?'<b class="r">🥴 SLOPPY (fat-finger prompts)</b>':bz>60?'<b class="a">wobbly (no strategy hints)</b>':bz>=20?'<b class="g">sweet spot</b>':'sober-ish';
+  let h=`<div class="panel mpvice"><h3>🍸 COCKTAIL WAITRESS · 🚬 SMOKE BREAK <button class="chip" style="float:right" onclick="mpViceOpen()">✖</button></h3>`;
+  h+=`<div class="small">😤 Tilt <b>${S.tilt}</b> · 🍺 Buzz <b>${bz}</b> ${bzTxt} · ❤️ HP <b>${S.hp}</b>/${maxHp()} · 💵 ${money(me.bal)}</div>`;
+  h+=`<div class="small dim">Paid from your free bankroll, never from chips already on the felt. Usable mid-hand; your hand doesn't care. Nicotine has a 20s cooldown and works less every time.${nic?` <b class="a">Next nicotine in <span id="mpnic">${Math.ceil(nic/1000)}</span>s.</b>`:''}</div><div class="grid2">`;
+  for(const k in MP_VICE){ const V=MP_VICE[k], why=V.cost>me.bal?'too broke':V.nic&&nic?'cooldown':V.win&&net<MPC.CIGAR_NET?`up $${MPC.CIGAR_NET}+ only`:'';
+    h+=`<button class="btn" ${why||pend?'disabled':''} onclick="mpVice('${k}')">${pend===k?'⏳ Waitress is coming…':`${V.ic} ${V.n} (${money(V.cost)})`}<small>${esc(V.d)}${why?` · <b>${why}</b>`:''}</small></button>`; }
+  return h+`</div></div>`; }
+function mpVice(k){ if(MP.st!=='in'||!S||!MP_VICE[k]||U.mpVicePend) return; U.mpVicePend=k; mpSend({t:'vice',k}); sfx.click(); renderMPSafe(); setTimeout(()=>{ if(U.mpVicePend===k){ U.mpVicePend=0; renderMPSafe(); } },8000); }
+// Too much buzz: a chance of a sloppy fat-finger prompt before a decision (never changes the hand by itself)
+function mpSlopChance(){ return S&&S.buzz>75?Math.min(.5,(S.buzz-70)/60):0; }
+function mpDrunk(label,go){ if(Math.random()<mpSlopChance()){ U.mpSlop={label,go}; sfx.lose(); renderMPSafe(); setTimeout(()=>{ const el=document.querySelector('.mpslop'); if(el) el.scrollIntoView({block:'center'}); },0); return; } U.mpSlop=null; go(); }
+function mpSlopHtml(){ const X=U.mpSlop; if(!X) return ''; return `<div class="panel r mpslop">🥴 <b>SLOPPY.</b> Buzz ${S?S.buzz:0}: you fumbled for <b>${esc(X.label)}</b> and almost knocked a drink into the dealer's lap. Did you actually mean that?<div class="grid2"><button class="btn go" onclick="mpSlopYes()">✅ Yeah, ${esc(X.label)}</button><button class="btn c" onclick="mpSlopNo()">✖ Nah, my bad</button></div></div>`; }
+function mpSlopYes(){ const X=U.mpSlop; U.mpSlop=null; if(X) X.go(); renderMPSafe(); }
+function mpSlopNo(){ U.mpSlop=null; toast('🥴 You put the chips down and pretend that never happened.'); renderMPSafe(); }
 // ===================== WHAT'S NEW (full update log, newest first) =====================
 // Every update since the game was created, rebuilt from the crow99999/arcade git history, the build/test notes and the
 // bugs fixed during testing. Returning players get a pop-up card on the title screen with only the entries newer than
 // the version they last saw (META.wnSeen); brand-new players aren't spammed. The full log lives on a scrollable screen.
-const GAME_VER='1.9.0';
+const GAME_VER='1.10.0';
 const WN_BEFORE_LOG='1.4.1'; // what returning players had before this log existed (last deploy before v1.5.0)
 const CHANGELOG=[
+ {v:'1.10.0',d:'Oct 7, 2026',t:'🏆 Live Leaderboard + 🍺 Tilt Relief at the Tables',items:[
+  'Online rooms now have a LIVE leaderboard. The host does the math and sends it to everyone after every settled bet. Players are ranked by session net, with bankroll, wagered, hands played, biggest win and win streak (🔥) next to each name.',
+  'Loans from Big Sal\'s cousin (🥪) get their own column and never count as profit. Money still riding on a bet isn\'t counted as a loss until it settles.',
+  'At the blackjack table, a compact leaderboard docks beside the table on wide screens. On phones it\'s a one-line strip you tap to open, and it never covers your cards or the HIT/STAND buttons. Every other online table gets the same strip, with an All tables / This table filter.',
+  'The leader gets a 👑 and the host calls out a new chip leader in chat. Last place gets tagged "🤡 Sal\'s favorite customer". Rows slide to their new spots when ranks change, with ▲/▼ arrows.',
+  'The lobby has the full leaderboard with per-table filters (blackjack, craps, roulette, book, Flip 7, keno). Players who left stay on it, marked (left).',
+  'Tilt relief at every online table: tap 🍺 Cocktail Waitress / 🚬 Smoke in the header without leaving your seat. The menu has cheap beer, well whiskey, an energy drink, a cigarette, a vape rip, a nicotine pouch, and a victory cigar for anyone up $250+.',
+  'Drinks and smokes are paid from your free bankroll and settled by the host like loans, so they never touch chips already on the felt. You can order mid-hand without changing the hand. Tilt, Buzz and HP follow the single-player bar rules, and Iron Liver still protects you from the booze.',
+  'Nicotine has a 20-second cooldown and diminishing returns. Above 60 Buzz you lose your Rain Man blackjack hints, and above 75 you might get a SLOPPY prompt asking whether you really meant to hit or roll. The room gets a crude chat announcement for every round you order.',
+  'When the host closes the table, everyone gets a FINAL STANDINGS screen: a podium, everybody\'s numbers, and awards for the biggest hit, longest heater, most action and Big Sal\'s best customer.']},
  {v:'1.9.0',d:'Oct 7, 2026',t:'🕹️ DegenClip Arcade',items:[
   'New location: the DegenClip Arcade (from the neighborhood for ⚡1, or upstairs from the casino floor). A 2005-style game portal with thumbnails, star ratings, fake ads and high-score tables.',
   '⚾ Home Run Derby: 10 outs, five pitch types (heater, slider, changeup, curve, knuckler), timing + bat-height swings, real ball-flight physics (drag + backspin), distance in feet, a crowd and a very rude announcer.',
@@ -3479,7 +3648,7 @@ function renderTop(){ const t=document.getElementById('top'); if(!t) return; if(
   t.innerHTML=`<div class="r1"><span>📅 <b>Day ${S.day}</b> ${DOW[(S.day-1)%7]}</span><span class="cash">💵 ${money(S.cash)}</span><span>${dl}</span><span>${due}</span><span>${'⚡'.repeat(S.energy)}<span class="dim">${'·'.repeat(Math.max(0,energyMax()-S.energy))}</span></span><span class="dim small">Lv${S.lvl}</span></div>
   <div class="meters"><div class="meter">😤 Tilt ${S.tilt}${bar(S.tilt,100,S.tilt>=85?'#ff3030':S.tilt>=60?'#ff9030':'#d0a030')}</div><div class="meter">❤️ HP ${S.hp}/${maxHp()}${bar(S.hp,maxHp(),'#3ad070')}</div><div class="meter">🍺 Buzz ${S.buzz}${bar(S.buzz,100,S.buzz>75?'#c050ff':'#e0b040')}</div></div>${U.screen==='mp'?mpTopRow():''}`; }
 function go(s){ U.screen=s; window.scrollTo(0,0); render(); }
-function render(){ const s=U.screen; { const sc=document.getElementById('scene'); if(sc) sc.style.display=''; } if(s!=='arcade'&&typeof arcStop==='function') arcStop(); mpCanvasTall(s==='mp'); renderTop(); try{
+function render(){ const s=U.screen; { const sc=document.getElementById('scene'); if(sc) sc.style.display=''; } if(s!=='arcade'&&typeof arcStop==='function') arcStop(); mpCanvasTall(s==='mp'); if(s!=='mp') document.body.classList.remove('lbside'); renderTop(); try{
   if(s==='mp') return renderMP(true);
   if(s==='title') return renderTitle(); if(s==='create') return renderCreate(); if(s==='hub') return renderHub(); if(s==='book'){ scene('book',[youActor({x:.5,pose:'phone',held:'phone'})],{caption:'THE SPORTSBOOK'}); return renderBook(); }
   if(s==='live') return renderLive(); if(s==='casino') return renderCasino(); if(s==='alley') return renderAlley(); if(s==='fight') return renderFight(); if(s==='event') return renderEvent();
@@ -3680,7 +3849,7 @@ function renderHelp(){ scene('title',[{id:'a',x:.5,pose:'point',hat:'cap',hatc:'
   <p><b>Edges:</b> the house always has one, but you can beat it with perks: Sharp (see +EV bets), Rain Man (count cards), Vig Killer, Promo Abuser, Eagle Eye (monte), Bottom Dealer (cheat at poker). Fading El Jefe has historically... worked.</p>
   <p><b>Flip 7 (Tony's back room):</b> buy in against 2–3 degenerates. Each round hit or stay; draw a number you already have and you BUST (0). 7 different numbers ends the round (+15). Freeze banks someone out, Flip Three forces 3 cards, Second Chance saves one bust. First to 200 wins the pot (5% rake).</p>
   <p><b>🕹️ DegenClip Arcade:</b> skill games with real bets. <b>Home Run Derby</b>: move/tap to set your bat height, tap/click (or Space) to swing; early = pull, late = oppo; 10 outs (non-HR swings and taken strikes). <b>Mini Putt</b>: drag back from anywhere like a slingshot, release to putt; water is +1 stroke; max 6 a hole. <b>Bowling</b>: drag sideways at the bottom to move, swipe up to bowl: swipe direction aims, a curved swipe hooks, a fast swipe throws harder. Tickets pay by score, props pay fixed odds, hustles pay 2× (ties push). Payouts are priced from bot simulations of an average player with a ~7–9% house edge, so if you're actually good, you're the hustler.</p>
-  <p><b>Keno:</b> pick 1–10 numbers of 80, 20 get drawn, payout depends on how many you catch. RTP is ~75–87%. It's a lottery with a cocktail menu.</p>
+  <p><b>🌐 Online casino leaderboard:</b> every online room keeps a live leaderboard ranked by session net (what you've actually won or lost on settled bets). Money still riding doesn't count against you yet, and 🥪 loans from Sal are listed separately because borrowing isn't winning. The leader gets a 👑 and last place is Sal's favorite customer. When the host closes the table, everyone gets final standings.</p><p><b>🍺 Tilt relief online:</b> tap <b>Cocktail Waitress / Smoke</b> in the top bar at any online table. Drinks and smokes lower your tilt, cost cash from your free bankroll and are allowed mid-hand. They follow the bar rules: booze adds Buzz and liquor costs HP. Nicotine has a cooldown and works less each time. Too much Buzz turns off strategy hints and can trigger a SLOPPY confirmation before you act.</p><p><b>Keno:</b> pick 1–10 numbers of 80, 20 get drawn, payout depends on how many you catch. RTP is ~75–87%. It's a lottery with a cocktail menu.</p>
   <p><b>Craps quick guide:</b> Pass Line on the come-out, add Odds once a point is set (true odds, no house edge). Place 6/8 pay 7:6. Hardways and Any 7 are fun sucker bets.</p>
   <p><b>Safety net:</b> new-user promos, Mom's emergency Venmo, plasma, and side jobs mean you can always claw back.</p></div>
   <button class="btn c" onclick="go(S&&!S.ended?'hub':'title')">⬅ Back</button>`); }
