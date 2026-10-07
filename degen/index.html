@@ -151,6 +151,12 @@ pre.ascii{color:var(--green);font-size:11px;line-height:1.1;overflow-x:auto;marg
 .kn.pk{background:#1d3550;color:#9cf;border-color:#6fc3ff}.kn.dr{background:#6b1d1d;color:#fff}.kn.hit{background:#ffc24a;color:#111;border-color:#fff;box-shadow:0 0 6px #ffc24a}
 .wn{max-height:60vh;overflow-y:auto;padding-right:4px}.wn .wv{border-left:3px solid var(--amber);padding:2px 0 6px 8px;margin:6px 0}.wn .wv.new{border-color:#5dff8a;background:#5dff8a0d}
 .wn ul{margin:3px 0 0 16px;padding:0}.wn li{margin:2px 0}
+.lifebar{display:flex;width:100%;align-items:stretch;margin:12px 0 4px;padding:0;border:2px solid #ff6600;background:#111;color:#ffcc00;font:bold 12px/1 monospace;cursor:pointer;border-radius:3px;overflow:hidden;box-shadow:0 0 0 2px #000,0 3px 0 #552200}
+.lifebar .lbl{flex:0 0 auto;background:linear-gradient(#ff8a00,#c34a00);color:#fff;padding:7px 8px;text-shadow:1px 1px 0 #000;border-right:2px solid #000}
+.lifebar .lbt{flex:1;overflow:hidden;white-space:nowrap;padding:7px 0;position:relative}.lifebar .lbm{display:inline-block;padding-left:8px;animation:lbm 40s linear infinite}
+.lifebar.up .lbt{color:#5dff8a}.lifebar.dn .lbt{color:#ff7a5a}.lifebar:hover .lbm{animation-play-state:paused}@keyframes lbm{0%,6%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+@media (prefers-reduced-motion:reduce){.lifebar .lbm{animation:none;padding-left:6px}}
+.lifetbl{overflow-x:auto}.lifetbl table{width:100%}.lifetbl td,.lifetbl th{white-space:nowrap}.lifetbl td:first-child{white-space:normal}
 .wnpop{border-color:#5dff8a;animation:wnpop .45s cubic-bezier(.2,1.6,.4,1)}@keyframes wnpop{from{transform:scale(.7) rotate(-2deg);opacity:0}to{transform:none;opacity:1}}
 </style>
 </head>
@@ -344,6 +350,73 @@ const ROASTS = {
   backdoorLoss: ['BACKDOOR COVER... AGAINST YOU. The backup on the other team just ruined your week in garbage time.','Garbage-time touchdown. You ARE the garbage.'],
   tilt: ['Your eye is twitching. You want to bet the Croatian second-division hockey game. Seek help.','TILT RISING. You just Googled "how much is a kidney worth."','You are one bad beat away from texting your ex.']
 };
+// ===================== LIFETIME MONEY STATS (no server; localStorage only) =====================
+// Stored under its own key, separate from the run save (degenRPG_save_v1) and META, so it survives new runs and save
+// resets. Only Settings -> "Reset lifetime stats" clears it.
+// COUNTING RULES (one record per DECIDED bet; see lifeRec callers):
+//  * Wagered = real money that was at risk on a bet that got decided (won or lost).
+//  * Won     = gross payout handed back on those bets (stake + profit). Net = Won - Wagered.
+//  * Pushes, voids, refunds, take-downs, cancelled/unplayed keno races and table-closed refunds count as NEITHER
+//    wagered nor won (the money just went back to you), so nothing is double counted.
+//  * Bonus-bet tokens are house money: their stake is not "wagered"; whatever they pay counts as won.
+//  * A craps place bet that wins and "stays up" counts as decided (stake+win) and re-wagered on the next decision.
+//  * Online tables: the host attaches the decided [stake, payout] pairs to each settlement ledger entry (e.lf), and
+//    the client records exactly those, once (ledger entries are de-duplicated by sequence number).
+//  * Biggest win / loss = largest net profit / loss on a single decided bet (a blackjack hand, a spin spot, a ticket...).
+const LIFE_KEY='degenRPG_life_v1';
+const LIFE_GAMES={sb:'📱 Sportsbook',bj:'🂡 Blackjack',craps:'🎲 Craps',roul:'🎡 Roulette',slots:'🎰 Slots',scr:'🎟️ Scratchers',keno:'🎱 Keno',f7:'7️⃣ Flip 7',poker:'♠️ Poker',monte:'👸 Monte',online:'🌐 Online tables'};
+const LIFE_SUB={bj:'Blackjack',cr:'Craps',rl:'Roulette',sb:'Sportsbook',f7:'Flip 7',kn:'Keno'};
+function lifeBlank(){ return {v:1,wag:0,won:0,n:0,big:null,bigL:null,since:null,g:{}}; }
+function lifeLoad(){ let L=null; try{ L=JSON.parse(localStorage.getItem(LIFE_KEY)||'null'); }catch(e){} if(!L||typeof L!=='object'||L.v!==1) L=lifeBlank(); L.g=L.g||{}; return L; }
+let LIFE=lifeLoad();
+function lifeSave(){ try{ localStorage.setItem(LIFE_KEY,JSON.stringify(LIFE)); }catch(e){} }
+function lifeG(g){ return LIFE.g[g]||(LIFE.g[g]={wag:0,won:0,n:0,w:0,l:0,big:0,bigL:0}); }
+// record one decided bet. stake = real money at risk, ret = gross payout (0 if lost). Callers skip pushes/refunds.
+function lifeRec(g,stake,ret,what,sub){ if(U.noSave||!LIFE_GAMES[g]) return; stake=Number(stake); ret=Number(ret); if(!Number.isFinite(stake)||!Number.isFinite(ret)) return;
+  stake=r2(Math.max(0,Math.min(stake,1e9))); ret=r2(Math.max(0,Math.min(ret,1e9))); if(!stake&&!ret) return;
+  const net=r2(ret-stake), G=lifeG(g), when=new Date().toISOString().slice(0,10), who=S&&S.name?S.name:'';
+  LIFE.wag=r2(LIFE.wag+stake); LIFE.won=r2(LIFE.won+ret); LIFE.n++; if(!LIFE.since) LIFE.since=when;
+  G.wag=r2(G.wag+stake); G.won=r2(G.won+ret); G.n++; if(net>0) G.w++; else if(net<0) G.l++; G.big=Math.max(G.big,net); G.bigL=Math.max(G.bigL,-net);
+  if(sub){ G.sub=G.sub||{}; const X=G.sub[sub]||(G.sub[sub]={wag:0,won:0,n:0}); X.wag=r2(X.wag+stake); X.won=r2(X.won+ret); X.n++; }
+  const lab=String(what||'').slice(0,60);
+  if(net>0&&(!LIFE.big||net>LIFE.big.amt)) LIFE.big={amt:net,g,what:lab,at:when,who};
+  if(net<0&&(!LIFE.bigL||-net>LIFE.bigL.amt)) LIFE.bigL={amt:-net,g,what:lab,at:when,who};
+  lifeSave(); }
+function lifeReset(){ LIFE=lifeBlank(); lifeSave(); }
+function lifeNet(){ return r2(LIFE.won-LIFE.wag); }
+function lifeSigned(v){ return (v>0?'+':v<0?'-':'')+money(Math.abs(v)); }
+// ---------- UI: Newgrounds-style ticker at the bottom of the title/home screens ----------
+function lifeBarHtml(from){ const n=lifeNet(), L=LIFE;
+  const txt=L.n?`LIFETIME: Wagered ${money(L.wag)} · Won ${money(L.won)} · Net ${lifeSigned(n)} · ${L.n.toLocaleString()} bet${L.n===1?'':'s'} settled${L.big?` · Biggest hit +${money(L.big.amt)}`:''}${L.bigL?` · Worst beat -${money(L.bigL.amt)}`:''}`:'LIFETIME: Wagered $0 · Won $0 · Net $0 · No bets yet. The house is waiting, champ.';
+  return `<button class="lifebar ${n>0?'up':n<0?'dn':''}" id="lifebar" onclick="U.statsFrom='${from||'title'}';go('stats')" aria-label="Lifetime stats: ${esc(txt)}"><span class="lbl">📊 STATS</span><span class="lbt"><span class="lbm">${esc(txt)} &nbsp;★&nbsp; ${esc(txt)} &nbsp;★&nbsp;</span></span></button>`; }
+function lifeFlavor(){ const n=lifeNet(), L=LIFE; if(!L.n) return 'Zero bets. Pure as the driven snow. Big Sal finds this suspicious.';
+  const roi=L.wag?n/L.wag:0;
+  if(n>=5000) return pick(['You are UP. Bookies have a dartboard with your face on it.','Lifetime winner. Somewhere a casino exec is crying into a shrimp cocktail.','Up big. Tell nobody. Especially not your cousin Ricky.']);
+  if(n>0) return pick(['Technically up. Frame this screen before it changes.','In the green! Barely. Like a guy who found $20 in old jeans.','Up money. Statistically this will not last. Enjoy it.']);
+  if(roi>-.05) return pick(['Basically break-even. You paid the vig for entertainment. Respectable degeneracy.','Down a little. Call it a "hobby" at Thanksgiving.']);
+  if(n>-5000) return pick(['You are DOWN. The house thanks you for your service.','Down bad. Your money is in a better place now (Sal\'s Cadillac).','Down. Big Sal sent a fruit basket. It\'s mostly lemons.']);
+  return pick(['DOWN HORRENDOUS. Casinos name wings after people like you.','You have funded at least one bookie\'s boat. Its name is "Thanks Jon".','Catastrophically down. Mom changed her Venmo.']); }
+function renderStats(){ const L=LIFE, n=lifeNet();
+  scene('title',[youActor({x:.25,pose:n>0?'celebrate':n<0?'facepalm':'shrug',held:'slip'}),{id:'sal',x:.72,pose:n>0?'facepalm':'celebrate',hat:'fedora',color:'#f0e0c0',label:'BIG SAL',fat:true}],{caption:'📊 LIFETIME STATS'});
+  const rows=Object.keys(LIFE_GAMES).map(k=>{ const G=L.g[k]; if(!G||!G.n) return `<tr class="dim"><td>${LIFE_GAMES[k]}</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>`; const gn=r2(G.won-G.wag);
+    let h=`<tr><td>${LIFE_GAMES[k]}<div class="small dim">${G.n} bet${G.n===1?'':'s'} · ${G.w}W-${G.l}L${G.big>0?` · best +${money(G.big)}`:''}</div></td><td>${money(G.wag)}</td><td>${money(G.won)}</td><td class="${gn>0?'g':gn<0?'r':''}">${lifeSigned(gn)}</td><td>${G.wag?Math.round(G.won/G.wag*100)+'%':'—'}</td></tr>`;
+    if(G.sub) for(const s in G.sub){ const X=G.sub[s], xn=r2(X.won-X.wag); h+=`<tr class="small"><td>&nbsp;&nbsp;↳ ${esc(LIFE_SUB[s]||s)} <span class="dim">(${X.n})</span></td><td>${money(X.wag)}</td><td>${money(X.won)}</td><td class="${xn>0?'g':xn<0?'r':''}">${lifeSigned(xn)}</td><td></td></tr>`; }
+    return h; }).join('');
+  let h=`<h2>📊 LIFETIME STATS <span class="small dim">every run, every table${L.since?` · since ${esc(L.since)}`:''}</span></h2>`;
+  h+=`<div class="panel ${n>0?'g':n<0?'r':''}"><div class="kv"><span>Total wagered</span><b>${money(L.wag)}</b></div><div class="kv"><span>Total won (gross payouts)</span><b>${money(L.won)}</b></div><div class="kv"><span>Net profit / loss</span><b class="${n>0?'g':n<0?'r':''}" style="font-size:18px">${lifeSigned(n)}</b></div><div class="kv"><span>Bets settled</span><b>${L.n.toLocaleString()}</b></div>
+    <div class="kv"><span>Biggest single win</span><b class="g">${L.big?`+${money(L.big.amt)}`:'—'}</b></div>${L.big?`<div class="small dim" style="text-align:right">${esc(LIFE_GAMES[L.big.g]||'')} · ${esc(L.big.what)} · ${esc(L.big.at)}</div>`:''}
+    <div class="kv"><span>Biggest single loss</span><b class="r">${L.bigL?`-${money(L.bigL.amt)}`:'—'}</b></div>${L.bigL?`<div class="small dim" style="text-align:right">${esc(LIFE_GAMES[L.bigL.g]||'')} · ${esc(L.bigL.what)} · ${esc(L.bigL.at)}</div>`:''}
+    <p class="small" style="margin:6px 0 0"><b>${esc(lifeFlavor())}</b></p></div>`;
+  h+=`<h3>Per game</h3><div class="lifetbl"><table><tr><th>Game</th><th>Wagered</th><th>Won</th><th>Net</th><th>Paid back</th></tr>${rows}</table></div>`;
+  h+=`<div class="small dim">How it's counted: <b>wagered</b> = money at risk on bets that got decided; <b>won</b> = gross payouts on those bets (stake + profit). Pushes, voids, refunds, take-downs and unplayed keno races count as neither. Bonus-bet stakes are house money (not wagered). Online bets are recorded from the host's settlements. Stored only in this browser; survives new runs. Reset it in ⚙️ Settings.</div>`;
+  h+=`<div class="grid2"><button class="btn c" onclick="U.setFrom='stats';go('settings')">⚙️ Settings</button><button class="btn c" onclick="go(S&&!S.ended&&U.statsFrom==='hub'?'hub':'title')">⬅ Back</button></div>`; setMain(h); }
+function renderSettings(){ scene('title',[{id:'a',x:.5,pose:'point',hat:'visor',label:'SETTINGS GUY',color:'#ddd'}],{caption:'⚙️ SETTINGS'});
+  const arm=U.lifeArm&&Date.now()-U.lifeArm<5000;
+  setMain(`<h2>⚙️ SETTINGS</h2><button class="btn c" onclick="SND.on=!SND.on;renderSettings()">🔊 Sound: ${SND.on?'ON':'OFF'}</button>
+  <div class="panel small">📊 Lifetime stats: ${LIFE.n.toLocaleString()} bets · wagered ${money(LIFE.wag)} · net ${lifeSigned(lifeNet())}. Kept separately from your run save, so new runs don't erase them.</div>
+  <button class="btn c bad" id="lifereset" onclick="lifeResetTap()">${arm?'⚠️ Tap again to WIPE lifetime stats forever':'🗑️ Reset lifetime stats'}<small style="text-align:center">${arm?'No take-backs. Not even Sal can undo this.':'Clears wagered/won/net and the per-game breakdown (your run save is untouched)'}</small></button>
+  <button class="btn c" onclick="go(U.setFrom==='stats'?'stats':S&&!S.ended&&U.statsFrom==='hub'?'hub':'title')">⬅ Back</button>`); }
+function lifeResetTap(){ if(!(U.lifeArm&&Date.now()-U.lifeArm<5000)){ U.lifeArm=Date.now(); sfx.click(); return renderSettings(); } U.lifeArm=0; lifeReset(); toast('🗑️ Lifetime stats wiped. Clean slate. Your sins remain.'); renderSettings(); }
 // ===================== STICK FIGURE RENDERER =====================
 const SC = { cv:null, ctx:null, w:0, h:0, dpr:1, cur:null, parts:[], texts:[], shakeT:0, dice:null, t:0, raf:0 };
 function scInit(){ SC.cv=document.getElementById('scene'); SC.ctx=SC.cv.getContext('2d'); scResize(); window.addEventListener('resize',scResize); const loop=ts=>{ SC.t=ts/1000; try{ scDraw(); }catch(e){ console.error(e); } SC.raf=requestAnimationFrame(loop); }; SC.raf=requestAnimationFrame(loop); }
@@ -885,6 +958,7 @@ function settleBets(gidFilter){
     let saved=false; if(bet.legs.length===1&&res[0]==='l'&&Math.abs(vals[0])<=.5&&bet.legs[0].mkt!=='ml'){ unlock('badbeat'); const p=st('luck')*.015*(has('luckybastard')?2:1); if(rnd()<p){ res=['p']; saved=true; } }
     const r=betReturn(bet,res); bet.status=r.status; bet.ret=r.ret; bet.res=res; bet.vals=vals; bet.saved=saved;
     if(r.ret>0) addCash(r.ret);
+    if(r.status!=='push') lifeRec('sb',bet.token==='bonus'?0:bet.stake,r.ret,bet.legs.length>1?bet.legs.length+'-leg parlay':bet.legs[0].label);
     const net=r2(r.ret-(bet.token==='bonus'?0:bet.stake)); bet.net=net;
     if(bet.status==='lost'&&bet.token==='nosweat'){ S.tokens.push({book:bet.book,type:'bonus',amt:Math.min(50,bet.stake),label:'No-Sweat refund Bonus Bet'}); bet.note='No-Sweat refund issued as a bonus bet.'; }
     // book limits
@@ -1054,7 +1128,7 @@ function liveBet(gid,mkt,side,odds,line){ const g=gameById(gid); const leg={gid,
 function cashOut(id){ const L=U.live; const b=S.bets.find(x=>x.id===id); if(!b) return; const leg=b.legs[0]; const g=gameById(leg.gid); const c=L.cur[g.id]; if(L.co&&L.co.id===id){ var val=L.co.val; } else { const mc=liveMC(g,c,200); const pr=legLiveProb(leg,g,mc); var val=null; val=r2((pr.w*b.stake*amToDec(b.odds)+pr.p*b.stake)*(has('hedge')?.96:.9)); }
   if(!L.co||L.co.id!==id){ L.co={id,val}; liveLog(`🐔 Cash-out offer for ${esc(leg.label)}: <b>${money(val)}</b> (risked ${money(b.stake)}). Tap Cash out again to confirm.`,'big'); renderLive(); return; }
   const v0=L.co.val; L.co=null; if(Math.abs(v0-val)>0.01){ /* use offered price */ }
-  b.status='cashed'; b.ret=val; b.net=r2(val-b.stake); addCash(val); S.books[b.book].profit+=b.net; S.hist.unshift(b); S.bets=S.bets.filter(x=>x.id!==id); unlock('cashout'); liveLog(`🐔 You cashed out ${esc(leg.label)} for ${money(val)}. Coward. (Smart coward, maybe.)`,'roast'); save(); renderLive(); }
+  b.status='cashed'; b.ret=val; b.net=r2(val-b.stake); addCash(val); lifeRec('sb',b.token==='bonus'?0:b.stake,val,'Cash out: '+leg.label); S.books[b.book].profit+=b.net; S.hist.unshift(b); S.bets=S.bets.filter(x=>x.id!==id); unlock('cashout'); liveLog(`🐔 You cashed out ${esc(leg.label)} for ${money(val)}. Coward. (Smart coward, maybe.)`,'roast'); save(); renderLive(); }
 function liveBathroom(){ const L=U.live; pose('you','sweat'); say('you','oh no. OH NO.',3000); sfx.fart();
   const hold=chk('liver',5); const has_p=(S.inv.pepto||0)>0;
   const lg=document.getElementById('lvlog'); const box=document.createElement('div'); box.className='panel'; box.innerHTML=`<b class="r">🚽 BATHROOM EMERGENCY MID-SWEAT!</b><p>Those three cheese coneys are filing for an emergency exit. Your bets are still live. The fourth quarter is about to start. What do you do?</p>
@@ -1208,7 +1282,7 @@ function cBet(a){ addCash(-a); if(U.cs) U.cs.net=r2(U.cs.net-a); }
 function cPay(a){ if(a>0){ addCash(a); if(U.cs) U.cs.net=r2(U.cs.net+a); } }
 function chips(vals, cur, fn){ return `<div class="row">${vals.map(v=>`<button class="chip ${cur===v?'on':''}" onclick="${fn}(${v})">$${v>=1000?(v/1000)+'k':v}</button>`).join('')}</div>`; }
 function enterCasino(){ if(!useEnergy(1)){ toast('Too tired. Sleep it off, degenerate.'); return; } U.cs={net:0}; S.dayPhase='night'; U.cgame=null; go('casino'); }
-function leaveCasino(){ if(U.busy) return; if(U.scr&&!U.scr.paid) scratchFinish(true); let msg=''; if(U.f7&&U.f7.G.phase!=='over'){ clearTimeout(U.f7.tm); msg+=` You walked out of Flip 7 (buy-in forfeited).`; addTilt(4); } U.f7=null; if(S.craps&&crapsTotalOnTable(S.craps)>0){ const t=crapsRefundAll(); msg+=` Craps chips returned: ${money(t)}.`; }
+function leaveCasino(){ if(U.busy) return; if(U.scr&&!U.scr.paid) scratchFinish(true); let msg=''; if(U.f7&&U.f7.G.phase!=='over'){ clearTimeout(U.f7.tm); f7Forfeit(U.f7); msg+=` You walked out of Flip 7 (buy-in forfeited).`; addTilt(4); } U.f7=null; if(S.craps&&crapsTotalOnTable(S.craps)>0){ const t=crapsRefundAll(); msg+=` Craps chips returned: ${money(t)}.`; }
   if(has('comped')&&U.cs&&U.cs.net<0){ const rb=r2(-U.cs.net*.1); addCash(rb); addHp(10); msg=` 🍤 Comped: ${money(rb)} loss rebate + free shrimp cocktail.`; }
   if(U.cs){ const n=U.cs.net; toast(`🎰 Session: ${n>=0?'+':''}${money(n)}.${msg}`); if(n<-100) addTilt(8); news(`Casino session: ${n>=0?'+':''}${money(n)}`); }
   U.cs=null; U.cgame=null; U.bj=null; U.scr=null; save(); go('hub'); }
@@ -1249,7 +1323,7 @@ function bjStart(){ const bet=U.bjBet; if(bet>S.cash){ toast('Not enough chips.'
   if(has('rainman')&&trueCount()>=3&&bet>=100) unlock('counter');
   cBet(bet); U.bj=bjDeal(bet); sfx.click(); pose('d','deal'); if(U.bj.phase==='done') bjEnd(); renderBJ(); }
 function bjDo(a){ const B=U.bj; if(!B||B.phase!=='play') return; const hd=B.hands[B.active]; if(a==='double'||a==='split'){ if(S.cash<hd.bet) return; cBet(hd.bet); } bjAct(B,a); sfx.click(); if(B.phase==='done') bjEnd(); renderBJ(); }
-function bjEnd(){ const B=U.bj; cPay(B.ret); const staked=B.hands.reduce((s,x)=>s+x.bet,0); const net=B.ret-staked; gainXp(2+staked/40);
+function bjEnd(){ const B=U.bj; cPay(B.ret); B.hands.forEach((hd,i)=>{ const R=B.res&&B.res[i]; if(R&&R.r!=='Push') lifeRec('bj',hd.bet,R.ret,'Blackjack: '+R.r); }); const staked=B.hands.reduce((s,x)=>s+x.bet,0); const net=B.ret-staked; gainXp(2+staked/40);
   if(net>0){ pose('you','celebrate',1600,'idle'); sfx.win(); fx.text('+'+money(net),'#5dff8a'); addTilt(-4); if(B.res.some(r=>r.r==='BLACKJACK')){ fx.money(15); say('you','BLACKJACK BABY'); } }
   else if(net<0){ pose('you','facepalm',1600,'idle'); sfx.lose(); fx.text(money(net),'#ff5d5d'); addTilt(Math.min(10,2+(-net)/Math.max(20,S.cash)*20)); } }
 // ---------- Slots UI ----------
@@ -1261,7 +1335,7 @@ function slotSet(v){ U.slotBet=v; renderSlots(); }
 function slotGo(){ if(U.busy) return; const bet=U.slotBet; if(bet>S.cash){ toast('Insert more money. (You have none.)'); return; } if(bet<minBet()&&minBet()<=S.cash&&bet<500){ toast(`Tilt forces min ${money(minBet())}.`); return; }
   cBet(bet); const res=slotSpin(bet); U.busy=true; const btn=document.getElementById('spinbtn'); if(btn) btn.disabled=true; let n=0; const stops=[8,13,18];
   const iv=setInterval(()=>{ n++; for(let i=0;i<3;i++){ const el=document.getElementById('reel'+i); if(!el) continue; if(n<stops[i]){ el.textContent=pick(SLOT_SYMS); el.classList.add('spin'); } else { el.textContent=res.r[i]; el.classList.remove('spin'); } } sfx.tick();
-    if(n>=stops[2]){ clearInterval(iv); U.busy=false; U.slotR=res.r; cPay(res.ret); const net=res.ret-bet; gainXp(1+bet/50);
+    if(n>=stops[2]){ clearInterval(iv); U.busy=false; U.slotR=res.r; cPay(res.ret); lifeRec('slots',bet,res.ret,'Slots spin'); const net=res.ret-bet; gainXp(1+bet/50);
       if(res.mult>=25){ U.slotMsg=`<b class="a">JACKPOT! ${res.mult}x → ${money(res.ret)}</b>`; sfx.big(); fx.money(40); pose('you','celebrate',3000); if(res.r[0]==='7️⃣') unlock('jackpot'); }
       else if(res.mult>0){ U.slotMsg=`<span class="g">Win ${money(res.ret)} (${res.mult}x)</span>${res.mult===1?' — congrats on winning your own money back.':''}`; sfx.win(); }
       else { U.slotMsg=pick(['Nothing. The machine burps.','Loss. A senior citizen next to you hits for $400. She doesn\'t even look happy.','Nope. That machine owes you nothing.','Brick.']); }
@@ -1283,7 +1357,7 @@ function rlRebet(){ if(U.busy) return; const tot=Object.values(U.rlPrev).reduce(
 function rlSpin(){ if(U.busy) return; const bets=U.rb; const tot=Object.values(bets).reduce((a,b)=>a+b,0); if(!tot||tot>S.cash) return; if(tot<minBet()&&minBet()<=S.cash){ toast(`Tilt forces min ${money(minBet())} total.`); return; }
   cBet(tot); const n=ri(0,37); U.busy=true; let k=0; const el=()=>document.getElementById('rlres'); pose('d','deal');
   const iv=setInterval(()=>{ k++; const x=ri(0,37); const e=el(); if(e) e.innerHTML=`<span class="badge ${rlColor(x)==='rd'?'l':rlColor(x)==='gr'?'w':'p'}" style="font-size:24px;padding:4px 14px">${rlLabel(x)}</span>`; sfx.tick();
-    if(k>22){ clearInterval(iv); U.busy=false; const ret=rlSettle(bets,n); cPay(ret); U.rlLast=n; U.rlPrev=Object.assign({},bets); U.rb={}; const net=ret-tot; gainXp(1+tot/40);
+    if(k>22){ clearInterval(iv); U.busy=false; const ret=rlSettle(bets,n); cPay(ret); for(const k in bets) lifeRec('roul',bets[k],rlSettle({[k]:bets[k]},n),'Roulette '+k.replace(/^n/,'#')+' on '+rlLabel(n)); U.rlLast=n; U.rlPrev=Object.assign({},bets); U.rb={}; const net=ret-tot; gainXp(1+tot/40);
       if(bets['n'+n]) unlock('roul');
       U.rlMsg= net>0?`<b class="g">${rlLabel(n)} ${rlColor(n)==='rd'?'red':rlColor(n)==='bk'?'black':'green'}! You win ${money(ret)} back (+${money(net)}).</b>`: net===0?'Broke even. Riveting.':`<span class="r">${rlLabel(n)}${n===37||n===0?' — GREEN. The house thanks you.':''}. Lost ${money(-net)}.</span>`;
       if(net>0){ sfx.win(); pose('you','celebrate',1500,'idle'); } else if(net<0){ sfx.lose(); pose('you','facepalm',1500,'idle'); addTilt(Math.min(8,1+(-net)/Math.max(20,S.cash)*15)); }
@@ -1297,7 +1371,7 @@ function renderScratch(){ const T=U.scr; let h=`<h2>🎫 SCRATCH-OFFS</h2><div c
 function scratchBuy(id){ const t=SCRATCHERS[id]; if(S.cash<t.price) return; cBet(t.price); U.scr=genScratch(id); U.scr.paid=false; sfx.click(); renderScratch(); }
 function scratchCell(i){ const T=U.scr; if(!T||T.rev[i]) return; T.rev[i]=true; sfx.tick(); if(T.rev.every(x=>x)) scratchFinish(); renderScratch(); }
 function scratchAll(){ const T=U.scr; if(!T) return; T.rev=T.rev.map(()=>true); scratchFinish(); renderScratch(); }
-function scratchFinish(silent){ const T=U.scr; if(!T||T.paid) return; T.paid=true; T.allRev=true; T.rev=T.rev.map(()=>true); cPay(T.prize); gainXp(1);
+function scratchFinish(silent){ const T=U.scr; if(!T||T.paid) return; T.paid=true; T.allRev=true; T.rev=T.rev.map(()=>true); cPay(T.prize); lifeRec('scr',SCRATCHERS[T.id].price,T.prize,SCRATCHERS[T.id].n||'Scratch-off'); gainXp(1);
   if(T.prize>=500) unlock('scratch'); if(silent) return; if(T.prize>SCRATCHERS[T.id].price){ sfx.win(); pose('you','celebrate',1500,'phone'); fx.text('+$'+T.prize,'#5dff8a'); } else if(T.prize===0){ addTilt(1); } }
 // ===================== CRAPS UI =====================
 function crapsScene(){ scene('craps',[ youActor({x:.1,pose:'idle',held:null,s:1}),
@@ -1372,7 +1446,7 @@ function crTalk(res,pt){ const s=res.sum; let talk='';
   if(res.comeOut){ if(s===7) talk=pick(CR_TALK.natural7); else if(CR_TALK[s]) talk=pick(CR_TALK[s]); else talk=`Mark it! The point is ${s}. ${s===6||s===8?'Easy or hard, just no seven.':''}`; }
   else { if(res.event==='sevenout') talk=pick(CR_TALK.sevenout); else if(res.event==='hit') talk=pick(CR_TALK.hit); else if(CR_TALK[s]&&s!==7) talk=pick(CR_TALK[s]); else talk=`${s}${res.hard&&[4,6,8,10].includes(s)?` — HARD ${s}! Born hard!`:[4,6,8,10].includes(s)?` easy, no hardways`:''}. ${pt?`Point is still ${pt}.`:''}`; }
   return talk; }
-function crResolve(d1,d2){ const C=S.craps; const pt=C.point; const res=crapsRoll(C,d1,d2); cPay(res.ret);
+function crResolve(d1,d2){ const C=S.craps; const pt=C.point; const res=crapsRoll(C,d1,d2); cPay(res.ret); for(const l of res.lines){ if(l.w===1) lifeRec('craps',l.amt,l.amt+l.win,'Craps '+l.what); else if(l.w===0) lifeRec('craps',l.amt,0,'Craps '+l.what); }
   let won=0, lost=0; for(const l of res.lines){ if(l.w===1) won+=l.win; else if(l.w===0) lost+=l.amt; }
   const s=res.sum; const talk=crTalk(res,pt);
   crLog(`🎲 <b>${d1} + ${d2} = ${s}</b> — ${talk}`,'big');
@@ -1537,7 +1611,7 @@ function f7Deal(){ const F=U.f7; if(!F) return; const G=F.G; if(!(G.q[0]&&G.q[0]
   if(tot>S.cash) return toast('Side bets cost more than you have. Classic.'); if(tot) cBet(tot); F.sb={f7:nx.f7,bust:Object.assign({},nx.bust)}; if(tot) f7Log(`💸 Side bets: ${money(tot)}.`); F.dealGo=true; f7Loop(); }
 function f7Me(a,to){ const F=U.f7; if(!F) return; const err=f7Act(F.G,0,a,to); if(err) return toast(err); sfx.click(); f7Loop(); }
 function f7Fold(){ const F=U.f7; if(!F) return; if(!F.foldArm){ F.foldArm=true; setTimeout(()=>{ if(U.f7===F){ F.foldArm=false; if(U.cgame==='f7') renderF7(); } },4000); return renderF7(); }
-  clearTimeout(F.tm); toast(`🏳️ You walked. ${money(F.buy)} stays in the pot. Ricky thanks you.`); addTilt(4); U.f7=null; U.busy=false; f7Scene(); renderF7(); }
+  clearTimeout(F.tm); f7Forfeit(F); toast(`🏳️ You walked. ${money(F.buy)} stays in the pot. Ricky thanks you.`); addTilt(4); U.f7=null; U.busy=false; f7Scene(); renderF7(); }
 function f7WaitDeal(G){ return (G.phase==='between'||G.phase==='idle')&&G.q[0]&&G.q[0].k==='start'; }
 function f7Loop(){ const F=U.f7; if(!F) return; clearTimeout(F.tm); if(U.cgame!=='f7'||U.screen!=='casino'){ U.busy=false; return; } const G=F.G;
   if(G.phase==='over'||G.await||(f7WaitDeal(G)&&!F.dealGo)){ U.busy=false; return renderF7(); }
@@ -1560,13 +1634,18 @@ function f7Ev(e){ const F=U.f7, G=F.G, nm=i=>esc(f7Name(G,i)), aid=i=>'f7_'+i;
     case 'over': f7PayPot(e.winners); return 0;
   } return 300; }
 function f7SettleSide(){ const F=U.f7, G=F.G, S7=F.sb; if(!S7) return; let ret=0, stake=S7.f7;
+  if(S7.f7) lifeRec('f7',S7.f7,G.players[0].f7?S7.f7*(1+F7_SIDE.f7.pay):0,'Flip 7 bonus side bet');
+  for(const i in S7.bust){ const a=S7.bust[i]; if(a){ const p=G.players[i]; lifeRec('f7',a,p.st==='busted'?r2(a*(1+F7_SIDE.bust[p.npc])):0,`Bust bet on ${p.name}`); } }
   if(S7.f7&&G.players[0].f7){ ret+=S7.f7*(1+F7_SIDE.f7.pay); f7Log(`💰 Flip 7 bonus hits: ${money(S7.f7*(1+F7_SIDE.f7.pay))}!`); }
   for(const i in S7.bust){ const a=S7.bust[i]; if(!a) continue; stake+=a; const p=G.players[i]; if(p.st==='busted'){ const w=r2(a*(1+F7_SIDE.bust[p.npc])); ret+=w; f7Log(`💰 ${esc(p.name)} busted like you prayed: ${money(w)}.`); } }
   if(ret) cPay(r2(ret)); else if(stake) f7Log(`🧾 Side bets lost (${money(stake)}). Tony pockets it.`); F.sb=null; }
-function f7PayPot(winners){ const F=U.f7; if(!F||F.paid) return; F.paid=true; const share=r2(F.pot*(1-F7_RAKE)/winners.length);
+function f7PayPot(winners){ const F=U.f7; if(!F||F.paid) return; F.paid=true; const share=r2(F.pot*(1-F7_RAKE)/winners.length); lifeRec('f7',F.buy,winners.includes(0)?share:0,`Flip 7 pot (${money(F.pot)})`);
   if(winners.includes(0)){ cPay(share); F.won=r2(share-F.buy); unlock('f7pot'); sfx.big(); fx.money(30); pose('f7_0','celebrate',3000,'idle'); addTilt(-8); gainXp(15+F.buy/10); news(`Won a ${money(F.pot)} Flip 7 pot in the back room.`); }
   else { sfx.lose(); addTilt(Math.min(12,3+F.buy/Math.max(20,S.cash)*20)); gainXp(5); }
   f7Log(`🏁 Game over. ${winners.map(i=>esc(f7Name(F.G,i))).join(' & ')} win${winners.length>1?'':'s'} ${money(share)} (pot ${money(F.pot)} minus ${money(r2(F.pot*F7_RAKE))} rake).`); save(); }
+
+// walking out of a live game: buy-in (and any side bets riding this round) are lost
+function f7Forfeit(F){ if(!F||F.paid||F.forfeit) return; F.forfeit=true; lifeRec('f7',F.buy,0,'Flip 7: walked out'); if(F.sb){ const t=(F.sb.f7||0)+Object.values(F.sb.bust||{}).reduce((a,b)=>a+b,0); if(t) lifeRec('f7',t,0,'Flip 7 side bets (walked out)'); } }
 // ===================== KENO =====================
 // 80-ball keno: pick 1-10 spots, the house draws 20. Paytable = "pays X for 1" (total return, stake included).
 // Vegas-style video-keno-ish table; exact RTP per spot count is computed from the hypergeometric distribution
@@ -1611,7 +1690,7 @@ function kenoRace(){ const K=U.kn; if(!K||!K.run) return; K.run.left--; K.drawn=
     const m=document.getElementById('knmsg'); const hits=K.picks.filter(x=>K.drawn.slice(0,K.shown).includes(x)).length; if(m) m.innerHTML=`Ball ${K.shown}/20: <b>${n}</b> · caught <b class="${hits?'g':''}">${hits}</b>`; kenoSyncScene();
     if(K.shown<20) setTimeout(step,K.fast?45:170); else setTimeout(kenoRaceDone,K.fast?150:500); };
   setTimeout(step,K.fast?60:350); }
-function kenoRaceDone(){ const K=U.kn; if(!K||!K.run) return; const r=kenoSettle(K.picks,K.drawn,K.bet); cPay(r.ret); K.run.won=r2(K.run.won+r.ret); K.lastHits=r.hits; S.stats2.keno=(S.stats2.keno||0)+1; gainXp(1+K.bet/40);
+function kenoRaceDone(){ const K=U.kn; if(!K||!K.run) return; const r=kenoSettle(K.picks,K.drawn,K.bet); cPay(r.ret); lifeRec('keno',K.bet,r.ret,`Keno ${K.picks.length}-spot caught ${r.hits}`); K.run.won=r2(K.run.won+r.ret); K.lastHits=r.hits; S.stats2.keno=(S.stats2.keno||0)+1; gainXp(1+K.bet/40);
   K.hist.push({s:K.picks.length,h:r.hits,ret:r.ret}); if(K.hist.length>30) K.hist.shift(); const net=r.ret-K.bet;
   if(r.hits>=7) unlock('keno');
   if(r.mult>=10){ K.msg=`<b class="a">🎱 CAUGHT ${r.hits}! ${r.mult}× → ${money(r.ret)}</b> ${pick(KENO_TALK.big)}`; sfx.big(); fx.money(Math.min(40,10+r.mult/10)); pose('you','celebrate',2000,'idle'); say('oldguy','HELL YEAH',1500); }
@@ -1648,7 +1727,7 @@ function mpWithS(tmp,fn){ const oS=S, oN=U.noSave, oQ=U.silent; S=tmp; U.noSave=
 
 function mpHostCreate(io){ // io: {send(cid,msg), now(), room, sess}
   const now=()=>io.now();
-  const H={ room:io.room, sess:io.sess, P:{}, order:[], ghost:{}, chat:[], chatN:0, pn:0, dirty:true, rig:{}, closed:false, rs:mpRoomS() };
+  const H={ room:io.room, sess:io.sess, P:{}, order:[], ghost:{}, chat:[], chatN:0, pn:0, dirty:true, rig:{}, closed:false, rs:mpRoomS(), rt:{w:0,r:0,n:0} };
   const bj=H.bj={ phase:'bet', seats:Array(MPC.SEATS).fill(null), shoe:newShoe(), dealer:[], hole:true, hands:{}, bets:{}, last:{}, order:[], turn:null, deadline:0, handNo:0, msg:'Place your bets.', doneAt:0, nextDraw:0, needDraw:false };
   const cr=H.cr={ point:null, shooter:null, C:{}, phase:'bet', rollAt:0, deadline:0, last:null, rollNo:0, hist:[], dice:null, thrower:'', sRolls:0 };
   const rl=H.rl={ phase:'bet', bets:{}, ready:{}, deadline:0, n:null, spinAt:0, doneAt:0, spinNo:0, hist:[], res:{} };
@@ -1660,6 +1739,7 @@ function mpHostCreate(io){ // io: {send(cid,msg), now(), room, sess}
   const rej=(p,why)=>{ if(p) io.send(p.cid,{t:'rej',why}); return false; };
   function sys(txt){ H.chat.push({i:++H.chatN,sys:1,txt:String(txt).slice(0,200)}); if(H.chat.length>60) H.chat.splice(0,H.chat.length-60); dirty(); }
   function led(p,w,d,out,why,net,x){ if(!p) return; d=r2(d); p.seq++; const e={seq:p.seq,w,d,out:r2(Math.max(0,out)),why:String(why||'').slice(0,90)}; if(net!=null) e.net=r2(net); if(x) Object.assign(e,x);
+    if(e.lf){ for(const [s,r] of e.lf){ p.rw=r2((p.rw||0)+s); p.rr=r2((p.rr||0)+r); H.rt.w=r2(H.rt.w+s); H.rt.r=r2(H.rt.r+r); H.rt.n++; } }
     p.bal=r2(p.bal+d); p.led.push(e); if(p.led.length>400) p.led.splice(0,p.led.length-400); if(H.P[p.cid]&&p.conn) io.send(p.cid,{t:'led',e:[e]}); dirty(); return e; }
   const atTable=tb=>H.order.filter(c=>H.P[c].table===tb);
   // ---------------- join / leave ----------------
@@ -1736,6 +1816,7 @@ function mpHostCreate(io){ // io: {send(cid,msg), now(), room, sess}
     led(p,'loan'+p.loanN,amt,0,`Loan from Big Sal: ${money(amt)}`,null,{loan:amt});
     sys(pick(MP_LOAN_TALK).replace('{n}',p.name).replace('{a}',money(amt))); }
   const sumObj=o=>{ let t=0; for(const k in o) t+=o[k]; return r2(t); };
+  const LF=pairs=>({lf:pairs.filter(([s,r])=>s>0||r>0).map(([s,r])=>[r2(s),r2(r)])}); // decided [stake, payout] pairs for lifetime stats + room totals
   // ---------------- BLACKJACK ----------------
   function draw(){ if(H.rig.cards&&H.rig.cards.length) return H.rig.cards.shift(); if(!bj.shoe.cards.length) bj.shoe=newShoe(); return bj.shoe.cards.pop(); }
   function bjSit(p){ if(bj.seats.includes(p.cid)) return; const i=bj.seats.indexOf(null); if(i<0) return rej(p,'Blackjack table is full. You can watch and heckle.'); bj.seats[i]=p.cid; dirty(); }
@@ -1772,7 +1853,7 @@ function mpHostCreate(io){ // io: {send(cid,msg), now(), room, sess}
     if(X.act>=X.hs.length){ X.done=true; bjNext(); } else { bj.deadline=now()+MPC.TURN_MS; } dirty(); return true; }
   function bjFinish(){ bj.phase='done'; bj.hole=false; bj.turn=null; bj.deadline=0; bj.doneAt=now()+MPC.DONE_MS; const dv=handVal(bj.dealer).t;
     for(const c of bj.order){ const X=bj.hands[c]; const B={hands:X.hs,dealer:bj.dealer}; bjSettle(B); X.hs.forEach((h,i)=>{ h.res=B.res[i].r; h.ret=B.res[i].ret; });
-      const staked=X.hs.reduce((s,x)=>s+x.bet,0); X.net=r2(B.ret-staked); led(pl(c),X.w,B.ret,0,`Blackjack #${bj.handNo}: ${X.hs.map(h=>h.res).join(' / ')}`,X.net);
+      const staked=X.hs.reduce((s,x)=>s+x.bet,0); X.net=r2(B.ret-staked); led(pl(c),X.w,B.ret,0,`Blackjack #${bj.handNo}: ${X.hs.map(h=>h.res).join(' / ')}`,X.net,LF(X.hs.filter(h=>h.res!=='Push').map(h=>[h.bet,h.ret])));
       if(X.net>=250) sys(`💰 ${nm(c)} wins ${money(X.net)} at blackjack.`); }
     bj.msg=isBJ(bj.dealer)?'Dealer has BLACKJACK. Brutal.':dv>21?`Dealer BUSTS (${dv})!`:`Dealer stands on ${dv}.`; dirty(); }
   function bjReset(){ bj.phase='bet'; bj.hands={}; bj.dealer=[]; bj.order=[]; bj.turn=null; bj.deadline=0; bj.hole=true; bj.msg='Place your bets.';
@@ -1799,7 +1880,7 @@ function mpHostCreate(io){ // io: {send(cid,msg), now(), room, sess}
   function crResolve(){ const [d1,d2]=cr.dice, pt=cr.point, res={}; let tres;
     mpWithS(H.rs,()=>{ const dummy=newCraps(); dummy.point=pt; tres=crapsRoll(dummy,d1,d2); cr.point=dummy.point;
       for(const c in cr.C){ const C=cr.C[c]; C.point=pt; const before=crapsTotalOnTable(C); if(before<=0){ C.point=cr.point; continue; } const r=crapsRoll(C,d1,d2); const after=crapsTotalOnTable(C); const net=r2(r.ret-(before-after));
-        const p=pl(c); if(p){ res[p.id]={net,ret:r.ret,lines:r.lines.map(l=>({w:l.w,what:l.what,amt:l.amt,win:l.win||0}))}; if(r.ret>0||before!==after) led(p,'cr',r.ret,after,`Craps ${d1}+${d2}=${d1+d2}`,net); } } });
+        const p=pl(c); if(p){ res[p.id]={net,ret:r.ret,lines:r.lines.map(l=>({w:l.w,what:l.what,amt:l.amt,win:l.win||0}))}; if(r.ret>0||before!==after) led(p,'cr',r.ret,after,`Craps ${d1}+${d2}=${d1+d2}`,net,LF(r.lines.filter(l=>l.w!==2).map(l=>l.w===1?[l.amt,l.amt+l.win]:[l.amt,0]))); } } });
     const s=d1+d2; cr.rollNo++; cr.sRolls++; cr.hist.unshift(s); if(cr.hist.length>14) cr.hist.length=14;
     cr.last={d1,d2,sum:s,event:tres.event,hard:tres.hard,talk:crTalk(tres,pt),by:cr.thrower,res,n:cr.rollNo};
     if(tres.event==='sevenout'){ const old=cr.shooter, n=cr.sRolls; crNextShooter(true); sys(`🎲 Seven out after ${n} roll${n===1?'':'s'}! ${old?nm(old):'The stickman'} passes the dice${cr.shooter?' to '+nm(cr.shooter):''}.`); }
@@ -1814,7 +1895,7 @@ function mpHostCreate(io){ // io: {send(cid,msg), now(), room, sess}
     B[k]=(B[k]||0)+v; rl.bets[p.cid]=B; delete rl.ready[p.cid]; led(p,'rl'+(rl.spinNo+1),-v,sumObj(B),'Roulette bet'); if(!rl.deadline) rl.deadline=now()+MPC.RL_MS; dirty(); }
   function rlClear(p){ if(rl.phase!=='bet') return rej(p,'Too late, it\'s spinning.'); const B=rl.bets[p.cid]; if(!B) return; delete rl.bets[p.cid]; delete rl.ready[p.cid]; led(p,'rl'+(rl.spinNo+1),sumObj(B),0,'Roulette bets pulled'); if(!Object.keys(rl.bets).length) rl.deadline=0; dirty(); }
   function rlSpin(){ rl.phase='spin'; rl.n=(H.rig.rl!=null&&H.rig.rl.length)?H.rig.rl.shift():ri(0,37); rl.spinNo++; rl.spinAt=now()+MPC.RL_SPIN_MS; rl.deadline=0; rl.res={}; dirty(); }
-  function rlFinish(){ const n=rl.n; for(const c in rl.bets){ const B=rl.bets[c], tot=sumObj(B), ret=rlSettle(B,n), p=pl(c); if(!p) continue; rl.res[p.id]={tot,ret,net:r2(ret-tot)}; led(p,'rl'+rl.spinNo,ret,0,`Roulette ${rlLabel(n)}`,ret-tot); if(ret-tot>=500) sys(`💰 ${p.name} hits ${rlLabel(n)} for ${money(ret)}!`); }
+  function rlFinish(){ const n=rl.n; for(const c in rl.bets){ const B=rl.bets[c], tot=sumObj(B), ret=rlSettle(B,n), p=pl(c); if(!p) continue; rl.res[p.id]={tot,ret,net:r2(ret-tot)}; led(p,'rl'+rl.spinNo,ret,0,`Roulette ${rlLabel(n)}`,ret-tot,LF(Object.keys(B).map(k=>[B[k],rlSettle({[k]:B[k]},n)]))); if(ret-tot>=500) sys(`💰 ${p.name} hits ${rlLabel(n)} for ${money(ret)}!`); }
     rl.hist.unshift(n); if(rl.hist.length>12) rl.hist.length=12; rl.phase='done'; rl.doneAt=now()+MPC.RL_DONE_MS; dirty(); }
   function rlTick(t){ if(rl.phase==='bet'&&rl.deadline){ const b=Object.keys(rl.bets); if(b.length&&b.every(c=>rl.ready[c])) rl.deadline=Math.min(rl.deadline,t+1200); if(t>=rl.deadline){ if(b.length) rlSpin(); else rl.deadline=0; } }
     else if(rl.phase==='spin'&&t>=rl.spinAt) rlFinish(); else if(rl.phase==='done'&&t>=rl.doneAt){ rl.phase='bet'; rl.bets={}; rl.ready={}; rl.deadline=0; dirty(); } }
@@ -1839,7 +1920,7 @@ function mpHostCreate(io){ // io: {send(cid,msg), now(), room, sess}
   function sbFinal(){ let best=null, worst=null;
     mpWithS(H.rs,()=>{ for(const g of sb.games) finalizeGame(g,sb.recs[g.id].final);
       for(const b of sb.bets){ if(b.status!=='open') continue; const res=b.legs.map(l=>{ const g=sb.games.find(x=>x.id===l.gid); const v=legValue(l,g.res.sa,g.res.sh,g.res.ps); return v>0?'w':v===0?'p':'l'; });
-        const r=betReturn(b,res); b.status=r.status; b.ret=r.ret; b.res=res; b.net=r2(r.ret-b.stake); const p=pl(b.cid); led(p,b.id,r.ret,0,`Sportsbook ${r.status}: ${b.legs.length>1?b.legs.length+'-leg parlay':b.legs[0].label}`,b.net);
+        const r=betReturn(b,res); b.status=r.status; b.ret=r.ret; b.res=res; b.net=r2(r.ret-b.stake); const p=pl(b.cid); led(p,b.id,r.ret,0,`Sportsbook ${r.status}: ${b.legs.length>1?b.legs.length+'-leg parlay':b.legs[0].label}`,b.net,LF(r.status==='push'?[]:[[b.stake,r.ret]]));
         const s=sb.stats[b.cid]||(sb.stats[b.cid]={w:0,l:0,p:0,net:0}); s[r.status==='won'?'w':r.status==='lost'?'l':'p']++; s.net=r2(s.net+b.net);
         if(!best||b.net>best.net) best=b; if(!worst||b.net<worst.net) worst=b; } });
     sb.phase='final'; sb.finalAt=now()+MPC.SB_FINAL_MS; sb.ticker.push({txt:'🏁 FINAL. All bets settled.',cls:'big'});
@@ -1881,18 +1962,18 @@ function mpHostCreate(io){ // io: {send(cid,msg), now(), room, sess}
     led(p,f7SbW(),-diff,tot,'Flip 7 side bet'); delete f7.ready[p.cid]; dirty(); }
   function f7SettleSide(){ const G=f7.G, w='f7s'+f7.gameNo+'.'+G.round;
     for(const c in f7.sbLive){ const B=f7.sbLive[c], p=pl(c); if(!p) continue; const me=f7.cids.indexOf(c), stake=f7SbTot(B); let ret=0;
-      if(B.f7&&me>=0&&G.players[me].f7) ret+=B.f7*(1+F7_SIDE.f7.pay);
-      for(const i in B.bust){ const q=G.players[i]; if(q&&q.npc&&q.st==='busted') ret+=B.bust[i]*(1+F7_SIDE.bust[q.npc]); }
-      ret=r2(ret); led(p,w,ret,0,`Flip 7 side bets, round ${G.round}`,ret-stake); if(ret-stake>=100) sys(`💰 ${p.name} cashes ${money(ret)} in Flip 7 side bets.`); }
+      const pairs=[]; if(B.f7){ const r=me>=0&&G.players[me].f7?B.f7*(1+F7_SIDE.f7.pay):0; ret+=r; pairs.push([B.f7,r]); }
+      for(const i in B.bust){ const q=G.players[i]; const r=q&&q.npc&&q.st==='busted'?B.bust[i]*(1+F7_SIDE.bust[q.npc]):0; ret+=r; pairs.push([B.bust[i],r]); }
+      ret=r2(ret); led(p,w,ret,0,`Flip 7 side bets, round ${G.round}`,ret-stake,LF(pairs)); if(ret-stake>=100) sys(`💰 ${p.name} cashes ${money(ret)} in Flip 7 side bets.`); }
     f7.sbLive={}; }
   function f7Fold(c,why){ const i=f7.cids.indexOf(c); if(f7.phase!=='play'||i<0||f7.folded[c]) return; const p=pl(c), G=f7.G; f7.folded[c]=1; G.players[i].auto=true;
-    led(p,'f7g'+f7.gameNo,0,0,'Flip 7: walked out, buy-in forfeited',-f7.buy);
+    led(p,'f7g'+f7.gameNo,0,0,'Flip 7: walked out, buy-in forfeited',-f7.buy,LF([[f7.buy,0]]));
     if(f7.sbNext[c]){ const B=f7.sbNext[c]; delete f7.sbNext[c]; led(p,f7SbW(),f7SbTot(B),0,'Flip 7 side bets returned'); }
-    if(f7.sbLive[c]){ const B=f7.sbLive[c]; delete f7.sbLive[c]; led(p,'f7s'+f7.gameNo+'.'+G.round,0,0,'Flip 7 side bets forfeited',-f7SbTot(B)); }
+    if(f7.sbLive[c]){ const B=f7.sbLive[c]; delete f7.sbLive[c]; led(p,'f7s'+f7.gameNo+'.'+G.round,0,0,'Flip 7 side bets forfeited',-f7SbTot(B),LF([[f7SbTot(B),0]])); }
     f7L(`🏳️ ${G.players[i].name} ${why}. Autopilot plays the seat for the house.`); sys(`🏳️ ${nm(c)} ${why} mid-Flip 7. Buy-in stays in the pot.`); dirty(); }
   function f7Finish(winners){ const G=f7.G, share=r2(f7.pot*(1-F7_RAKE)/winners.length), w='f7g'+f7.gameNo;
     f7.cids.forEach((c,i)=>{ if(!c||f7.folded[c]) return; const p=pl(c); if(!p) return;
-      if(winners.includes(i)) led(p,w,share,0,`🏆 Flip 7 pot #${f7.gameNo}`,share-f7.buy); else led(p,w,0,0,`Flip 7 #${f7.gameNo}: lost the buy-in`,-f7.buy); });
+      if(winners.includes(i)) led(p,w,share,0,`🏆 Flip 7 pot #${f7.gameNo}`,share-f7.buy,LF([[f7.buy,share]])); else led(p,w,0,0,`Flip 7 #${f7.gameNo}: lost the buy-in`,-f7.buy,LF([[f7.buy,0]])); });
     const names=winners.map(i=>G.players[i].name).join(' & '), house=winners.every(i=>!f7.cids[i]||f7.folded[f7.cids[i]]);
     f7.res={names,share,ids:winners.map(i=>f7.cids[i]?idOf(f7.cids[i]):null),house};
     const line=`🏁 Flip 7 #${f7.gameNo}: ${names} take${winners.length>1?'':'s'} the ${money(f7.pot)} pot (${money(share)} after the house's 5%).${house?' The house wins. Of course it does.':''}`; f7L(line); sys(line);
@@ -1940,7 +2021,7 @@ function mpHostCreate(io){ // io: {send(cid,msg), now(), room, sess}
   function knDraw(t){ const rg=H.rig.keno&&H.rig.keno.length?H.rig.keno.shift():null; kn.draw=kenoDraw(rg); kn.raceNo++; kn.inRace=Object.keys(kn.tickets); kn.shown=0; kn.nextBall=t+MPC.KN_BALL_MS; kn.phase='draw'; kn.deadline=0; kn.res={}; dirty(); }
   function knSettle(t){ const D=kn.draw; let best=null;
     for(const c of kn.inRace){ const T=kn.tickets[c]; if(!T) continue; const p=pl(c), r=kenoSettle(T.spots,D,T.bet); T.left--;
-      if(p){ const net=r2(r.ret-T.bet); led(p,T.w,r.ret,T.left*T.bet,`Keno race #${kn.raceNo}: caught ${r.hits}/${T.spots.length}`,net); kn.res[p.id]={h:r.hits,s:T.spots.length,ret:r.ret,net,bet:T.bet};
+      if(p){ const net=r2(r.ret-T.bet); led(p,T.w,r.ret,T.left*T.bet,`Keno race #${kn.raceNo}: caught ${r.hits}/${T.spots.length}`,net,LF([[T.bet,r.ret]])); kn.res[p.id]={h:r.hits,s:T.spots.length,ret:r.ret,net,bet:T.bet};
         if(net>=250||r.hits>=7) sys(`🎱 ${p.name} catches ${r.hits} of ${T.spots.length} at keno for ${money(r.ret)}! Karen is visibly annoyed.`); if(!best||net>best.net) best={net,p}; }
       if(T.gone&&T.left>0){ if(p) led(p,T.w,r2(T.left*T.bet),0,'Keno: rest of the ticket refunded (you left)'); T.left=0; }
       if(T.left<=0){ delete kn.tickets[c]; delete kn.ready[c]; } }
@@ -1969,10 +2050,11 @@ function mpHostCreate(io){ // io: {send(cid,msg), now(), room, sess}
     H.closed=true; for(const c of H.order) if(H.P[c].conn) io.send(c,{t:'close',why:why||'The host closed the table.'}); };
   // ---------------- public snapshot (no shoe, no hole card, no secret ids) ----------------
   H.view=function(){ const t=now(), rem=d=>d?Math.max(0,d-t):0; const byId=o=>{ const r={}; for(const c in o){ const id=idOf(c); if(id) r[id]=o[c]; } return r; };
-    const players=H.order.map(c=>{ const p=H.P[c]; return {id:p.id,name:p.name,color:p.color,table:p.table,bal:p.bal,net:r2(p.bal-p.start),conn:p.conn,host:p.isHost,loaned:p.loaned||0}; });
+    const players=H.order.map(c=>{ const p=H.P[c]; return {id:p.id,name:p.name,color:p.color,table:p.table,bal:p.bal,net:r2(p.bal-p.start),conn:p.conn,host:p.isHost,loaned:p.loaned||0,rw:p.rw||0,rr:p.rr||0}; });
+    const gone=Object.values(H.ghost).filter(p=>p.rw||p.rr).map(p=>({name:p.name,color:p.color,rw:p.rw||0,rr:p.rr||0}));
     const hands={}; for(const c of bj.order){ const X=bj.hands[c], id=idOf(c); if(id) hands[id]={hs:X.hs.map(h=>({cards:h.cards,bet:h.bet,dbl:h.dbl,split:h.split,done:h.done,res:h.res||null,ret:h.ret})),act:X.act,done:X.done,net:X.net}; }
     const crb={}; for(const c in cr.C){ const id=idOf(c), C=cr.C[c]; if(id) crb[id]={bets:C.bets,comes:C.comes,dcs:C.dcs,on:crapsTotalOnTable(C)}; }
-    return { v:MPC.VER, room:H.room, players, chat:H.chat.slice(-30),
+    return { v:MPC.VER, room:H.room, players, chat:H.chat.slice(-30), rt:{w:H.rt.w,r:H.rt.r,n:H.rt.n,gone},
       bj:{phase:bj.phase,seats:bj.seats.map(c=>c?idOf(c):null),dealer:bj.dealer.map((c,i)=>bj.hole&&i===1?{h:1}:c),dv:bj.dealer.length?(bj.hole?cval(bj.dealer[0]):handVal(bj.dealer).t):0,
         turn:idOf(bj.turn),rem:rem(bj.deadline),hands,bets:byId(bj.bets),last:byId(bj.last),handNo:bj.handNo,msg:bj.msg,left:bj.shoe.cards.length},
       cr:{point:cr.point,shooter:idOf(cr.shooter),phase:cr.phase,rem:rem(cr.deadline),last:cr.last,rollNo:cr.rollNo,hist:cr.hist,bets:crb,thrower:cr.phase==='roll'?cr.thrower:'',sRolls:cr.sRolls},
@@ -2021,7 +2103,8 @@ function mpVoidOpen(why){ const t=mpOpenTotal(); if(S&&S.mp){ if(t>0){ addCash(t
 function mpBindSess(sess){ if(!S) return; S.mp=S.mp||{}; if(S.mp.sess!==sess){ if(mpOpenTotal()>0) mpVoidOpen('old table is gone'); S.mp={sess,room:MP.code,lastSeq:0,open:{}}; } else S.mp.room=MP.code; save(); }
 function mpApply(list){ if(!S||!S.mp||!Array.isArray(list)) return; const es=list.filter(e=>e&&typeof e.seq==='number').sort((a,b)=>a.seq-b.seq); let any=false;
   for(const e of es){ if(e.seq<=S.mp.lastSeq) continue; S.mp.lastSeq=e.seq; any=true; const d=Number(e.d); if(e.loan!=null&&d>0&&Number(e.loan)===d) mpLoanApply(d); else if(Number.isFinite(d)&&d!==0){ addCash(d); MP.sessNet=r2(MP.sessNet+d); }
-    const w=String(e.w||'').slice(0,20), out=Number(e.out)||0; if(out>0) S.mp.open[w]=r2(out); else delete S.mp.open[w];
+    const w=String(e.w||'').slice(0,20), out=Number(e.out)||0;
+    if(Array.isArray(e.lf)&&e.lf.length<=60){ const sb=(w.match(/^(bj|cr|rl|sb|f7|kn)/)||[])[1]||''; for(const pr of e.lf) if(Array.isArray(pr)) lifeRec('online',pr[0],pr[1],String(e.why||'Online bet'),sb); } if(out>0) S.mp.open[w]=r2(out); else delete S.mp.open[w];
     if(e.net!=null&&Number.isFinite(Number(e.net))) mpResultFx(Number(e.net),String(e.why||'')); }
   if(any){ save(); renderTop(); } mpSend({t:'ack',seq:S.mp.lastSeq}); }
 // A loan the host approved: exactly Sal's deli borrow() (fee 10% +5% per prior loan, debt += amt+fee, loans++ -> higher weekly rate), +5 tilt like the deli.
@@ -2262,7 +2345,7 @@ function mpLobbyHtml(R){ const url=mpLink();
   let h=`<h2>🌐 THE BACK ROOM <span class="small dim">${R.players.length}/${MPC.MAXP} degenerates</span></h2><div class="panel" style="text-align:center"><div class="small dim">Room code — send it to your friends</div><div class="mpcode">DEGEN-${esc(MP.code)}</div><div class="grid2"><button class="btn c" onclick="mpCopy()">📋 Copy invite link</button><button class="btn c" onclick="mpShare()">📤 Share</button></div><div class="small dim" style="word-break:break-all">${esc(url)}</div></div>`;
   h+=`<h3>🪑 Who's here</h3><table><tr><th>Degen</th><th>At</th><th>Bankroll</th><th>Session</th></tr>${R.players.map(p=>`<tr><td>${mpDot(p.color)}<b>${esc(p.name)}</b>${p.host?' 👑':''}${p.id===MP.me?' <span class="g small">(you)</span>':''}${p.conn?'':' <span class="r small">📵</span>'}</td><td>${MP_TSHORT[p.table]||''}</td><td>${money(p.bal)}${p.loaned?` <span class="small a" title="borrowed from Sal this session">🥪${money(p.loaned)}</span>`:''}</td><td class="${p.net>=0?'g':'r'}">${p.net>=0?'+':''}${money(p.net)}</td></tr>`).join('')}</table>`;
   h+=`<h3>🎰 Tables</h3><div class="grid2">${['bj','cr','rl','sb','f7','kn'].map(t=>`<button class="btn" onclick="mpGo('${t}')">${MP_TNAME[t]}<small>${MP_TDESC[t]} · ${R.players.filter(p=>p.table===t).length} here</small></button>`).join('')}</div>`;
-  h+=mpLeaderHtml(R)+`<div class="small dim">Your online bankroll is your single-player save (${money(S?S.cash:0)}). Wins & losses write back to your run. The day doesn't advance while you're here.</div>`;
+  h+=mpRoomTotHtml(R)+mpLeaderHtml(R)+`<div class="small dim">Your online bankroll is your single-player save (${money(S?S.cash:0)}). Wins & losses write back to your run. The day doesn't advance while you're here.</div>`;
   h+=`<button class="btn c ${MP.role==='host'?'bad':''}" onclick="mpLeave()">${MP.role==='host'?'🔒 Close the table (kicks everyone)':'🚪 Leave the room'}</button>`; return h; }
 function mpChipsAdd(vals,fn,max){ return `<div class="row">${vals.map(v=>`<button class="chip" ${v>max?'disabled':''} onclick="${fn}(${v})">+$${v>=1000?(v/1000)+'k':v}</button>`).join('')}</div>`; }
 function mpBJHtml(R){ const B=R.bj, me=MP.me, myP=mpP(me)||{bal:0}, seat=B.seats.indexOf(me); let st;
@@ -2402,13 +2485,26 @@ function mpKnQP(n){ U.mpKn.picks=kenoQuick(n); sfx.click(); mpRenderRoom(false);
 function mpKnBet(v){ U.mpKn.bet=v; mpRenderRoom(false); }
 function mpKnRaces(v){ U.mpKn.races=v; mpRenderRoom(false); }
 function mpKnPlay(){ const K=U.mpKn; if(!K.picks.length) return; mpSend({t:'kn.ticket',spots:K.picks.slice(),bet:K.bet,races:K.races}); sfx.coin(); say('mp_'+MP.me,pick(['Birthdays and my ex\'s jersey number.','Karen, this is the one.','Mama needs a 7-spot.']),1500); }
+
+// ROOM TOTALS: computed by the host from every decided bet this session (pushes/refunds excluded), broadcast in the view
+function mpRoomTotHtml(R){ const T=R.rt||{w:0,r:0,n:0,gone:[]}, n=r2(T.r-T.w); const rows=R.players.map(p=>({name:p.name,color:p.color,rw:p.rw||0,rr:p.rr||0,me:p.id===MP.me})).concat((T.gone||[]).map(p=>Object.assign({left:1},p)));
+  return `<h3>🧮 ROOM TOTALS <span class="small dim">this session · ${T.n} bets settled</span></h3><div class="panel roomtot"><div class="kv"><span>Everyone wagered</span><b>${money(T.w)}</b></div><div class="kv"><span>Everyone won (gross)</span><b>${money(T.r)}</b></div><div class="kv"><span>Room net vs the house</span><b class="${n>0?'g':n<0?'r':''}">${lifeSigned(n)}</b></div>
+  <table class="small"><tr><th>Degen</th><th>Wagered</th><th>Won</th><th>Net</th></tr>${rows.map(p=>{ const pn=r2(p.rr-p.rw); return `<tr><td>${mpDot(p.color)}${esc(p.name)}${p.me?' <span class="g">(you)</span>':''}${p.left?' <span class="dim">(left)</span>':''}</td><td>${money(p.rw)}</td><td>${money(p.rr)}</td><td class="${pn>0?'g':pn<0?'r':''}">${lifeSigned(pn)}</td></tr>`; }).join('')}</table>
+  <div class="small dim">${n<0?pick(['The house is eating good tonight.','Collectively donating to the casino. Beautiful teamwork.']):n>0?'The room is UP. Somebody check the dealer\'s pulse.':'Dead even. Suspicious.'}</div></div>`; }
 // ===================== WHAT'S NEW (full update log, newest first) =====================
 // Every update since the game was created, rebuilt from the crow99999/arcade git history, the build/test notes and the
 // bugs fixed during testing. Returning players get a pop-up card on the title screen with only the entries newer than
 // the version they last saw (META.wnSeen); brand-new players aren't spammed. The full log lives on a scrollable screen.
-const GAME_VER='1.7.0';
+const GAME_VER='1.8.0';
 const WN_BEFORE_LOG='1.4.1'; // what returning players had before this log existed (last deploy before v1.5.0)
 const CHANGELOG=[
+ {v:'1.8.0',d:'Oct 6, 2026 · night',t:'📊 Lifetime money stats',items:[
+  'Lifetime totals that survive new runs and save resets: total wagered, total won (gross payouts), net profit/loss, biggest single win and biggest single loss.',
+  'Per-game breakdown: sportsbook, blackjack, craps, roulette, slots, scratchers, keno, Flip 7, poker, monte and online tables (with a per-table split).',
+  'Newgrounds-style stat ticker at the bottom of the title and home screens. Tap it for the full stats panel (with appropriate shame or praise).',
+  'Online rooms: ROOM TOTALS in the lobby — everybody\'s wagered and won this session, per player, counted by the host.',
+  'How it counts: only decided bets. Pushes, voids, refunds, take-downs and unplayed keno races count as neither wagered nor won; bonus-bet stakes are house money.',
+  'Everything stays in your browser (no accounts, no server). New ⚙️ Settings screen with sound and a "Reset lifetime stats" button.']},
  {v:'1.7.0',d:'Oct 6, 2026 · evening',t:'📰 What\'s New log',items:[
   'This screen: every update since day one, newest first, in one scrollable log (title screen and hub → 📰 What\'s New).',
   'Returning players get a pop-up on the title screen with just the stuff that\'s new since their last visit.',
@@ -2518,11 +2614,13 @@ function monteStart(){ const bet=U.al.bet; if(bet>S.cash){ toast('Pete laughs at
       if(++n>=swaps){ clearInterval(iv); M.phase='pick'; if(M.cheat&&(has('eagle')?rnd()<.75:roll('street',6))){ M.cheatSeen=true; U.al.msg='👀 Wait... did Pete\'s pinky just flick something into his sleeve? Pick a card or call him out.'; } else U.al.msg='Pete: "Where\'s the lady? Pick one, pick one!"'; setTimeout(()=>{ if(U.screen==='alley'&&U.al&&U.al.m===M) renderMonte(); },dur); } }, dur); }, 1100); }
 function montePick(i){ const M=U.al&&U.al.m; if(!M||M.phase!=='pick') return; M.pick=i; M.phase='done';
   const real=!M.cheat&&i===M.q; if(M.cheat&&i===M.q){ M.q=(i+1)%3; } // palmed: the queen was never there
+  lifeRec('monte',M.bet,real?M.bet*2:0,real?'Found the queen':'Monte: wrong card');
   if(real){ addCash(M.bet*2); U.al.msg=`👸 <b class="g">YOU FOUND HER! +${money(M.bet)}</b> Pete: "Beginner's luck. Go again? Double or nothin'?"`; sfx.win(); pose('you','celebrate',1500); unlock('monte'); gainXp(6); addTilt(-3); }
   else { U.al.msg=`❌ Jack of spades. ${M.cheat?'(The queen was in his sleeve the whole time, genius.) ':''}Pete: "Ooh, so close! Try again, my guy!" Lost ${money(M.bet)}.`; sfx.lose(); pose('you','facepalm',1500); addTilt(3); gainXp(2); }
   save(); renderMonte(); }
 function monteCallOut(){ const M=U.al&&U.al.m; if(!M||M.phase!=='pick') return; M.phase='done';
-  if(roll('street',4)){ addCash(M.bet*3); U.al.msg=`🚨 You grab Pete's wrist. The queen falls out of his sleeve. A crowd forms. Pete pays you <b class="g">${money(M.bet*2)}</b> profit to keep quiet. Moose looks impressed.`; gainXp(15); sfx.win(); renderMonte(); }
+  const won=roll('street',4); lifeRec('monte',M.bet,won?M.bet*3:0,won?'Called out Pete (paid)':'Called out Pete (fight)');
+  if(won){ addCash(M.bet*3); U.al.msg=`🚨 You grab Pete's wrist. The queen falls out of his sleeve. A crowd forms. Pete pays you <b class="g">${money(M.bet*2)}</b> profit to keep quiet. Moose looks impressed.`; gainXp(15); sfx.win(); renderMonte(); }
   else { U.al.msg='🚨 You accuse Pete. He shows an empty sleeve. Moose cracks his knuckles...'; renderMonte(); setTimeout(()=>startFight('moose','You accused Shifty Pete of cheating (correctly, but you couldn\'t prove it).','alley'),900); } }
 // ---------- HOLD'EM ----------
 function pokerSit(id){ const N=NPCS[id]; if(S.cash<N.bb*4){ toast(`You need at least ${money(N.bb*4)} to sit with ${N.n}.`); return; } U.al={game:'poker',npc:id,stack:(U.npcStacks&&U.npcStacks[id])||N.stack,btn:0,log:[]};
@@ -2565,7 +2663,7 @@ function npcAct(){ const A=U.al; if(!A||!A.h||A.h.over||A.h.turn!=='npc'||U.scre
 function pShowdown(){ const A=U.al, H=A.h, N=NPCS[A.npc]; const y=best7([...H.you,...H.board]), n=best7([...H.npc,...H.board]); H.show=true;
   pLog(`SHOWDOWN: You ${HAND_NAMES[handCat(y)]} vs ${N.n} ${HAND_NAMES[handCat(n)]}.`);
   pEnd(y>n?'you':y<n?'npc':'split'); }
-function pEnd(w){ const A=U.al, H=A.h, N=NPCS[A.npc]; H.over=true; H.winner=w;
+function pEnd(w){ const A=U.al, H=A.h, N=NPCS[A.npc]; H.over=true; H.winner=w; { const ret=w==='you'?H.pot:w==='npc'?0:H.pot/2; if(!(w==='split'&&Math.abs(ret-H.youIn)<1e-9)) lifeRec('poker',H.youIn,ret,`Hold'em vs ${N.n}`); }
   if(w==='you'){ addCash(H.pot); const prof=H.pot-H.youIn; pLog(`💰 You win ${money(H.pot)} (+${money(prof)}).`); sfx.win(); pose('you','celebrate',1500,'idle'); pose('npc','facepalm',1500); if(H.pot>=200) unlock('pokerwin'); gainXp(3+prof/15); addTilt(-3); }
   else if(w==='npc'){ A.stack+=H.pot; pLog(`🩸 ${N.n} takes the ${money(H.pot)} pot. You lost ${money(H.youIn)}.`); sfx.lose(); pose('you','facepalm',1500,'idle'); pose('npc','celebrate',1500); addTilt(2+H.youIn/Math.max(20,S.cash)*15); gainXp(2); }
   else { addCash(H.pot/2); A.stack+=H.pot/2; pLog('Split pot. Boring.'); }
@@ -2573,7 +2671,7 @@ function pEnd(w){ const A=U.al, H=A.h, N=NPCS[A.npc]; H.over=true; H.winner=w;
 function pokerCheat(kind){ const A=U.al, H=A.h, N=NPCS[A.npc]; const bonus=has('bottomdeal')?.25:0; const dc={peek:4,bottom:6}[kind]+(A.npc==='margo'?2:0);
   const p=clamp(chk('street',dc)+bonus,.05,.95); const ok=rnd()<p;
   if(ok){ if(kind==='peek'){ H.peek=true; pLog(`👀 You "drop a chip" and peek. ${N.n} has ${H.npc.map(c=>PR[c.r]+SUITS[c.s]).join(' ')}. Disgusting. Effective.`); gainXp(5); renderPoker(); } else { pokerHand(true); gainXp(5); } }
-  else { unlock('caught'); pLog(`🚨 CAUGHT! ${N.n} grabs your wrist. "You cheatin' me?!"`); if(H&&!H.over){ A.stack+=H.pot; H.over=true; } renderPoker(); setTimeout(()=>startFight(A.npc,`${N.n} caught you cheating at cards.`,'alley'),800); } }
+  else { unlock('caught'); pLog(`🚨 CAUGHT! ${N.n} grabs your wrist. "You cheatin' me?!"`); if(H&&!H.over){ lifeRec('poker',H.youIn,0,'Caught cheating'); A.stack+=H.pot; H.over=true; } renderPoker(); setTimeout(()=>startFight(A.npc,`${N.n} caught you cheating at cards.`,'alley'),800); } }
 function renderPoker(){ const A=U.al, H=A.h, N=NPCS[A.npc]; let h=`<h2>♠️ vs ${N.n} <span class="small dim">$${N.sb}/$${N.bb} limit · their stack ${money(A.stack)}</span></h2>`;
   if(H){ const showN=H.show||H.peek||(H.over&&H.winner!=='you'&&H.show);
     h+=`<div class="small dim">${N.n}${H.npcIn?` · in pot ${money(H.npcIn)}`:''}</div><div class="cards">${H.npc.map(c=>pCard(c,!showN)).join('')}</div>`;
@@ -2767,7 +2865,7 @@ function render(){ const s=U.screen; mpCanvasTall(s==='mp'); renderTop(); try{
   if(s==='mp') return renderMP(true);
   if(s==='title') return renderTitle(); if(s==='create') return renderCreate(); if(s==='hub') return renderHub(); if(s==='book'){ scene('book',[youActor({x:.5,pose:'phone',held:'phone'})],{caption:'THE SPORTSBOOK'}); return renderBook(); }
   if(s==='live') return renderLive(); if(s==='casino') return renderCasino(); if(s==='alley') return renderAlley(); if(s==='fight') return renderFight(); if(s==='event') return renderEvent();
-  if(s==='char') return renderChar(); if(s==='shop') return renderShop(); if(s==='sal') return renderSal(); if(s==='jobs') return renderJobs(); if(s==='bar') return renderBar(); if(s==='ach') return renderAch(); if(s==='morning') return renderMorning(); if(s==='ending') return renderEnding(); if(s==='help') return renderHelp(); if(s==='news') return renderNews(); if(s==='final') return renderFinal();
+  if(s==='char') return renderChar(); if(s==='shop') return renderShop(); if(s==='sal') return renderSal(); if(s==='jobs') return renderJobs(); if(s==='bar') return renderBar(); if(s==='ach') return renderAch(); if(s==='morning') return renderMorning(); if(s==='ending') return renderEnding(); if(s==='help') return renderHelp(); if(s==='news') return renderNews(); if(s==='stats') return renderStats(); if(s==='settings') return renderSettings(); if(s==='final') return renderFinal();
   } catch(e){ console.error(e); setMain(`<div class="panel r">Something broke: ${esc(e.message)}</div><button class="btn" onclick="go('hub')">Back to hub</button>`); } }
 // ---------- title / create ----------
 const ASCII_TITLE = String.raw`
@@ -2783,8 +2881,8 @@ function renderTitle(){ scene('title',[{id:'a',x:.2,pose:'celebrate',hat:'cap',h
   <button class="btn big ${live?'':'go'}" onclick="go('create')">🆕 NEW RUN</button>
   <button class="btn big gold" data-nomk="1" onclick="mpOpen('title')">🌐 ONLINE CASINO<small style="text-align:center">Host or join a table with friends: blackjack, craps, roulette, Flip 7, keno, sportsbook</small></button>
   <div class="grid2"><button class="btn c" onclick="go('help')">📖 How to play</button><button class="btn c" onclick="U.achMeta=true;go('ach')">🏆 Achievements (${Object.keys(META.ach).length}/${Object.keys(ACHS).length})</button></div>
-  <div class="grid2"><button class="btn c" onclick="U.wnFrom='title';go('news')">📰 What's New <small style="text-align:center">v${GAME_VER}</small></button><button class="btn c" onclick="SND.on=!SND.on;renderTitle()">🔊 Sound: ${SND.on?'ON':'OFF'}</button></div>
-  <div class="small dim" style="text-align:center;margin-top:8px">Runs: ${META.runs} · Best score: ${META.best.toLocaleString()} · Endings found: ${Object.keys(META.endings).length}/6<br>All teams, books, people and gambling are fictional. Please don't actually do this.</div>`); }
+  <div class="grid2"><button class="btn c" onclick="U.wnFrom='title';go('news')">📰 What's New <small style="text-align:center">v${GAME_VER}</small></button><button class="btn c" onclick="U.setFrom='title';U.statsFrom='title';go('settings')">⚙️ Settings<small style="text-align:center">sound · reset stats</small></button></div>
+  <div class="small dim" style="text-align:center;margin-top:8px">Runs: ${META.runs} · Best score: ${META.best.toLocaleString()} · Endings found: ${Object.keys(META.endings).length}/6<br>All teams, books, people and gambling are fictional. Please don't actually do this.</div>${lifeBarHtml('title')}`); }
 function continueGame(){ S=load(); if(!S) return go('title'); if(S.craps&&crapsTotalOnTable(S.craps)>0){ const t=crapsRefundAll(); toast(`Your ${money(t)} of craps chips were returned.`); } if(!S.slate||S.slate.day!==S.day) genSlate(); go('hub'); }
 function renderCreate(){ U.arch=U.arch||'sharp'; scene('apt',[youActor({x:.5,pose:'idle',label:'YOU'})],{});
   setMain(`<h2>🆕 CREATE YOUR DEGENERATE</h2><label class="small dim">Name</label><input type="text" id="nm" maxlength="14" value="${esc(U.nm||'Jon')}" oninput="U.nm=this.value">
@@ -2843,7 +2941,7 @@ function renderHub(){
    <button class="btn" onclick="go('char')">🧍 Character<small>Stats, perks, inventory</small></button>
    <button class="btn" onclick="U.achMeta=false;go('ach')">🏆 Achievements<small>${Object.keys(S.ach).length}/${Object.keys(ACHS).length}</small></button></div>
    <button class="btn big ${e?'':'gold'}" onclick="doSleep()">😴 Sleep (end day ${S.day})<small style="text-align:center">${!S.slate.done&&S.bets.length?'Unwatched games will auto-sim':''}${e?' · You still have energy left':''}</small></button>
-   <div class="row" style="justify-content:space-between"><button class="tab" onclick="go('help')">📖 Help</button><button class="tab" onclick="U.wnFrom='hub';go('news')">📰 New</button><button class="tab" onclick="SND.on=!SND.on;render()">🔊 ${SND.on?'On':'Off'}</button><button class="tab" onclick="save();go('title')">💾 Save & Title</button></div>`;
+   <div class="row" style="justify-content:space-between"><button class="tab" onclick="go('help')">📖 Help</button><button class="tab" onclick="U.wnFrom='hub';go('news')">📰 New</button><button class="tab" onclick="SND.on=!SND.on;render()">🔊 ${SND.on?'On':'Off'}</button><button class="tab" onclick="save();go('title')">💾 Save & Title</button></div>${lifeBarHtml('hub')}`;
   save(); setMain(h); }
 function doSleep(){ sfx.click(); const out=sleep(); S.lastLog=[]; U.morning=out; go('morning'); }
 function renderMorning(){ scene('apt',[youActor({x:.5,pose:'idle',held:null}),{id:'sun',x:.12,y:.3,s:.01}],{caption:'☀️ GOOD MORNING'}); pose('you','idle');
