@@ -210,6 +210,44 @@ pre.ascii{color:var(--green);font-size:11px;line-height:1.1;overflow-x:auto;marg
   body.lbside #mplbx .lbhead .lbsum{display:none}
 }
 @media (prefers-reduced-motion:reduce){.lbmv{animation:none}}
+/* ---- Euchre Hall ---- */
+.euseats{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:6px 0}.eusch{border:1px solid var(--line);border-radius:6px;padding:5px 7px;background:#12160f;display:flex;flex-direction:column;gap:3px}
+.eusch.t0{border-left:4px solid #6fc3ff}.eusch.t1{border-left:4px solid #ffc24a}.eusch.me{box-shadow:0 0 0 2px #5dff8a}.eusch .chip{align-self:flex-start}
+.eutbl{position:relative;height:262px;margin:6px 0;border-radius:14px;background:radial-gradient(ellipse at 50% 45%,#3b8a55,#24603a 70%,#1b4a2c);border:6px solid #7a5a32;box-shadow:inset 0 0 0 2px #00000055,0 3px 0 #000;overflow:hidden;color:#fff}
+.euscore{position:absolute;left:6px;top:5px;font-size:11px;line-height:1.25;background:#0008;border-radius:5px;padding:3px 6px;z-index:2}
+.euscore .eun{display:inline-block;min-width:16px;text-align:right;font-weight:bold;color:#ffc24a;font-size:14px}
+.eupips{display:inline-flex;gap:2px;margin-left:4px;vertical-align:middle}.eupips i{width:5px;height:9px;border:1px solid #ffc24a88;border-radius:1px}.eupips i.on{background:#ffc24a}
+.eutrump{position:absolute;right:6px;top:5px;background:#fbf7ec;color:#111;border:2px solid #222;border-radius:7px;padding:2px 7px;text-align:center;font-size:10px;line-height:1.1;z-index:2;min-width:52px;box-shadow:2px 2px 0 #0006}
+.eutrump b{display:block;font-size:26px;line-height:1}.eutrump.red b{color:#c0392b}.eutrump span{display:block}
+.eus{position:absolute;text-align:center;font-size:11.5px;line-height:1.2;padding:2px 6px;border-radius:6px;background:#0007;max-width:170px;z-index:2}
+.eus.bot{bottom:4px;left:50%;transform:translateX(-50%)}.eus.top{top:6px;left:50%;transform:translateX(-50%)}.eus.lft{left:4px;top:50%;transform:translateY(-50%)}.eus.rgt{right:4px;top:50%;transform:translateY(-50%)}
+.eus.us .eunm{color:#9ff7b8}.eus.them .eunm{color:#ffb3b3}.eus.turn{box-shadow:0 0 0 2px #ffc24a;background:#3a2c00cc;animation:eupulse 1s infinite alternate}.eus.out{opacity:.55}
+@keyframes eupulse{to{box-shadow:0 0 0 4px #ffc24a66}}
+.eunm{font-weight:bold;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.eusub{font-size:10.5px;color:#ddd}
+.eudl{display:inline-block;background:#fff;color:#111;border-radius:50%;width:14px;height:14px;line-height:14px;font-size:10px;margin-right:3px}
+.eumk{background:#ffc24a;color:#111;border-radius:3px;padding:0 3px;font-size:9px}.eupart{color:#9ff7b8}.eutk{color:#ffc24a;font-weight:bold}
+.eubacks i{display:inline-block;width:8px;height:12px;margin-left:-2px;border:1px solid #fff;border-radius:2px;background:repeating-linear-gradient(45deg,#c0392b 0 2px,#8e1f14 2px 4px);vertical-align:middle}
+.eumid{position:absolute;left:50%;top:50%;width:0;height:0}
+.euc{display:inline-flex;flex-direction:column;align-items:center;justify-content:center;width:40px;height:56px;background:#fbf7ec;color:#111;border:2px solid #222;border-radius:6px;font:bold 15px/1 ui-monospace,monospace;box-shadow:2px 2px 0 #0005;position:relative;padding:0}
+.euc i{font-style:normal;font-size:19px;margin-top:2px}.euc.red{color:#c0392b}.euc u{position:absolute;top:1px;right:2px;font-size:8px;text-decoration:none;color:#b8860b}
+.euc.big{width:46px;height:64px}.euc.gone{opacity:.45;filter:grayscale(.8)}
+.euup{position:absolute;transform:translate(-50%,-50%);text-align:center;color:#fff}.euup .small{font-size:10px}
+.eut{position:absolute;margin:-28px 0 0 -20px}
+.eut.bot{top:34px;left:0}.eut.top{top:-34px;left:0}.eut.lft{left:-48px;top:0}.eut.rgt{left:48px;top:0}
+.eut.in{animation:euin .3s ease-out}
+@keyframes euin{from{transform:translate(var(--dx),var(--dy)) scale(.7);opacity:.1}}
+.eut.win{box-shadow:0 0 0 3px #ffc24a,2px 2px 0 #0005;z-index:3}
+.eut.sw{animation:eusw .45s ease-in .95s forwards}.eut.sw.in{animation:euin .3s ease-out,eusw .45s ease-in .95s forwards}
+@keyframes eusw{to{transform:translate(var(--wx),var(--wy)) scale(.5);opacity:0}}
+.euwon{position:absolute;transform:translate(-50%,0);top:66px;white-space:nowrap;font-size:11px;color:#ffc24a;font-weight:bold;text-shadow:1px 1px 0 #000}
+.euc.tr::after{content:'★';position:absolute;bottom:1px;right:2px;font-size:8px;color:#b8860b}
+.euhand{display:flex;justify-content:center;gap:5px;flex-wrap:wrap;margin:8px 0 4px;min-height:62px}
+.euhand .euc{width:48px;height:68px;font-size:17px;cursor:default;transition:transform .12s}.euhand .euc i{font-size:22px}
+.euhand.act .euc.ok{cursor:pointer;border-color:#ffc24a;box-shadow:0 0 0 3px #ffc24a99,2px 2px 0 #0005;transform:translateY(-7px)}
+.euhand .euc:disabled{color:#111;opacity:1}.euhand .euc.red:disabled{color:#c0392b}.euhand .euc.no{opacity:.35;filter:grayscale(.7)}
+.eusuits .redt{color:#ff8a8a}
+.eutbl.sm{height:240px}
+@media (max-width:420px){.eupips{display:none}.eumk{font-size:0;padding:0 2px}.eumk::after{content:'★';font-size:10px}.euscore{font-size:10px;padding:2px 4px}.eutbl{height:250px}.eus{max-width:104px;font-size:10.5px}.eut.lft{left:-44px}.eut.rgt{left:44px}}
 </style>
 </head>
 <body>
@@ -350,6 +388,9 @@ const ACHS = {
   arcadecash:{ n:'Paid To Play', ic:'💵', d:'Walk out of an arcade game with a profit on your bets.' },
   flip7:{ n:'Flip Seven', ic:'7️⃣', d:'Flip 7 unique numbers in a round of Flip 7.' },
   f7pot:{ n:'Pot Sweeper', ic:'🧹', d:'Win a Flip 7 pot in Tony\'s back room.' },
+  loner:{ n:'Loner', ic:'🚶', d:'Go alone in euchre and march (take all 5 tricks).' },
+  euchred:{ n:'Euchred!', ic:'💥', d:'Euchre the makers: hold them to 2 tricks or fewer.' },
+  euhall:{ n:'Post 1717 Champion', ic:'🎖️', d:'Win a euchre match for money in the Euchre Hall.' },
   keno:{ n:'Keno Lounge Lizard', ic:'🎱', d:'Catch 7+ numbers on a single keno ticket.' },
   first:{ n:'First Blood', ic:'🩸', d:'Win your first bet.' },
   badbeat:{ n:'Bad Beat Survivor', ic:'💔', d:'Lose a bet by a half point.' },
@@ -421,8 +462,8 @@ const ROASTS = {
 //    the client records exactly those, once (ledger entries are de-duplicated by sequence number).
 //  * Biggest win / loss = largest net profit / loss on a single decided bet (a blackjack hand, a spin spot, a ticket...).
 const LIFE_KEY='degenRPG_life_v1';
-const LIFE_GAMES={sb:'📱 Sportsbook',bj:'🂡 Blackjack',craps:'🎲 Craps',roul:'🎡 Roulette',slots:'🎰 Slots',scr:'🎟️ Scratchers',keno:'🎱 Keno',f7:'7️⃣ Flip 7',poker:'♠️ Poker',monte:'👸 Monte',online:'🌐 Online tables',arc:'🕹️ Arcade'};
-const LIFE_SUB={bj:'Blackjack',cr:'Craps',rl:'Roulette',sb:'Sportsbook',f7:'Flip 7',kn:'Keno',hrd:'HR Derby',putt:'Mini Putt',bowl:'Bowling'};
+const LIFE_GAMES={sb:'📱 Sportsbook',bj:'🂡 Blackjack',craps:'🎲 Craps',roul:'🎡 Roulette',slots:'🎰 Slots',scr:'🎟️ Scratchers',keno:'🎱 Keno',f7:'7️⃣ Flip 7',eu:'🃏 Euchre',poker:'♠️ Poker',monte:'👸 Monte',online:'🌐 Online tables',arc:'🕹️ Arcade'};
+const LIFE_SUB={bj:'Blackjack',cr:'Craps',rl:'Roulette',sb:'Sportsbook',f7:'Flip 7',kn:'Keno',eu:'Euchre',hrd:'HR Derby',putt:'Mini Putt',bowl:'Bowling'};
 function lifeBlank(){ return {v:1,wag:0,won:0,n:0,big:null,bigL:null,since:null,g:{}}; }
 function lifeLoad(){ let L=null; try{ L=JSON.parse(localStorage.getItem(LIFE_KEY)||'null'); }catch(e){} if(!L||typeof L!=='object'||L.v!==1) L=lifeBlank(); L.g=L.g||{}; return L; }
 let LIFE=lifeLoad();
@@ -671,6 +712,19 @@ function bgDraw(c,bg,W,H,t){
       c.fillStyle='#333'; c.fillRect(W*.5-1,0,2,8); c.fillStyle='#ffd27a'; c.beginPath(); c.arc(W*.5,12,6,Math.PI,0); c.fill();
       for(let i=0;i<3;i++){ const sx=W*(.15+i*.3)+Math.sin(t*.7+i)*10; c.fillStyle='#ffffff09'; c.beginPath(); c.ellipse(sx,H*.22+i*8,40,10,0,0,7); c.fill(); }
       c.fillStyle='#c8b27a'; c.font='bold 11px monospace'; c.fillText("TONY'S BACK ROOM · CASH ONLY · NO SNITCHES",W/2,H*.07+10);
+      break; }
+    case 'euchre': { // VFW hall / church basement: painted cinderblock, flickering fluorescents, coffee urn, bulletin board
+      c.fillStyle=g(0,floor,'#b9c9a6','#8fa07c'); c.fillRect(0,0,W,floor); c.fillStyle='#6b5a43'; c.fillRect(0,floor,W,H-floor);
+      c.strokeStyle='#00000018'; c.lineWidth=1; for(let y=8;y<floor;y+=14){ c.beginPath(); c.moveTo(0,y); c.lineTo(W,y); c.stroke(); for(let x=(y/14%2)*18;x<W;x+=36){ c.beginPath(); c.moveTo(x,y); c.lineTo(x,y+14); c.stroke(); } }
+      c.fillStyle='#5a4a35'; c.fillRect(0,floor*.62,W,3); // chair rail
+      for(let i=0;i<3;i++){ const fx=W*(.2+i*.3), on=(i===1&&Math.sin(t*23)>.86)?0:1; c.fillStyle='#ddd'; c.fillRect(fx-34,2,68,6); c.fillStyle=on?'#fffbe8':'#9a9a88'; c.fillRect(fx-31,7,62,3); if(on){ c.fillStyle='#fffbe814'; c.beginPath(); c.moveTo(fx-30,10); c.lineTo(fx+30,10); c.lineTo(fx+70,floor); c.lineTo(fx-70,floor); c.closePath(); c.fill(); } }
+      const bx=W*.06, by=floor*.18, bw=Math.min(118,W*.26), bh=floor*.36; c.fillStyle='#a8763e'; c.fillRect(bx-3,by-3,bw+6,bh+6); c.fillStyle='#c9a46a'; c.fillRect(bx,by,bw,bh);
+      c.fillStyle='#fffdf0'; c.save(); c.translate(bx+bw*.5,by+bh*.45); c.rotate(-.04); c.fillRect(-bw*.42,-bh*.36,bw*.84,bh*.72); c.fillStyle='#c0392b'; c.font='bold 8px monospace'; c.fillText('EUCHRE NITE',0,-bh*.2); c.fillStyle='#222'; c.font='7px monospace'; c.fillText('TUES 7PM · $5',0,-bh*.02); c.fillText('NO RENEGING',0,bh*.14); c.restore();
+      c.fillStyle='#ffc24a'; c.fillRect(bx+bw*.8,by+4,10,12); c.fillStyle='#6fc3ff'; c.fillRect(bx+4,by+bh-16,12,10);
+      const ux=W*.88, uy=floor*.52; c.fillStyle='#8b6b4a'; c.fillRect(ux-26,uy+26,52,4); c.fillStyle='#b8bcc2'; c.fillRect(ux-11,uy-4,22,30); c.fillStyle='#d9dde2'; c.fillRect(ux-8,uy-2,5,26); c.fillStyle='#222'; c.fillRect(ux-3,uy+18,6,4); c.fillStyle='#fff'; c.fillRect(ux+14,uy+16,6,8); c.fillRect(ux+21,uy+18,5,6);
+      for(let i=0;i<2;i++){ const sx=ux+Math.sin(t*1.6+i*2)*3; c.fillStyle='#ffffff30'; c.beginPath(); c.ellipse(sx,uy-10-i*9-(t*7%8),3+i,2,0,0,7); c.fill(); }
+      c.fillStyle='#b23'; for(let x=0;x<W;x+=40){ c.beginPath(); c.moveTo(x,floor*.1); c.quadraticCurveTo(x+20,floor*.1+12,x+40,floor*.1); c.lineTo(x+40,floor*.1+3); c.quadraticCurveTo(x+20,floor*.1+15,x,floor*.1+3); c.fill(); }
+      c.fillStyle='#3a2e20'; c.font='bold 11px monospace'; c.fillText('POST 1717 · EUCHRE HALL · COFFEE 25¢',W*.55,floor*.3);
       break; }
     case 'keno': {
       c.fillStyle=g(0,floor,'#14102a','#0a0816'); c.fillRect(0,0,W,floor); c.fillStyle='#2a1838'; c.fillRect(0,floor,W,H-floor);
@@ -1339,7 +1393,7 @@ function cBet(a){ addCash(-a); if(U.cs) U.cs.net=r2(U.cs.net-a); }
 function cPay(a){ if(a>0){ addCash(a); if(U.cs) U.cs.net=r2(U.cs.net+a); } }
 function chips(vals, cur, fn){ return `<div class="row">${vals.map(v=>`<button class="chip ${cur===v?'on':''}" onclick="${fn}(${v})">$${v>=1000?(v/1000)+'k':v}</button>`).join('')}</div>`; }
 function enterCasino(){ if(!useEnergy(1)){ toast('Too tired. Sleep it off, degenerate.'); return; } U.cs={net:0}; S.dayPhase='night'; U.cgame=null; go('casino'); }
-function leaveCasino(){ if(U.busy) return; if(U.scr&&!U.scr.paid) scratchFinish(true); let msg=''; if(U.f7&&U.f7.G.phase!=='over'){ clearTimeout(U.f7.tm); f7Forfeit(U.f7); msg+=` You walked out of Flip 7 (buy-in forfeited).`; addTilt(4); } U.f7=null; if(S.craps&&crapsTotalOnTable(S.craps)>0){ const t=crapsRefundAll(); msg+=` Craps chips returned: ${money(t)}.`; }
+function leaveCasino(){ if(U.busy) return; if(U.scr&&!U.scr.paid) scratchFinish(true); let msg=''; if(U.f7&&U.f7.G.phase!=='over'){ clearTimeout(U.f7.tm); f7Forfeit(U.f7); msg+=` You walked out of Flip 7 (buy-in forfeited).`; addTilt(4); } U.f7=null; if(U.eu&&U.eu.G.phase!=='over'){ clearTimeout(U.eu.tm); euForfeit(U.eu); msg+=` You walked out of the euchre match (ante forfeited).`; addTilt(4); } U.eu=null; if(S.craps&&crapsTotalOnTable(S.craps)>0){ const t=crapsRefundAll(); msg+=` Craps chips returned: ${money(t)}.`; }
   if(has('comped')&&U.cs&&U.cs.net<0){ const rb=r2(-U.cs.net*.1); addCash(rb); addHp(10); msg=` 🍤 Comped: ${money(rb)} loss rebate + free shrimp cocktail.`; }
   if(U.cs){ const n=U.cs.net; toast(`🎰 Session: ${n>=0?'+':''}${money(n)}.${msg}`); if(n<-100) addTilt(8); news(`Casino session: ${n>=0?'+':''}${money(n)}`); }
   U.cs=null; U.cgame=null; U.bj=null; U.scr=null; save(); go('hub'); }
@@ -1350,16 +1404,17 @@ function renderCasino(){
       <div class="grid2"><button class="btn" onclick="cgo('bj')">🂡 Blackjack<small>6-deck, 3:2, dealer stands soft 17</small></button><button class="btn" onclick="cgo('craps')">🎲 Craps<small>Full table: line, come, odds, place, props</small></button>
       <button class="btn" onclick="cgo('slots')">🎰 Slots<small>"Turd Jackpot" edition</small></button><button class="btn" onclick="cgo('roul')">🎡 Roulette<small>American wheel. 0 and 00, baby.</small></button>
       <button class="btn" onclick="cgo('f7')">7️⃣ Flip 7<small>Back-room card game vs. degenerates. Winner takes the pot.</small></button><button class="btn" onclick="cgo('keno')">🎱 Keno<small>80 balls, pick 1–10, multi-race. Lounge vibes.</small></button>
+      <button class="btn" onclick="cgo('eu')">🃏 Euchre Hall<small>VFW basement. You + a bot partner vs. 2 bots for stakes.</small></button>
       <button class="btn" onclick="cgo('scr')">🎫 Scratch-offs<small>From the gift shop. Sad but legal.</small></button><button class="btn" onclick="casinoDrink()">🍸 Free Drink<small>Tip the waitress $2. +buzz, −tilt</small></button></div>
       <button class="btn c" onclick="arcEnter('casino')">🕹️ Upstairs: DegenClip Arcade<small>HR Derby · Mini Putt · Bowling — skill games, real bets</small></button>
       <button class="btn gold c" data-nomk="1" onclick="mpOpen('casino')">🌐 Multiplayer tables (play with friends)</button>
       <button class="btn c" onclick="leaveCasino()">🚪 Leave the casino</button>`); return; }
-  if(g==='bj') return renderBJ(); if(g==='slots') return renderSlots(); if(g==='roul') return renderRoul(); if(g==='craps') return renderCraps(); if(g==='scr') return renderScratch(); if(g==='f7') return renderF7(); if(g==='keno') return renderKeno();
+  if(g==='bj') return renderBJ(); if(g==='slots') return renderSlots(); if(g==='roul') return renderRoul(); if(g==='craps') return renderCraps(); if(g==='scr') return renderScratch(); if(g==='f7') return renderF7(); if(g==='keno') return renderKeno(); if(g==='eu') return renderEu();
 }
 function cgo(g){ sfx.click(); U.cgame=g; if(g==='craps'&&!S.craps) S.craps=newCraps(); if(g==='craps') crapsScene(); if(g==='bj') scene('casino',[youActor({x:.25,pose:'idle',held:null}),{id:'d',x:.72,hat:'visor',label:'DEALER DEB',pose:'deal',color:'#ffd9a0'}],{caption:'BLACKJACK'});
   if(g==='slots') scene('casino',[youActor({x:.5,pose:'idle',held:'beer'})],{caption:'SLOTS'}); if(g==='roul') scene('casino',[youActor({x:.3,pose:'idle'}),{id:'d',x:.72,hat:'visor',label:'CROUPIER CLAUDE',pose:'deal',color:'#c8e0ff'}],{caption:'ROULETTE'}); if(g==='scr') scene('casino',[youActor({x:.5,pose:'phone',held:'slip'})],{caption:'SCRATCHERS'});
-  if(g==='f7') f7Scene(); if(g==='keno') kenoScene();
-  renderCasino(); if(g==='f7'&&U.f7) f7Loop(); }
+  if(g==='f7') f7Scene(); if(g==='keno') kenoScene(); if(g==='eu') euScene();
+  renderCasino(); if(g==='f7'&&U.f7) f7Loop(); if(g==='eu'&&U.eu) euLoop(); }
 function casinoDrink(){ if(S.cash<2){ toast('You can\'t even tip $2. The waitress pities you.'); return; } cBet(2); addBuzz(18); addTilt(-6); pose('you','drink',1500); toast(pick(['🍸 Free vodka cran. Tastes like regret and Ocean Spray.','🍸 A comped Bud Light. It\'s basically water with a press agent.','🍸 Long Island. Your liver files a restraining order.'])); renderCasino(); }
 const backBtn = `<button class="btn c" onclick="if(U.busy)return;if(U.scr&&!U.scr.paid)scratchFinish(true);U.cgame=null;renderCasino()">⬅ Casino floor</button>`;
 // ---------- Blackjack UI ----------
@@ -1757,6 +1812,237 @@ function kenoRaceDone(){ const K=U.kn; if(!K||!K.run) return; const r=kenoSettle
   if(net<0&&K.bet>=25) addTilt(1);
   if(K.run.left>0){ renderKeno(); setTimeout(()=>{ if(U.kn===K&&K.run) kenoRace(); },K.fast?500:1400); return; }
   const tot=K.run; K.run=null; U.busy=false; if(tot.total>1) K.msg+=`<br>🧾 ${tot.total} races: returned ${money(tot.won)} on ${money(tot.total*K.bet)}.`; save(); renderKeno(); }
+// ===================== EUCHRE HALL (rules engine + bots; shared by solo play and the online host) =====================
+// 24 cards (9-A), partners sit across (seats 0&2 vs 1&3), 5 cards each + a 4-card kitty with one card turned up.
+// Round 1: order up the up-card's suit (dealer picks it up and discards) or pass. Round 2: name any other suit or pass
+// (stick the dealer = the dealer can't pass). Right bower (J of trump) > left bower (J of same color, counts as TRUMP
+// suit for following) > A K Q 10 9 of trump. Makers 3-4 tricks = 1, all 5 = 2, alone march = 4, euchred = 2 to defenders.
+const EU_SUITS=['♠','♥','♦','♣'], EU_SNAME=['Spades','Hearts','Diamonds','Clubs'], EU_RK={9:'9',10:'10',11:'J',12:'Q',13:'K',14:'A'};
+const EU_TEAMS=['Team Skyline','Team Gold Star']; // seats 0&2 vs 1&3 (Cincinnati chili parlor war)
+const EU_RAKE=.05, EU_OPTS={stick:true,to:10,farmer:false};
+function euDeck(){ const d=[]; for(let s=0;s<4;s++) for(let r=9;r<=14;r++) d.push({r,s}); return d; }
+const euIsRight=(c,t)=>c.r===11&&c.s===t, euIsLeft=(c,t)=>c.r===11&&c.s===3-t; // same color: ♠↔♣, ♥↔♦
+function euSuit(c,t){ return t!=null&&euIsLeft(c,t)?t:c.s; } // the left bower IS trump suit
+function euPow(c,t,led){ if(t!=null&&euSuit(c,t)===t) return euIsRight(c,t)?200:euIsLeft(c,t)?199:100+c.r; return euSuit(c,t)===led?c.r:0; }
+function euLegal(hand,t,led){ const all=hand.map((c,i)=>i); if(led==null) return all; const f=all.filter(i=>euSuit(hand[i],t)===led); return f.length?f:all; }
+function euTrickWin(trick,t){ const led=euSuit(trick[0].c,t); let b=0; for(let k=1;k<trick.length;k++) if(euPow(trick[k].c,t,led)>euPow(trick[b].c,t,led)) b=k; return trick[b].i; }
+function euLabel(c){ return c?EU_RK[c.r]+EU_SUITS[c.s]:'?'; }
+function euScoreHand(maker,alone,mk){ if(mk>=3) return {team:maker%2,pts:mk===5?(alone?4:2):1,euchred:false,march:mk===5}; return {team:1-maker%2,pts:2,euchred:true,march:false}; }
+function euFarmer(hand){ return hand.length===5&&hand.every(c=>c.r<=10); }
+function euNew(players,opts,rig){ return {players:players.map(p=>Object.assign({name:'?',npc:null},p)),opts:Object.assign({},EU_OPTS,opts||{}),score:[0,0],
+  dealer:rig&&rig.dealer!=null?rig.dealer:Math.floor(rnd()*4),handNo:0,phase:'idle',hands:[[],[],[],[]],kitty:[],up:null,trump:null,maker:null,alone:false,out:null,
+  trick:[],tricks:[0,0,0,0],tw:[0,0],lastTrick:null,lastHand:null,ev:[],await:null,winner:null,rig:rig||null,passes:0,voids:[[],[],[],[]],played:[],fq:[],trickNo:0}; }
+function euDeal(G){ if(G.phase==='over') return; G.handNo++; const R=G.rig&&G.rig.deals&&G.rig.deals.length?G.rig.deals.shift():null;
+  if(R){ G.hands=R.hands.map(h=>h.map(c=>({r:c.r,s:c.s}))); G.kitty=R.kitty.map(c=>({r:c.r,s:c.s})); }
+  else { const d=shuffle(euDeck()); G.hands=[[],[],[],[]]; for(let k=0;k<5;k++) for(let j=1;j<=4;j++) G.hands[(G.dealer+j)%4].push(d.shift()); G.kitty=d.slice(0,4); }
+  G.up=G.kitty[0]; Object.assign(G,{trump:null,maker:null,alone:false,out:null,trick:[],tricks:[0,0,0,0],tw:[0,0],passes:0,voids:[[],[],[],[]],played:[],lastTrick:null,trickNo:0});
+  G.ev.push({k:'deal',dealer:G.dealer,up:G.up,n:G.handNo});
+  G.fq=G.opts.farmer?[1,2,3,4].map(j=>(G.dealer+j)%4).filter(i=>euFarmer(G.hands[i])):[]; euBid1Start(G); }
+function euBid1Start(G){ if(G.fq.length){ G.phase='farmer'; G.await={k:'farmer',i:G.fq[0]}; return; } G.phase='bid1'; G.passes=0; G.await={k:'bid1',i:(G.dealer+1)%4}; }
+function euMake(G,i,t,alone,rd){ G.trump=t; G.maker=i; G.alone=!!alone; G.out=alone?(i+2)%4:null; G.ev.push({k:rd===1?'order':'call',i,suit:t,alone:G.alone});
+  if(rd===1&&G.out!==G.dealer){ G.hands[G.dealer].push(G.up); G.kitty[0]=null; G.ev.push({k:'pickup',i:G.dealer}); G.phase='discard'; G.await={k:'discard',i:G.dealer}; return; }
+  euPlayStart(G); }
+function euPlayStart(G){ G.phase='play'; G.trick=[]; let l=(G.dealer+1)%4; if(l===G.out) l=(l+1)%4; G.await={k:'play',i:l}; }
+// returns an error string, or null when the move was applied
+function euAct(G,i,a,arg,alone){ const W=G.await; if(!W||W.i!==i) return 'Not your turn, hoss.'; const h=G.hands[i];
+  switch(W.k){
+    case 'farmer': { if(a==='swap'){ const idx=h.map((c,j)=>j).sort((p,q)=>h[p].r-h[q].r||p-q).slice(0,3).sort((p,q)=>q-p); const out=idx.map(j=>h.splice(j,1)[0]); const inn=G.kitty.splice(1,3,...out); h.push(...inn); }
+      else if(a!=='keep') return "Swap 'em or keep 'em."; G.ev.push({k:'farmer',i,swap:a==='swap'}); G.fq.shift(); euBid1Start(G); return null; }
+    case 'bid1': if(a==='pass'){ G.ev.push({k:'pass',i,r:1}); if(++G.passes>=4){ G.phase='bid2'; G.passes=0; G.ev.push({k:'turndown',up:G.up}); G.await={k:'bid2',i:(G.dealer+1)%4}; } else G.await={k:'bid1',i:(i+1)%4}; return null; }
+      if(a==='order'){ euMake(G,i,G.up.s,alone,1); return null; } return 'Order it up or pass.';
+    case 'bid2': if(a==='pass'){ if(i===G.dealer&&G.opts.stick) return 'Stick the dealer: you HAVE to name trump.'; G.ev.push({k:'pass',i,r:2});
+        if(++G.passes>=4){ G.ev.push({k:'redeal',dealer:G.dealer}); G.dealer=(G.dealer+1)%4; G.phase='between'; G.await=null; G.redeal=true; return null; } G.await={k:'bid2',i:(i+1)%4}; return null; }
+      if(a==='call'){ const s=Number(arg); if(!(s>=0&&s<=3)||s!==Math.floor(s)) return 'Name a suit.'; if(s===G.up.s) return `${EU_SNAME[s]} got turned down. Pick another suit.`; euMake(G,i,s,alone,2); return null; } return 'Name a suit or pass.';
+    case 'discard': { const k=Number(arg); if(a!=='discard'||!(k>=0&&k<h.length)||k!==Math.floor(k)) return 'Pick a card to bury.'; G.kitty[0]=h.splice(k,1)[0]; G.ev.push({k:'discard',i}); euPlayStart(G); return null; }
+    case 'play': { const k=Number(arg); if(a!=='play'||!(k>=0&&k<h.length)||k!==Math.floor(k)) return 'Pick a card.'; const t=G.trump, led=G.trick.length?euSuit(G.trick[0].c,t):null;
+      if(!euLegal(h,t,led).includes(k)) return `You have to follow ${EU_SNAME[led]}${led===t&&h.some(c=>euIsLeft(c,t))?' (the left bower counts as trump!)':''}. Renege and the VFW revokes your membership.`;
+      const c=h.splice(k,1)[0]; if(led!=null&&euSuit(c,t)!==led&&!G.voids[i].includes(led)) G.voids[i].push(led); G.trick.push({i,c}); G.played.push(c); G.ev.push({k:'play',i,c});
+      if(G.trick.length<(G.out!=null?3:4)){ let n=(i+1)%4; if(n===G.out) n=(n+1)%4; G.await={k:'play',i:n}; return null; }
+      const w=euTrickWin(G.trick,t); G.tricks[w]++; G.tw[w%2]++; G.trickNo++; G.lastTrick={cards:G.trick,w,n:G.trickNo,hand:G.handNo}; G.ev.push({k:'trick',w,cards:G.trick}); G.trick=[];
+      if(G.trickNo>=5) euEndHand(G); else G.await={k:'play',i:w}; return null; } }
+  return 'Huh?'; }
+function euEndHand(G){ const mk=G.tw[G.maker%2], r=euScoreHand(G.maker,G.alone,mk); G.score[r.team]+=r.pts;
+  G.lastHand=Object.assign({},r,{maker:G.maker,alone:G.alone,mk,trump:G.trump,n:G.handNo}); G.ev.push(Object.assign({k:'hand'},G.lastHand)); G.await=null; G.redeal=false;
+  if(G.score[r.team]>=G.opts.to){ G.phase='over'; G.winner=r.team; G.ev.push({k:'over',team:r.team}); } else { G.phase='between'; G.dealer=(G.dealer+1)%4; } }
+// ---------- bots: sensible bidding by hand strength, trump leading, basic partner signals, never an illegal play ----------
+const EU_NPCS={ dale:{n:'Uncle Dale',ic:'🧢',hat:'cap',hatc:'#c0392b',color:'#ffd9a0',agg:.8,alone:.9},
+  marge:{n:'Church Lady Marge',ic:'⛪',hat:'beanie',hatc:'#8e44ad',color:'#ffe0f0',agg:-.5,alone:-.6},
+  earl:{n:'VFW Earl',ic:'🎖️',hat:'visor',hatc:'#2e7d32',color:'#e8e0c8',agg:.2,alone:.2},
+  steve:{n:'Skyline Steve',ic:'🌶️',hat:'cap',hatc:'#f39c12',color:'#ffd0a0',agg:.45,alone:.4},
+  bev:{n:'Bingo Bev',ic:'🎱',hat:'bald',color:'#fff0d0',agg:0,alone:-.2} };
+const EU_TALK={ order:["Pick it up, sweetheart. Trump's comin' home.","Order it up! I didn't drive here from Delhi to pass.","That's MY card. Pick it up."],
+  call:["Let's make it {s}. Don't look at me like that.","{s}. Final answer. Pray for me."],
+  alone:["I'm goin' ALONE. Partner, go get a coffee from the urn.","ALONE. Sit down, partner. Watch a professional.","Loner. Somebody start the church bells."],
+  euchred:["EUCHRED! Get that two-spot on the board!","You got EUCHRED, pal. Go sit in the parking lot and think about it.","Euchre! Somebody call the Enquirer!"],
+  march:["MARCH! All five, baby!","That's a MARCH. Put it in the bulletin."],
+  stuck:["Stuck AGAIN. Fine. {s}. I hate this game.","Screw the dealer, huh? {s}. Happy?"],
+  trick:["Gimme that.","Read 'em and weep.","Was that your best card? Yikes.","Next!"],
+  renege:["That's a RENEGE in my house, buddy."] };
+function euCardVal(c,t){ if(euIsRight(c,t)) return 3.2; if(euIsLeft(c,t)) return 2.6; if(c.s===t) return ({14:2,13:1.6,12:1.35,10:1.15,9:1})[c.r]; if(c.r===14) return .9; if(c.r===13) return .25; return 0; }
+function euStrength(hand,t){ let v=0, nt=0; const offs=new Set(); for(const c of hand){ v+=euCardVal(c,t); if(euSuit(c,t)===t) nt++; else offs.add(c.s); } if(nt>=2) v+=(3-offs.size)*.55; if(nt>=3) v+=.5; return {v,nt,right:hand.some(c=>euIsRight(c,t)),left:hand.some(c=>euIsLeft(c,t))}; }
+function euBestDiscard(hand,t){ let best=0, bv=-1e9; hand.forEach((c,k)=>{ const rest=hand.filter((x,j)=>j!==k); const v=euStrength(rest,t).v-(euSuit(c,t)===t?.01:0)-c.r*.001; if(v>bv){ bv=v; best=k; } }); return best; }
+function euNpc(G,i){ const p=G.players[i]; return (p&&p.npc&&EU_NPCS[p.npc])||{agg:0,alone:-.3}; }
+function euBidEval(G,i,t,rd){ const h=G.hands[i]; let S;
+  if(rd===1&&i===G.dealer){ const six=h.concat([G.up]); const k=euBestDiscard(six,t); S=euStrength(six.filter((x,j)=>j!==k),t); }
+  else { S=euStrength(h,t); if(rd===1){ const uv=euCardVal(G.up,t); S.v+=(G.dealer%2===i%2?.6:-.55)*uv; } }
+  return S; }
+function euBotBid(G,i){ const W=G.await, N=euNpc(G,i), th=6.3-N.agg*.7, al=S=>S.v>=10.6-N.alone*.9&&S.nt>=4&&(S.right||S.left);
+  if(W.k==='bid1'){ const S=euBidEval(G,i,G.up.s,1); return S.v>=th?{a:'order',alone:al(S)&&!(G.dealer===(i+2)%4&&S.v<11.5)}:{a:'pass'}; }
+  let best=null; for(let t=0;t<4;t++){ if(t===G.up.s) continue; const S=euBidEval(G,i,t,2); if(!best||S.v>best.S.v) best={t,S}; }
+  const stuck=i===G.dealer&&G.opts.stick; return best.S.v>=th-.2||stuck?{a:'call',arg:best.t,alone:al(best.S),stuck:stuck&&best.S.v<th-.2}:{a:'pass'}; }
+function euOut(G){ const out=new Set(G.played.map(c=>c.r*10+c.s)); return c=>!out.has(c.r*10+c.s); }
+function euBotPlay(G,i){ const h=G.hands[i], t=G.trump, led=G.trick.length?euSuit(G.trick[0].c,t):null, L=euLegal(h,t,led), team=i%2, mkSide=G.maker%2===team, part=(i+2)%4;
+  const isT=c=>euSuit(c,t)===t, low=(arr,lp)=>arr.slice().sort((a,b)=>(isT(h[a])-isT(h[b]))||((lp?euPow(h[a],t,lp):h[a].r)-(lp?euPow(h[b],t,lp):h[b].r))||(h[a].r-h[b].r))[0];
+  if(led==null){ const tr=L.filter(k=>isT(h[k])).sort((a,b)=>euPow(h[b],t)-euPow(h[a],t)), off=L.filter(k=>!isT(h[k]));
+    const unseen=euOut(G), topLeft=tr.length&&euDeck().concat([]).filter(c=>euSuit(c,t)===t&&unseen(c)&&!h.some(x=>x.r===c.r&&x.s===c.s)).every(c=>euPow(c,t)<euPow(h[tr[0]],t));
+    if(mkSide&&tr.length&&(G.maker===i||G.alone)&&(tr.length>=2||topLeft)) return tr[0];                       // makers pull trump
+    if(mkSide&&G.maker===part&&tr.length&&G.out==null) return tr[0];                                         // lead trump to the partner who called it
+    const aces=off.filter(k=>h[k].r===14); if(aces.length) return aces[0];                                    // cash off-suit aces
+    if(G.out!==part){ const sg=off.filter(k=>G.voids[part].includes(h[k].s)&&!G.voids[(i+1)%4].includes(h[k].s)); if(sg.length&&(mkSide||G.voids[part].length)) return low(sg); } // partner signalled a void: lead it so they can trump
+    if(off.length){ const cnt=s=>off.filter(k=>h[k].s===s).length; return off.slice().sort((a,b)=>cnt(h[a].s)-cnt(h[b].s)||h[a].r-h[b].r)[0]; } // short-suit yourself
+    return tr[tr.length-1]; }
+  const w=euTrickWin(G.trick,t), wc=G.trick.find(x=>x.i===w).c, cur=euPow(wc,t,led), last=G.trick.length===(G.out!=null?2:3);
+  const wins=L.filter(k=>euPow(h[k],t,led)>cur).sort((a,b)=>euPow(h[a],t,led)-euPow(h[b],t,led));
+  if(w===part&&(last||cur>=114||(cur>=113&&!isT(wc)))) return low(L);                                          // partner's got it: throw junk
+  if(wins.length){ if(last) return wins[0]; const top=wins[wins.length-1], tp=euPow(h[top],t,led); return (tp>=199||(!isT(h[top])&&h[top].r===14))?top:wins[0]; } // win cheap when last, otherwise play a boss card
+  return low(L); }
+function euBotMove(G){ const W=G.await; if(!W) return null; const i=W.i;
+  if(W.k==='farmer') return {a:'swap'}; if(W.k==='bid1'||W.k==='bid2') return euBotBid(G,i);
+  if(W.k==='discard') return {a:'discard',arg:euBestDiscard(G.hands[i],G.trump)}; return {a:'play',arg:euBotPlay(G,i)}; }
+function euBotAct(G){ const m=euBotMove(G); if(!m) return null; const err=euAct(G,G.await.i,m.a,m.arg,m.alone); if(err) throw new Error('euchre bot illegal move: '+err); return m; }
+function euRunHand(G,maxSteps){ if(G.phase==='between'||G.phase==='idle') euDeal(G); for(let s=0;s<(maxSteps||400)&&G.await;s++) euBotAct(G); return G.phase; }
+// what one seat may see (other hands are face down; only the up card / buried card rules apply)
+function euView(G,me){ const W=G.await, bid=G.phase==='bid1'||G.phase==='farmer';
+  return {phase:G.phase,score:G.score.slice(),opts:Object.assign({},G.opts),dealer:G.dealer,handNo:G.handNo,up:bid?G.up:null,down:G.phase==='bid2'?G.up:null,trump:G.trump,maker:G.maker,alone:G.alone,out:G.out,
+    trick:G.trick.map(x=>({i:x.i,c:x.c})),last:G.lastTrick,tricks:G.tricks.slice(),tw:G.tw.slice(),lastHand:G.lastHand,winner:G.winner,counts:G.hands.map(h=>h.length),redeal:!!G.redeal,
+    players:G.players.map(p=>({name:p.name,npc:p.npc,pid:p.pid||null,color:p.color||null})),await:W?{k:W.k,i:W.i}:null,
+    mine:me!=null&&G.hands[me]?G.hands[me].map(c=>({r:c.r,s:c.s})):null,legal:me!=null&&W&&W.i===me&&W.k==='play'?euLegal(G.hands[me],G.trump,G.trick.length?euSuit(G.trick[0].c,G.trump):null):null}; }
+// per-hand side bets (fair-ish, house edge from simulations: see tests/euchre.js)
+const EU_SIDE={ euchred:{n:'Makers get EUCHRED',ic:'💥',pay:6}, march:{n:'Somebody goes ALONE and MARCHES',ic:'🚶',pay:50} }; // X:1. Bot sims: euchre ~12.5% of hands, lone march ~1.9% → ~90-91% return
+// ===================== EUCHRE HALL (shared table renderer + single-player UI) =====================
+// Seats are drawn relative to the viewer: you at the bottom, partner on top, opponents left/right.
+const EU_POS=['bot','lft','top','rgt'], EU_FLY={bot:[0,70],lft:[-90,0],top:[0,-70],rgt:[90,0]};
+function euRel(i,me){ return EU_POS[((i-(me||0))%4+4)%4]; }
+function euCardHtml(c,cls,extra){ if(!c) return ''; const red=c.s===1||c.s===2; return `<span class="euc ${red?'red':''} ${cls||''}" ${extra||''}><b>${EU_RK[c.r]}</b><i>${EU_SUITS[c.s]}</i></span>`; }
+function euSortIdx(h,t){ const key=c=>{ const s=euSuit(c,t); const so=t!=null&&s===t?-1:[0,1,3,2][s]; return so*1000-euPow(c,t,s)-(t==null?c.r:0); }; return h.map((c,i)=>i).sort((a,b)=>key(h[a])-key(h[b])); }
+// V = euView(); me = viewer seat; o = {names:[], tags:[], anim:{} (remembers which cards already flew in), lbl:['Us','Them']}
+function euTableHtml(V,me,o){ o=o||{}; me=me||0; const A=o.anim||{}, W=V.await, my=me%2, t=V.trump;
+  const nm=i=>(o.names&&o.names[i])||V.players[i].name, tm=i=>i%2===my?'us':'them';
+  let h=`<div class="eutbl">`;
+  const pips=n=>Array.from({length:V.opts.to},(_,k)=>`<i class="${k<n?'on':''}"></i>`).join('');
+  h+=`<div class="euscore"><div><b>${o.lbl?o.lbl[0]:'US'}</b> <span class="eun">${V.score[my]}</span><span class="eupips">${pips(V.score[my])}</span></div><div><b>${o.lbl?o.lbl[1]:'THEM'}</b> <span class="eun">${V.score[1-my]}</span><span class="eupips">${pips(V.score[1-my])}</span></div><div class="dim">to ${V.opts.to}${V.opts.stick?' · stick':''}${V.opts.farmer?' · farmer':''}</div></div>`;
+  h+=`<div class="eutrump ${t!=null&&(t===1||t===2)?'red':''}">${t!=null?`<span class="dim">TRUMP</span><b>${EU_SUITS[t]}</b><span>${esc(nm(V.maker).split(' ').slice(-1)[0])}${V.alone?' 🚶ALONE':''}</span>`:`<span class="dim">TRUMP</span><b class="dim">?</b><span class="dim">${V.phase==='bid2'?'round 2':'bidding'}</span>`}</div>`;
+  for(let i=0;i<4;i++){ const p=EU_POS[((i-me)%4+4)%4], turn=W&&W.i===i, out=V.out===i, n=V.counts[i];
+    h+=`<div class="eus ${p} ${tm(i)} ${turn?'turn':''} ${out?'out':''}"><div class="eunm">${V.dealer===i?'<span class="eudl">D</span>':''}${i===me?'🫵 ':''}${esc(nm(i))}${V.maker===i&&t!=null?' <span class="eumk">MAKER</span>':''}</div>`;
+    h+=`<div class="eusub">${out?'☕ sitting out':i===me?'':`<span class="eubacks">${'<i></i>'.repeat(n)}</span>`}${t!=null&&!out?` <span class="eutk">${V.tricks[i]} tk</span>`:''}${o.tags&&o.tags[i]?' '+o.tags[i]:''}</div></div>`; }
+  h+=`<div class="eumid">`;
+  if(V.up) h+=`<div class="euup">${euCardHtml(V.up,'big')}<div class="small">up card</div></div>`;
+  else if(V.down) h+=`<div class="euup down">${euCardHtml(V.down,'big gone')}<div class="small">turned down</div></div>`;
+  else { let cards=V.trick, done=false, win=null; if(!cards.length&&V.last&&V.last.hand===V.handNo&&(V.phase==='play'||V.phase==='between'||V.phase==='over')){ cards=V.last.cards; done=true; win=V.last.w; }
+    const key=done?`${V.handNo}.${V.last.n}`:`${V.handNo}.${(V.last&&V.last.hand===V.handNo?V.last.n:0)+1}`;
+    for(const x of cards){ const p=euRel(x.i,me), k=key+'.'+x.i, isNew=!A[k]; A[k]=1; const f=EU_FLY[p], wp=win!=null?EU_FLY[euRel(win,me)]:[0,0];
+      h+=euCardHtml(x.c,`eut ${p} ${isNew?'in':''} ${done&&x.i===win?'win':''} ${done?'sw':''} ${t!=null&&euSuit(x.c,t)===t?'tr':''}`,`style="--dx:${f[0]}px;--dy:${f[1]}px;--wx:${wp[0]*1.6}px;--wy:${wp[1]*1.6}px"`); }
+    if(done&&win!=null) h+=`<div class="euwon">${esc(nm(win).split(' ').slice(-1)[0])} takes it</div>`; }
+  h+=`</div></div>`; return h; }
+function euHandHtml(V,me,fn){ const h=V.mine||[]; if(!h.length) return ''; const W=V.await, mine=W&&W.i===me, play=mine&&W.k==='play', disc=mine&&W.k==='discard', L=new Set(V.legal||[]), t=V.trump!=null?V.trump:(V.up?V.up.s:null);
+  return `<div class="euhand ${play||disc?'act':''}">${euSortIdx(h,V.trump).map(i=>{ const c=h[i], ok=disc||(play&&L.has(i)), tr=V.trump!=null&&euSuit(c,V.trump)===V.trump;
+    return `<button class="euc ${c.s===1||c.s===2?'red':''} ${ok?'ok':''} ${play&&!ok?'no':''} ${tr?'tr':''}" ${ok?`onclick="${fn}(${i})"`:'disabled'} data-i="${i}"><b>${EU_RK[c.r]}</b><i>${EU_SUITS[c.s]}</i>${euIsRight(c,V.trump)?'<u>R</u>':euIsLeft(c,V.trump)?'<u>L</u>':''}</button>`; }).join('')}</div>`; }
+// bidding / discard / farmer controls for the seat whose turn it is. fn(a,arg,alone)
+function euCtlHtml(V,me,fn){ const W=V.await; if(!W||W.i!==me) return '';
+  const deal=V.dealer===me, part=(me+2)%4;
+  if(W.k==='farmer') return `<div class="panel small">🧑‍🌾 <b>Farmer's hand!</b> All 9s and 10s. Swap your 3 lowest cards for the 3 face-down kitty cards?</div><div class="grid2"><button class="btn c go" onclick="${fn}('swap')">🔄 Swap 3</button><button class="btn c" onclick="${fn}('keep')">✋ Keep 'em</button></div>`;
+  if(W.k==='bid1'){ const s=V.up.s; return `<div class="panel small">🃏 <b>Round 1.</b> Up card is <b>${euLabel(V.up)}</b>. ${deal?'You\'re the dealer: <b>pick it up</b> and bury a card, or turn it down.':V.dealer===part?'Your partner is dealing: ordering it up gives them the card.':'Ordering it up puts that card in the <b>dealer\'s</b> hand (the other team\'s, here).'}</div>
+    <div class="grid2"><button class="btn c go" onclick="${fn}('order')">${deal?'🫳 Pick it up':'☝️ Order it up'} (${EU_SUITS[s]} trump)</button><button class="btn c" onclick="${fn}('pass')">🙅 Pass</button><button class="btn c gold" onclick="${fn}('order',null,1)">🚶 ${deal?'Pick up':'Order up'} & go ALONE</button></div>`; }
+  if(W.k==='bid2'){ const stuck=deal&&V.opts.stick, ss=[0,1,2,3].filter(s=>s!==V.down.s);
+    return `<div class="panel small">🃏 <b>Round 2.</b> ${euLabel(V.down)} got turned down. Name another suit${stuck?' — <b class="r">stick the dealer: you have to call it.</b>':' or pass.'}</div>
+    <div class="grid2 eusuits">${ss.map(s=>`<button class="btn c ${s===1||s===2?'redt':''}" onclick="${fn}('call',${s})">${EU_SUITS[s]} ${EU_SNAME[s]}</button>`).join('')}<button class="btn c" ${stuck?'disabled':''} onclick="${fn}('pass')">🙅 Pass</button></div>
+    <div class="row">${ss.map(s=>`<button class="chip" onclick="${fn}('call',${s},1)">🚶 alone in ${EU_SUITS[s]}</button>`).join('')}</div>`; }
+  if(W.k==='discard') return `<div class="panel small">🫳 You picked up <b>${euLabel(V.mine&&V.mine.length===6?V.mine[V.mine.length-1]:null)}</b>. Tap a card to <b>bury</b> (discard).</div>`;
+  if(W.k==='play') return `<div class="panel small">👉 <b>Your lead/play.</b> Highlighted cards are legal${V.trick.length?` (must follow ${EU_SNAME[euSuit(V.trick[0].c,V.trump)]} if you can)`:''}.</div>`;
+  return ''; }
+function euHandSummary(L,nm){ if(!L) return ''; return `${esc(nm(L.maker))} ${L.alone?'went ALONE and ':''}made it ${EU_SUITS[L.trump]} · took ${L.mk}/5 → ${L.euchred?`<b class="r">EUCHRED!</b> +2 to the defenders`:L.march?`<b class="a">MARCH!</b> +${L.pts}`:`+${L.pts}`}`; }
+// ---------------- single player ----------------
+function euName(G,i){ return i===0?'You':G.players[i].name; }
+function euLog(t){ const F=U.eu; if(!F) return; F.log.push(t); if(F.log.length>60) F.log.shift(); }
+function euActors(G){ return G.players.map((p,i)=>{ const x=[.16,.39,.62,.85][i]; if(i===0) return youActor({x,pose:'idle',held:null,id:'eu_0'}); const N=EU_NPCS[p.npc]||{};
+  return {id:'eu_'+i,x,label:(N.n||p.name).split(' ').slice(-1)[0].slice(0,9).toUpperCase(),hat:N.hat||'cap',hatc:N.hatc,color:N.color||'#eee',pose:'idle',ph:i*.7}; }); }
+function euOver(c,W,H){ const ty=H*.7; c.fillStyle='#7a5a32'; c.fillRect(W*.06,ty,W*.88,8); c.fillStyle='#4a3520'; c.fillRect(W*.1,ty+8,4,H*.2); c.fillRect(W*.9-4,ty+8,4,H*.2); c.fillStyle='#e9e4d2'; c.fillRect(W*.06,ty-1,W*.88,3);
+  const P=(SC.cur&&SC.cur.eup)||[]; c.font='bold 10px monospace'; c.textAlign='center'; P.forEach(p=>{ const x=p.x*W; for(let k=0;k<Math.min(p.n,6);k++){ c.fillStyle='#fbf7ec'; c.strokeStyle='#333'; c.fillRect(x-14+k*5,ty-12,8,11); c.strokeRect(x-14+k*5,ty-12,8,11); } if(p.tag){ c.fillStyle=p.on?'#ffc24a':'#fff'; c.fillText(p.tag,x,ty+20); } }); }
+function euScene(){ const F=U.eu; if(F&&F.G){ scene('euchre',euActors(F.G),{caption:'🃏 EUCHRE HALL · POST 1717',over:euOver}); euSyncScene(); }
+  else scene('euchre',[youActor({x:.25,pose:'idle',held:'beer'}),{id:'eu_e',x:.55,hat:'visor',hatc:'#2e7d32',label:'EARL',color:'#e8e0c8',pose:'deal'},{id:'eu_m',x:.8,hat:'beanie',hatc:'#8e44ad',label:'MARGE',color:'#ffe0f0',pose:'idle'}],{caption:'🃏 EUCHRE HALL · POST 1717',over:euOver}); }
+function euSyncScene(){ const F=U.eu; if(!F||!SC.cur||SC.cur.bg!=='euchre') return; const G=F.G, W=G.await;
+  SC.cur.eup=G.players.map((p,i)=>({x:[.16,.39,.62,.85][i],n:G.out===i?0:G.hands[i].length,on:W&&W.i===i,tag:(G.dealer===i?'D ':'')+(G.out===i?'☕':G.trump!=null?G.tricks[i]+' tk':'')})); }
+function renderEuSetup(){ const st=U.eus=U.eus||{ante:25,stick:true,to:10,farmer:false}; const tiers=[10,25,100,500].filter(v=>v<=casinoMax()); if(!tiers.includes(st.ante)) st.ante=tiers[0]||10;
+  let h=`<h2>🃏 EUCHRE HALL <span class="small dim">Post 1717 · folding chairs · 25¢ coffee</span></h2>`;
+  h+=`<div class="panel small">Classic euchre: 24 cards (9 through A), you + a bot partner (across) vs. 2 bots. Call trump, take 3 of 5 tricks. <b>Right bower</b> (J of trump) &gt; <b>left bower</b> (other J of the same color — it counts as trump) &gt; A K Q 10 9. Makers 3–4 tricks = 1, march = 2, <b>alone</b> march = 4, get <b>euchred</b> = 2 for the other team.</div>`;
+  h+=`<div class="small dim">Match ante (all 4 ante; winning team splits the pot, 5% rake → you collect ${money(st.ante*1.9)})</div>${chips(tiers,st.ante,'euSetAnte')}`;
+  h+=`<div class="small dim">House rules</div><div class="row"><button class="chip ${st.stick?'on':''}" onclick="U.eus.stick=!U.eus.stick;renderEu()">📌 Stick the dealer: ${st.stick?'ON':'OFF'}</button><button class="chip ${st.to===10?'on':''}" onclick="U.eus.to=10;renderEu()">To 10</button><button class="chip ${st.to===11?'on':''}" onclick="U.eus.to=11;renderEu()">To 11</button><button class="chip ${st.farmer?'on':''}" onclick="U.eus.farmer=!U.eus.farmer;renderEu()">🧑‍🌾 Farmer's hand: ${st.farmer?'ON':'OFF'}</button></div>`;
+  h+=`<div class="panel small">${Object.values(EU_NPCS).map(N=>`${N.ic} <b>${N.n}</b> — ${N.agg>.5?'calls trump on fumes':N.agg<0?'only calls with both bowers and a prayer':'plays it by the book'}${N.alone>.5?', goes alone a LOT':''}`).join('<br>')}</div>`;
+  h+=`<button class="btn big go" ${st.ante<=S.cash?'':'disabled'} onclick="euStart()">🃏 ANTE ${money(st.ante)} · POT ${money(st.ante*4)}</button>${backBtn}`; setMain(h); }
+function euSetAnte(v){ U.eus.ante=v; renderEu(); }
+function euStart(){ const st=U.eus; if(st.ante>S.cash) return toast('Can\'t cover the ante. Earl doesn\'t take IOUs.'); const k=shuffle(Object.keys(EU_NPCS)).slice(0,3);
+  cBet(st.ante); const G=euNew([{name:S.name||'You'},{name:EU_NPCS[k[1]].n,npc:k[1]},{name:EU_NPCS[k[0]].n,npc:k[0]},{name:EU_NPCS[k[2]].n,npc:k[2]}],{stick:st.stick,to:st.to,farmer:st.farmer},U.euRig||null);
+  U.eu={G,ante:st.ante,pot:st.ante*4,log:[`🃏 Your partner tonight: ${EU_NPCS[k[0]].ic} <b>${EU_NPCS[k[0]].n}</b>. Across the table: ${EU_NPCS[k[1]].n} & ${EU_NPCS[k[2]].n}. Pot ${money(st.ante*4)} (house stakes the bots).`],evi:0,anim:{},fast:false,sb:null,sbNext:{euchred:0,march:0},paid:false,won:0,tm:null};
+  S.stats2.eu=(S.stats2.eu||0)+1; sfx.coin(); euScene(); say('eu_2',pick(['Don\'t trump my ace, sweetie.','Lead trump to me if I call it. That\'s ALL I ask.','We\'re gonna clean these clowns out.']),2600); renderEu(); }
+function renderEu(){ const F=U.eu; if(!F) return renderEuSetup(); const G=F.G, V=euView(G,0), W=G.await;
+  let h=`<h2>🃏 EUCHRE HALL <span class="small dim">pot <b class="a">${money(F.pot)}</b> · hand ${G.handNo||1}</span></h2>`;
+  h+=euTableHtml(V,0,{names:G.players.map((p,i)=>i===0?'You':p.name),anim:F.anim,tags:[0,1,2,3].map(i=>i===2?'<span class="eupart">partner</span>':'')});
+  h+=euHandHtml(V,0,'euCard');
+  if(G.phase==='over'){ const win=G.winner===0; h+=`<div class="panel ${win?'g':'r'}"><b>${win?`🏆 YOU WIN THE MATCH ${G.score[0]}–${G.score[1]}! +${money(F.won)}`:`💀 Lost ${G.score[0]}–${G.score[1]}. ${money(F.ante)} goes to the VFW.`}</b> ${win?pick(['Earl salutes you. Marge says a prayer for the losers.','Your partner high-fives you so hard the coffee urn wobbles.','Put it in the bulletin: you\'re a euchre GOD.']):pick(['Your partner blames you. Loudly. In front of the priest.','"Shoulda led trump," says everyone, forever.','Somebody\'s grandma just took your lunch money.'])}</div>
+    <div class="grid2"><button class="btn go" onclick="U.eu=null;euScene();renderEu()">🔁 Run it back</button><button class="btn c" onclick="U.eu=null;U.cgame=null;renderCasino()">⬅ Casino floor</button></div>`; }
+  else if(W&&W.i===0) h+=euCtlHtml(V,0,'euMe');
+  else if(G.phase==='between'||G.phase==='idle') h+=euSideHtml();
+  else h+=`<div class="panel small dim">🃏 ${W?`${esc(euName(G,W.i))} is ${W.k==='play'?'thinking':W.k==='discard'?'burying a card':'deciding'}…`:'…'}</div>`;
+  if(G.lastHand&&G.phase!=='over') h+=`<div class="small dim">Last hand: ${euHandSummary(G.lastHand,i=>euName(G,i))}</div>`;
+  h+=`<div class="log mplog" style="max-height:150px">${F.log.slice(-10).map(x=>`<div>${x}</div>`).join('')}</div>`;
+  if(G.phase!=='over') h+=`<div class="grid2"><button class="btn c" onclick="U.eu.fast=!U.eu.fast;renderEu()">${F.fast?'⏩ Fast bots: ON':'▶️ Fast bots: OFF'}</button><button class="btn c bad" onclick="euFold()">${F.foldArm?'⚠️ Tap again: forfeit '+money(F.ante):'🏳️ Fold & walk'}</button></div>`;
+  setMain(h); euSyncScene(); }
+const EU_SB_AMT=[0,5,10,25,50];
+function euSideHtml(){ const F=U.eu, G=F.G, nx=F.sbNext, tot=nx.euchred+nx.march; const amts=EU_SB_AMT.filter(v=>v<=casinoMax());
+  let h=`<div class="panel"><b>${G.handNo?(G.redeal?'Everybody passed — throw \'em in.':'Hand over.'):'Shuffle up and deal.'}</b> <span class="small dim">Side bets on the next hand (optional, house-banked):</span>`;
+  for(const k of ['euchred','march']){ const B=EU_SIDE[k]; h+=`<div class="small">${B.ic} <b>${B.n}</b> — pays <b>${B.pay}:1</b> · ${money(nx[k])}</div><div class="row">${amts.map(v=>`<button class="chip ${nx[k]===v?'on':''}" onclick="euSB('${k}',${v})">${v?'$'+v:'none'}</button>`).join('')}</div>`; }
+  h+=`<div class="small dim">A thrown-in hand refunds side bets.</div></div><button class="btn big go" onclick="euDealBtn()">🃏 DEAL HAND ${G.handNo+1}${tot?` (side bets ${money(tot)})`:''}</button>`; return h; }
+function euSB(k,v){ const F=U.eu; if(!F) return; F.sbNext[k]=v; sfx.click(); renderEu(); }
+function euDealBtn(){ const F=U.eu; if(!F) return; const G=F.G; if(!(G.phase==='between'||G.phase==='idle')) return; const nx=F.sbNext, tot=nx.euchred+nx.march;
+  if(tot>S.cash) return toast('Side bets cost more than you have. Classic.'); if(tot){ cBet(tot); euLog(`💸 Side bets: ${money(tot)}.`); } F.sb={euchred:nx.euchred,march:nx.march};
+  euDeal(G); sfx.click(); euLoop(); }
+function euMe(a,arg,alone){ const F=U.eu; if(!F) return; const err=euAct(F.G,0,a,arg,alone); if(err) return toast(err); sfx.click(); euLoop(); }
+function euCard(i){ const F=U.eu; if(!F||!F.G.await||F.G.await.i!==0) return; euMe(F.G.await.k==='discard'?'discard':'play',i); }
+function euFold(){ const F=U.eu; if(!F) return; if(!F.foldArm){ F.foldArm=true; setTimeout(()=>{ if(U.eu===F){ F.foldArm=false; if(U.cgame==='eu') renderEu(); } },4000); return renderEu(); }
+  clearTimeout(F.tm); euForfeit(F); toast(`🏳️ You walked. ${money(F.ante)} stays in the pot. Earl shakes his head.`); addTilt(4); U.eu=null; U.busy=false; euScene(); renderEu(); }
+function euForfeit(F){ if(!F||F.paid||F.forfeit) return; F.forfeit=true; lifeRec('eu',F.ante,0,'Euchre: walked out'); if(F.sb){ const t=(F.sb.euchred||0)+(F.sb.march||0); if(t) lifeRec('eu',t,0,'Euchre side bets (walked out)'); } }
+function euLoop(){ const F=U.eu; if(!F) return; clearTimeout(F.tm); const G=F.G; let delay=F.fast?150:650;
+  while(F.evi<G.ev.length) delay=Math.max(delay,euEv(G.ev[F.evi++])*(F.fast?.35:1));
+  if(U.cgame!=='eu'||U.screen!=='casino'){ U.busy=false; return; }
+  renderEu(); if(G.phase==='over'||!G.await||G.await.i===0){ U.busy=false; return; }
+  U.busy=true; F.tm=setTimeout(()=>{ if(U.eu!==F) return; euBotAct(G); euLoop(); },delay); }
+function euEv(e){ const F=U.eu, G=F.G, nm=i=>esc(euName(G,i)), aid=i=>'eu_'+i, bot=i=>i!==0, talk=(i,k,ms)=>{ if(bot(i)) say(aid(i),pick(EU_TALK[k]).replace('{s}',EU_SNAME[G.trump!=null?G.trump:0]),ms||2400); };
+  switch(e.k){
+    case 'deal': euLog(`<b class="b">— Hand ${e.n} —</b> ${nm(e.dealer)} deal${e.dealer?'s':''}. Up card: <b>${euLabel(e.up)}</b>.`); pose(aid(e.dealer),'deal',900,'idle'); return 700;
+    case 'farmer': euLog(`🧑‍🌾 ${nm(e.i)} ${e.swap?'swaps a farmer\'s hand with the kitty':'keeps a farmer\'s hand. Brave.'}`); return 600;
+    case 'pass': if(bot(e.i)&&chance(.3)) say(aid(e.i),pick(['Pass.','Nope.','Not with this garbage.','Pass. Don\'t look at me.']),1200); return 520;
+    case 'turndown': euLog(`🙅 Everybody passed. ${euLabel(e.up)} turned down.`); return 700;
+    case 'order': case 'call': { const stuck=e.k==='call'&&e.i===G.dealer&&G.opts.stick&&G.passes>=3; euLog(`${e.alone?'🚶':'☝️'} ${nm(e.i)} ${e.k==='order'?(e.i===G.dealer?'picks it up':'orders it up'):'calls'} <b>${EU_SUITS[e.suit]} ${EU_SNAME[e.suit]}</b>${e.alone?' — <b class="a">GOING ALONE!</b>':''}${stuck?' (stuck)':''}`);
+      if(e.alone) talk(e.i,'alone',3000); else talk(e.i,stuck?'stuck':e.k==='order'?'order':'call'); pose(aid(e.i),'point',900,'idle'); if(e.alone&&e.i===0) say('eu_2',pick(['Fine. I\'ll get coffee. Don\'t blow it.','Go get \'em, cowboy.']),2400); return 1000; }
+    case 'pickup': return 500;
+    case 'discard': if(e.i) euLog(`🫳 ${nm(e.i)} buries a card.`); return 500;
+    case 'play': sfx.tick(); return 560;
+    case 'trick': { const c=e.cards.find(x=>x.i===e.w).c; euLog(`🂠 ${nm(e.w)} take${e.w?'s':''} the trick with <b>${euLabel(c)}</b>.`); if(bot(e.w)&&chance(.22)) talk(e.w,'trick',1500); if(e.w%2===0) sfx.coin(); return 1450; }
+    case 'hand': { euLog(`📊 ${euHandSummary(e,nm)}. Score: <b>${G.score[0]}–${G.score[1]}</b>.`); const mine=e.team===0;
+      if(e.euchred){ const def=e.team; const who=[def,def+2].find(bot); if(who!=null) say(aid(who),pick(EU_TALK.euchred),2600); if(mine){ unlock('euchred'); sfx.win(); fx.text('EUCHRED!','#ffc24a'); } else { sfx.lose(); if(e.maker===0){ say('eu_2',pick(['Nice call, genius.','You called THAT?','I\'m telling the whole VFW.']),2600); addTilt(3); } } }
+      else if(e.march){ say(aid(e.maker),pick(EU_TALK.march),2400); if(mine){ sfx.big(); fx.money(10); if(e.alone&&e.maker===0) unlock('loner'); } else sfx.lose(); }
+      else if(mine) sfx.win(); euSettleSide(e); return 1200; }
+    case 'redeal': euLog(`♻️ Nobody wanted it. Throw 'em in — deal passes left.`); euRefundSide(); return 700;
+    case 'over': euPayPot(e.team); return 0;
+  } return 300; }
+function euSettleSide(L){ const F=U.eu, B=F.sb; if(!B) return; let ret=0, stake=0;
+  for(const k of ['euchred','march']){ const a=B[k]; if(!a) continue; stake+=a; const hit=k==='euchred'?L.euchred:(L.alone&&L.march); const w=hit?r2(a*(1+EU_SIDE[k].pay)):0; ret+=w; lifeRec('eu',a,w,`Euchre side bet: ${EU_SIDE[k].n}`); if(hit) euLog(`💰 Side bet hits: ${EU_SIDE[k].ic} ${EU_SIDE[k].n} pays ${money(w)}!`); }
+  if(ret) cPay(r2(ret)); else if(stake) euLog(`🧾 Side bets lost (${money(stake)}).`); F.sb=null; }
+function euRefundSide(){ const F=U.eu, B=F.sb; if(!B) return; const t=(B.euchred||0)+(B.march||0); if(t){ cPay(t); euLog(`↩️ Side bets refunded (${money(t)}).`); } F.sb=null; }
+function euPayPot(team){ const F=U.eu; if(!F||F.paid) return; F.paid=true; const share=r2(F.pot*(1-EU_RAKE)/2), win=team===0; lifeRec('eu',F.ante,win?share:0,`Euchre match (pot ${money(F.pot)})`);
+  if(win){ cPay(share); F.won=r2(share-F.ante); unlock('euhall'); sfx.big(); fx.money(25); pose('eu_0','celebrate',3000,'idle'); pose('eu_2','celebrate',3000,'idle'); addTilt(-8); gainXp(15+F.ante/10); news(`Won a ${money(F.pot)} euchre match at Post 1717.`); }
+  else { sfx.lose(); pose('eu_0','facepalm',2500,'idle'); addTilt(Math.min(12,3+F.ante/Math.max(20,S.cash)*20)); gainXp(5); }
+  euLog(`🏁 ${win?'You and '+esc(F.G.players[2].name)+' win':esc(F.G.players[1].name)+' & '+esc(F.G.players[3].name)+' win'} ${F.G.score[0]}–${F.G.score[1]}. Each winner collects ${money(share)} (pot ${money(F.pot)} minus ${money(r2(F.pot*EU_RAKE))} rake).`); save(); }
 // ===================== MULTIPLAYER: HOST-AUTHORITATIVE ROOM LOGIC =====================
 // Transport-agnostic. The host's browser runs this; clients only send intents ("I bet $25 on red").
 // Everything a client sends is validated here. Money moves via a per-player LEDGER of numbered
@@ -1766,7 +2052,8 @@ const MPC = { VER:1, MAXP:5, SEATS:5, BJ_MIN:5, BJ_MAX:1000, TMAX:500, SB_MAXBET
   BET_MS:15000, TURN_MS:20000, DEAL_MS:650, DONE_MS:5000, RL_MS:20000, RL_SPIN_MS:3200, RL_DONE_MS:4500,
   CR_MS:25000, CR_ROLL_MS:700, SB_MS:90000, SB_LIVE_MS:45000, SB_FINAL_MS:25000, DC_MS:60000, MAXCASH:1e8, CHATLEN:120, LOANS:[250,500,1000,2500], LOAN_GAP:2000,
   F7_BUYS:[25,100,500], F7_LOBBY_MS:20000, F7_SB_MS:12000, F7_DONE_MS:10000, F7_SBV:[0,5,10,25,50], F7_TURN_MS:20000,
-  KN_MAX:25, KN_BETS:[1,2,5,10,25], KN_RACES:[1,2,5,10], KN_MS:15000, KN_NEXT_MS:6000, KN_BALL_MS:180, KN_DONE_MS:4000, VICE_GAP:2500, NIC_CD:20000, NIC_WIN:600000, CIGAR_NET:250 };
+  KN_MAX:25, KN_BETS:[1,2,5,10,25], KN_RACES:[1,2,5,10], KN_MS:15000, KN_NEXT_MS:6000, KN_BALL_MS:180, KN_DONE_MS:4000, VICE_GAP:2500, NIC_CD:20000, NIC_WIN:600000, CIGAR_NET:250,
+  EU_ANTES:[10,25,100,500], EU_LOBBY_MS:25000, EU_SB_MS:10000, EU_TURN_MS:25000, EU_DONE_MS:12000, EU_SBV:[0,5,10,25,50] };
 const MP_COLORS=['#f2efe4','#ff6b6b','#6fc3ff','#5dff8a','#ffc24a','#ff7ad9','#b78bff','#ff9a3c','#3ee6d0'];
 const MP_TALK=["Hit on 16, you coward","Dealer's rigged","Sal is gonna kill me","LET IT RIDE","That was MY card","Bro is down BAD","Easy money 💰","I'm calling my mom","Nice hit, nerd","Who touched the dice?!","Seven out? GET OUT.","Drinks on me (lie)","Pray for me 🙏","gg go next","Sir, this is a Wendy's"];
 // in-session loans: same menu/terms as Big Sal's deli (borrow()/loanCap() in 30_core.js); announced in chat
@@ -1789,7 +2076,7 @@ const MP_VICE_TALK={ beer:["🍺 {n} cracked a warm cheap beer. Peak performance
   pouch:["🫙 {n} tucked a nicotine pouch. Lip bulge of a man with a system.","🫙 {n} threw in a pouch and started explaining 'expected value' to nobody."],
   cigar:["🏆 {n} lit a VICTORY CIGAR. Insufferable. Earned, but insufferable.","🏆 {n} is puffing a fat victory cigar like they own the place. They don't. Sal does."] };
 const MP_EMOJI=['😂','💀','🤡','🔥','🐋','💩','🍺','😭'];
-const MP_TABLES=['lobby','bj','cr','rl','sb','f7','kn'];
+const MP_TABLES=['lobby','bj','cr','rl','sb','f7','kn','eu'];
 const RL_KEYS=new Set(['red','black','odd','even','low','high','d1','d2','d3','c1','c2','c3']);
 function mpCleanText(s,n){ return String(s==null?'':s).replace(/[\u0000-\u001f\u007f\u200b-\u200f\u2028-\u202e\u2066-\u2069\ufeff]/g,'').replace(/\s+/g,' ').trim().slice(0,n); }
 function mpInt(v,lo,hi){ if(typeof v==='string'&&v.trim()!=='') v=Number(v); if(typeof v!=='number'||!Number.isFinite(v)) return null; v=Math.floor(v); return (v<lo||v>hi)?null:v; }
@@ -1801,8 +2088,8 @@ function mpRoomS(){ const ach={}; for(const k in ACHS) ach[k]=1; return {v:1,nam
 function mpWithS(tmp,fn){ const oS=S, oN=U.noSave, oQ=U.silent; S=tmp; U.noSave=true; U.silent=true; try{ return fn(); } finally{ S=oS; U.noSave=oN; U.silent=oQ; } }
 
 // ---- LIVE SESSION LEADERBOARD helpers (pure; the host ranks, clients only render) ----
-const MP_LB_TB=['bj','cr','rl','sb','f7','kn'];
-function mpLbTable(w){ const m=String(w||'').match(/^(bj|cr|rl|sb|f7|kn)/); return m?m[1]:null; }
+const MP_LB_TB=['bj','cr','rl','sb','f7','kn','eu'];
+function mpLbTable(w){ const m=String(w||'').match(/^(bj|cr|rl|sb|f7|kn|eu)/); return m?m[1]:null; }
 function mpLbKey(r,tb){ return tb==='all'?r.net:((r.t&&r.t[tb])||{}).net||0; }
 // rank by session net (loans excluded), ties -> more action (wagered), then name; a per-table board lists who played or sits there
 function mpLbRank(rows,tb){ const w=r=>tb==='all'?r.w:((r.t&&r.t[tb])||{}).w||0;
@@ -1860,6 +2147,9 @@ function mpHostCreate(io){ // io: {send(cid,msg), now(), room, sess}
     if(f7.phase==='lobby') f7Out(p,'Left: Flip 7 buy-in returned');
     else if(f7.phase==='play'){ const i=f7.cids.indexOf(cid); if(i>=0){ if(voluntary) f7Fold(cid,'left the room'); else f7.G.players[i].auto=true; }
       if(f7.sbNext[cid]){ const B=f7.sbNext[cid]; delete f7.sbNext[cid]; led(p,f7SbW(),f7SbTot(B),0,'Flip 7 side bets returned (you left)'); } }
+    if(eu.phase==='lobby') ehStand(p,'Left: euchre ante returned');
+    else if(eu.phase==='play'){ const i=eu.cids.indexOf(cid); if(i>=0&&voluntary) ehFold(cid,'left the room');
+      if(eu.sbNext[cid]){ const B=eu.sbNext[cid]; delete eu.sbNext[cid]; led(p,euSbW(),euSbTot(B),0,'Euchre side bets returned (you left)'); } }
     if(kn.tickets[cid]){ if(kn.phase==='draw'&&kn.inRace.includes(cid)) kn.tickets[cid].gone=true; else knCancel(p,'Left: keno ticket refunded'); }
     H.order=H.order.filter(c=>c!==cid); delete H.P[cid]; p.conn=false; H.ghost[cid]=p; sys(`🚪 ${p.name} ${why}.`); }
   // ---------------- messages ----------------
@@ -1888,12 +2178,20 @@ function mpHostCreate(io){ // io: {send(cid,msg), now(), room, sess}
     case 'f7.ready': if((f7.phase==='lobby'&&f7.seats.includes(cid))||(f7.phase==='play'&&f7.sbOpen)){ f7.ready[cid]=1; dirty(); } return;
     case 'f7.sb': return f7Sb(p,String(m.k||''),m.i==null?null:mpInt(m.i,0,9),mpInt(m.v,0,1000));
     case 'f7.act': return f7ActMsg(p,String(m.a||''),m.to==null?null:mpInt(m.to,0,9));
+    case 'eu.sit': return ehSit(p,mpInt(m.seat,0,3),m.ante==null?null:mpInt(m.ante,1,1e6));
+    case 'eu.stand': if(eu.phase!=='lobby') return rej(p,"Cards are out. You're in it now."); return ehStand(p);
+    case 'eu.rand': return ehRand(p);
+    case 'eu.opt': return ehOpt(p,m);
+    case 'eu.ready': if((eu.phase==='lobby'&&eu.seats.includes(cid))||(eu.phase==='play'&&eu.sbOpen)){ eu.ready[cid]=1; dirty(); } return;
+    case 'eu.sb': return ehSb(p,String(m.k||''),mpInt(m.v,0,1000));
+    case 'eu.act': return ehAct(p,String(m.a||''),m.arg==null?null:mpInt(m.arg,0,5),!!m.alone);
     case 'kn.ticket': return knTicket(p,m.spots,mpInt(m.bet,1,1e6),mpInt(m.races,1,1000));
     case 'kn.cancel': if(kn.phase==='draw'&&kn.inRace.includes(cid)) return rej(p,'Balls are flying. Cancel after this race.'); return knCancel(p);
     case 'kn.ready': if(kn.phase!=='draw'&&kn.tickets[cid]){ kn.ready[cid]=1; dirty(); } return;
     default: return; } }catch(e){ console.warn('mp host msg error',e); } };
   function go(p,tb){ if(!MP_TABLES.includes(tb)||p.table===tb) return; const old=p.table; p.table=tb; if(old==='bj') bjLeave(p,false);
     if(old==='f7'&&f7.phase==='lobby'&&f7.seats.includes(p.cid)) f7Out(p,'Left the Flip 7 table: buy-in returned');
+    if(old==='eu'&&eu.phase==='lobby'&&eu.seats.includes(p.cid)) ehStand(p,'Left the Euchre Hall: ante returned');
     if(tb==='f7'&&f7.phase==='play'){ const i=f7.cids.indexOf(p.cid); if(i>=0&&!f7.folded[p.cid]) f7.G.players[i].auto=false; } if(tb==='bj') bjSit(p); if(tb==='sb'&&!sb.day) sbNewSlate(); dirty(); }
   function chat(p,m){ const t=now(); if(t-p.lastChat<700){ if(++p.chatBurst>4) return rej(p,'Easy on the trash talk. (rate limit)'); } else p.chatBurst=0; p.lastChat=t;
     let txt, em=false; if(m.em!=null){ const i=mpInt(m.em,0,200); if(i==null) return; txt=i>=100?MP_EMOJI[i-100]:MP_TALK[i]; if(!txt) return; em=true; } else { txt=mpCleanText(m.txt,MPC.CHATLEN); if(!txt) return; }
@@ -1902,7 +2200,7 @@ function mpHostCreate(io){ // io: {send(cid,msg), now(), room, sess}
   // The client reports its save's lvl/debt; the host re-runs Sal's loanCap() rule on them, and never lets the
   // effective debt go below what this session already lent (debt can't be paid down while online), so a
   // client can't lie its way past the single-player credit limit. No loans while your own money is mid-hand.
-  function loanBusy(c){ return (bj.hands[c]&&(bj.phase==='play'||bj.phase==='dealer'))||(rl.phase==='spin'&&!!rl.bets[c])||f7Busy(c)||(kn.phase==='draw'&&kn.inRace.includes(c)); }
+  function loanBusy(c){ return (bj.hands[c]&&(bj.phase==='play'||bj.phase==='dealer'))||(rl.phase==='spin'&&!!rl.bets[c])||f7Busy(c)||ehBusy(c)||(kn.phase==='draw'&&kn.inRace.includes(c)); }
   function loan(p,m){ const amt=mpInt(m.amt,1,1e6); if(amt==null||!MPC.LOANS.includes(amt)) return rej(p,'Sal only does $250, $500, $1k or $2.5k.');
     if(m.whale) return rej(p,"Sal doesn't lend to his business partners.");
     if(loanBusy(p.cid)) return rej(p,'✋ No re-upping mid-hand. Finish the hand first.');
@@ -2116,6 +2414,111 @@ function mpHostCreate(io){ // io: {send(cid,msg), now(), room, sess}
       if(t>=f7.sbDeadline){ f7.sbOpen=false; f7.sbLive=f7.sbNext; f7.sbNext={}; f7.ready={}; f7.dealGo=true; f7.stepAt=t; dirty(); } return; }
     if(t<f7.stepAt) return;
     f7.dealGo=false; const r=f7Advance(G); const d=f7Events(); if(r==='wait'&&G.await) f7.turnAt=t+MPC.F7_TURN_MS; f7.stepAt=t+d; dirty(); }
+  // ---------------- EUCHRE HALL (2 vs 2: seats 0&2 vs 1&3; humans pick chairs = pick teams; house bots fill the rest) ----------------
+  // Everyone at the match antes (house stakes the bots); winning team splits the pot minus the 5% rake. The shared engine
+  // (63_euchre.js) runs here; each seat's hand only ever goes to that seat (see H.flush). Turn timer -> autopilot (bot brain).
+  const eu=H.eu={ phase:'lobby', ante:0, opts:Object.assign({},EU_OPTS), seats:[null,null,null,null], boss:null, ready:{}, deadline:0, matchNo:0, G:null, cids:[null,null,null,null], folded:{}, pot:0,
+    stepAt:0, turnAt:0, awaitKey:'', sbOpen:false, sbDeadline:0, sbNext:{}, sbLive:{}, log:[], doneAt:0, res:null, dealGo:false, evi:0, say:[], sayN:0 };
+  const euSbTot=B=>r2((B.euchred||0)+(B.march||0));
+  const euSbW=()=>'eus'+eu.matchNo+'.'+((eu.G?eu.G.handNo:0)+1);
+  function ehL(t){ eu.log.push(String(t).slice(0,220)); if(eu.log.length>40) eu.log.splice(0,eu.log.length-40); }
+  function ehSay(i,txt){ eu.say.push({n:++eu.sayN,i,txt:String(txt).slice(0,120)}); if(eu.say.length>6) eu.say.shift(); }
+  function ehBusy(c){ if(eu.phase!=='play'||!eu.G||eu.G.phase==='between'||eu.G.phase==='idle') return false; return (eu.cids.includes(c)&&!eu.folded[c])||!!eu.sbLive[c]; }
+  function ehTeams(){ return [0,1].map(t=>[t,t+2].map(i=>eu.seats[i]?nm(eu.seats[i]):'🤖 bot').join(' & ')); }
+  function ehSit(p,seat,ante){ if(eu.phase!=='lobby') return rej(p,'Match in progress. Grab a chair for the next one.'); if(p.table!=='eu') return rej(p,'Walk over to the Euchre Hall first.');
+    if(seat==null) return rej(p,'Pick a chair.'); if(eu.seats[seat]&&eu.seats[seat]!==p.cid) return rej(p,"Somebody's already in that chair.");
+    const cur=eu.seats.indexOf(p.cid); if(cur===seat) return; if(cur>=0){ eu.seats[cur]=null; eu.seats[seat]=p.cid; eu.ready={}; dirty(); return; } // switching chairs/teams: no second ante
+    const first=!eu.seats.some(Boolean); if(first&&(ante==null||!MPC.EU_ANTES.includes(ante))) return rej(p,'Antes are $10, $25, $100 or $500.');
+    const a=first?ante:eu.ante; if(a>p.bal+1e-9) return rej(p,`Can't cover the ${money(a)} ante. Earl doesn't take IOUs.`);
+    if(first){ eu.ante=a; eu.boss=p.cid; } eu.seats[seat]=p.cid; led(p,'eug'+(eu.matchNo+1),-a,a,'Euchre ante'); if(!eu.deadline) eu.deadline=now()+MPC.EU_LOBBY_MS;
+    sys(`🃏 ${p.name} pulls up a folding chair at the Euchre Hall (${money(a)} ante, ${EU_TEAMS[seat%2]}).`); dirty(); }
+  function ehStand(p,why){ const i=eu.seats.indexOf(p.cid); if(eu.phase!=='lobby'||i<0) return; eu.seats[i]=null; delete eu.ready[p.cid]; led(p,'eug'+(eu.matchNo+1),eu.ante,0,why||'Euchre ante returned');
+    if(!eu.seats.some(Boolean)) Object.assign(eu,{deadline:0,ante:0,boss:null,opts:Object.assign({},EU_OPTS),ready:{}}); else if(eu.boss===p.cid) eu.boss=eu.seats.find(Boolean); dirty(); }
+  function ehRand(p){ if(eu.phase!=='lobby') return rej(p,'Teams are locked once the cards are out.'); if(!eu.seats.includes(p.cid)) return rej(p,'Sit down first.');
+    const hs=shuffle(eu.seats.filter(Boolean)), pos=shuffle([0,1,2,3]); eu.seats=[null,null,null,null]; hs.forEach((c,k)=>{ eu.seats[pos[k]]=c; }); eu.ready={};
+    const T=ehTeams(); sys(`🎲 ${p.name} shuffled the teams: ${EU_TEAMS[0]} = ${T[0]} · ${EU_TEAMS[1]} = ${T[1]}.`); dirty(); }
+  function ehOpt(p,m){ if(eu.phase!=='lobby') return rej(p,'House rules are locked once the cards are out.'); if(p.cid!==eu.boss&&!p.isHost) return rej(p,'Only the table captain (first to sit) or the host sets house rules.');
+    const b=v=>v===true||v===1; let ch=[];
+    if(m.stick!=null){ eu.opts.stick=b(m.stick); ch.push(`stick the dealer ${eu.opts.stick?'ON':'OFF'}`); }
+    if(m.to!=null){ const t=mpInt(m.to,10,11); if(t==null) return rej(p,'Game to 10 or 11.'); eu.opts.to=t; ch.push(`game to ${t}`); }
+    if(m.farmer!=null){ eu.opts.farmer=b(m.farmer); ch.push(`farmer's hand ${eu.opts.farmer?'ON':'OFF'}`); }
+    if(ch.length){ eu.ready={}; sys(`📋 ${p.name} set euchre house rules: ${ch.join(', ')}.`); } dirty(); }
+  function ehReset(){ Object.assign(eu,{phase:'lobby',seats:[null,null,null,null],boss:null,ready:{},deadline:0,ante:0,G:null,cids:[null,null,null,null],folded:{},sbOpen:false,sbNext:{},sbLive:{},dealGo:false,res:null,opts:Object.assign({},eu.opts),say:[]}); dirty(); }
+  function ehStart(){ if(!eu.seats.some(c=>c&&pl(c))) return ehReset(); const keys=shuffle(Object.keys(EU_NPCS)); let k=0; eu.matchNo++; eu.cids=eu.seats.slice();
+    const players=eu.cids.map(c=>{ if(c) return {name:nm(c),pid:idOf(c),color:pl(c).color}; const key=keys[k++]; return {name:EU_NPCS[key].n,npc:key}; });
+    eu.G=euNew(players,eu.opts,H.rig.eu||null); eu.pot=r2(eu.ante*4);
+    Object.assign(eu,{phase:'play',deadline:0,folded:{},sbNext:{},sbLive:{},sbOpen:false,ready:{},log:[],res:null,dealGo:false,evi:0,say:[],stepAt:now()+400,awaitKey:''});
+    const T=[0,1].map(t=>[t,t+2].map(i=>players[i].name).join(' & '));
+    ehL(`🃏 Match #${eu.matchNo}: ${EU_TEAMS[0]} (${T[0]}) vs ${EU_TEAMS[1]} (${T[1]}). Pot ${money(eu.pot)}${k?` (the house stakes ${k} bot${k>1?'s':''})`:''}. Game to ${eu.opts.to}${eu.opts.stick?', stick the dealer':''}${eu.opts.farmer?", farmer's hand":''}.`);
+    sys(`🃏 Euchre match #${eu.matchNo} is ON: ${T[0]} vs ${T[1]} for a ${money(eu.pot)} pot.`); dirty(); }
+  function ehSb(p,k,v){ if(eu.phase!=='play'||!eu.sbOpen) return rej(p,'Side bets only between hands.'); if(p.table!=='eu') return rej(p,'Walk over to the Euchre Hall first.');
+    if(!Object.prototype.hasOwnProperty.call(EU_SIDE,k)) return rej(p,'No such side bet.'); if(v==null||!MPC.EU_SBV.includes(v)) return rej(p,'Bad chip.');
+    const B=eu.sbNext[p.cid]||{euchred:0,march:0}, diff=r2(v-(B[k]||0)); if(diff>p.bal+1e-9) return rej(p,"Can't cover that side bet."); B[k]=v; const tot=euSbTot(B);
+    if(tot) eu.sbNext[p.cid]=B; else delete eu.sbNext[p.cid]; led(p,euSbW(),-diff,tot,'Euchre side bet'); delete eu.ready[p.cid]; dirty(); }
+  function ehSettleSide(L){ const w='eus'+eu.matchNo+'.'+L.n;
+    for(const c in eu.sbLive){ const B=eu.sbLive[c], p=pl(c); if(!p) continue; let ret=0; const pairs=[], hits=[];
+      for(const k of ['euchred','march']){ const a=B[k]; if(!a) continue; const hit=k==='euchred'?L.euchred:(L.alone&&L.march), r=hit?r2(a*(1+EU_SIDE[k].pay)):0; ret+=r; pairs.push([a,r]); if(hit) hits.push(EU_SIDE[k].n); }
+      const stake=euSbTot(B); led(p,w,ret,0,ret?`💰 Euchre side bet hits: ${hits.join(' + ')}`:`Euchre side bets lost (hand ${L.n})`,ret-stake,LF(pairs));
+      if(ret>=100) sys(`💰 ${p.name} cashes a ${money(ret)} euchre side bet. Earl is filing a complaint.`); }
+    eu.sbLive={}; }
+  function ehRefundSide(n){ for(const c in eu.sbLive){ const p=pl(c); if(p) led(p,'eus'+eu.matchNo+'.'+n,euSbTot(eu.sbLive[c]),0,'Euchre side bets returned (hand thrown in)'); } eu.sbLive={}; }
+  function ehFold(c,why){ const i=eu.cids.indexOf(c); if(eu.phase!=='play'||i<0||eu.folded[c]) return; const p=pl(c), G=eu.G; eu.folded[c]=1;
+    led(p,'eug'+eu.matchNo,0,0,'Euchre: walked out, ante forfeited',-eu.ante,LF([[eu.ante,0]]));
+    if(eu.sbNext[c]){ const B=eu.sbNext[c]; delete eu.sbNext[c]; led(p,euSbW(),euSbTot(B),0,'Euchre side bets returned'); }
+    if(eu.sbLive[c]){ const B=eu.sbLive[c]; delete eu.sbLive[c]; led(p,'eus'+eu.matchNo+'.'+G.handNo,0,0,'Euchre side bets forfeited',-euSbTot(B),LF([[euSbTot(B),0]])); }
+    ehL(`🏳️ ${G.players[i].name} ${why}. A bot takes the chair for the house.`); sys(`🏳️ ${nm(c)} ${why} mid-euchre. Ante stays in the pot.`); dirty(); }
+  function ehFinish(team){ const G=eu.G, share=r2(eu.pot*(1-EU_RAKE)/2), w='eug'+eu.matchNo, sc=`${G.score[team]}–${G.score[1-team]}`;
+    eu.cids.forEach((c,i)=>{ if(!c||eu.folded[c]) return; const p=pl(c); if(!p) return;
+      if(i%2===team) led(p,w,share,0,`🏆 Euchre match #${eu.matchNo} won ${sc}`,share-eu.ante,LF([[eu.ante,share]])); else led(p,w,0,0,`Euchre match #${eu.matchNo}: lost ${sc}`,-eu.ante,LF([[eu.ante,0]])); });
+    const seats=[team,team+2], names=seats.map(i=>G.players[i].name).join(' & '), house=seats.every(i=>!eu.cids[i]||eu.folded[eu.cids[i]]);
+    eu.res={team,names,share,score:G.score.slice(),ids:seats.map(i=>eu.cids[i]&&!eu.folded[eu.cids[i]]?idOf(eu.cids[i]):null),house};
+    const line=`🏁 Euchre #${eu.matchNo}: ${EU_TEAMS[team]} (${names}) win ${sc} and split the ${money(eu.pot)} pot (${money(share)} each after the 5% rake).${house?' The house wins. Of course it does.':''}`; ehL(line); sys(line);
+    eu.phase='over'; eu.doneAt=now()+MPC.EU_DONE_MS; eu.sbOpen=false; dirty(); }
+  function ehEvents(){ const G=eu.G, N=i=>G.players[i].name, bot=i=>!eu.cids[i]||eu.folded[eu.cids[i]], talk=(i,k)=>{ if(bot(i)) ehSay(i,pick(EU_TALK[k]).replace('{s}',EU_SNAME[G.trump!=null?G.trump:0])); }; let d=0;
+    while(eu.evi<G.ev.length){ const e=G.ev[eu.evi++];
+      switch(e.k){
+        case 'deal': ehL(`— Hand ${e.n} — ${N(e.dealer)} deals. Up card: ${euLabel(e.up)}.`); d=Math.max(d,1100); break;
+        case 'farmer': ehL(`🧑‍🌾 ${N(e.i)} ${e.swap?"swaps a farmer's hand with the kitty":"keeps a farmer's hand"}.`); d=Math.max(d,700); break;
+        case 'pass': if(bot(e.i)&&rnd()<.25) ehSay(e.i,pick(['Pass.','Nope.','Not with this garbage.'])); d=Math.max(d,700); break;
+        case 'turndown': ehL(`🙅 Everybody passed. ${euLabel(e.up)} turned down.`); d=Math.max(d,900); break;
+        case 'order': case 'call': { const stuck=e.k==='call'&&e.i===G.dealer&&G.opts.stick&&G.passes>=3;
+          const line=`${e.alone?'🚶':'☝️'} ${N(e.i)} ${e.k==='order'?(e.i===G.dealer?'picks it up':'orders it up'):'calls'} ${EU_SUITS[e.suit]} ${EU_SNAME[e.suit]}${e.alone?' — GOING ALONE!':''}${stuck?' (stuck)':''}`; ehL(line); if(e.alone) sys(line);
+          talk(e.i,e.alone?'alone':stuck?'stuck':e.k==='order'?'order':'call'); d=Math.max(d,1300); break; }
+        case 'discard': ehL(`🫳 ${N(e.i)} buries a card.`); d=Math.max(d,600); break;
+        case 'play': d=Math.max(d,750); break;
+        case 'trick': { const c=e.cards.find(x=>x.i===e.w).c; ehL(`🂠 ${N(e.w)} takes the trick with ${euLabel(c)}.`); if(rnd()<.2) talk(e.w,'trick'); d=Math.max(d,1700); break; }
+        case 'hand': { ehL(`📊 ${N(e.maker)} ${e.alone?'(alone) ':''}${EU_SUITS[e.trump]}: ${e.mk}/5 tricks → ${e.euchred?'EUCHRED! +2 to '+EU_TEAMS[e.team]:e.march?'MARCH! +'+e.pts:'+'+e.pts} · ${EU_TEAMS[0]} ${G.score[0]} – ${G.score[1]} ${EU_TEAMS[1]}`);
+          if(e.euchred){ const who=[e.team,e.team+2].find(bot); if(who!=null) ehSay(who,pick(EU_TALK.euchred)); sys(`💥 ${N(e.maker)} got EUCHRED! +2 for ${EU_TEAMS[e.team]}.`); }
+          else if(e.march){ talk(e.maker,'march'); if(e.alone) sys(`🚶 ${N(e.maker)} went alone and MARCHED. +4. Put it in the bulletin.`); }
+          ehSettleSide(e); d=Math.max(d,1800); break; }
+        case 'redeal': ehL("♻️ Nobody wanted it. Throw 'em in — the deal passes left."); ehRefundSide(G.handNo); d=Math.max(d,900); break;
+        case 'over': ehFinish(e.team); break; } }
+    return d||500; }
+  function ehAwait(t){ const G=eu.G, W=G.await, k=W?`${G.handNo}.${W.k}.${W.i}.${G.trickNo}.${G.trick.length}`:''; if(k!==eu.awaitKey){ eu.awaitKey=k; eu.turnAt=Math.max(t,eu.stepAt)+MPC.EU_TURN_MS; } }
+  function ehBot(G){ try{ return euBotAct(G); }catch(e){ console.warn('euchre bot',e); const W=G.await, i=W.i; // never soft-lock: fall back to any legal move
+      if(W.k==='bid1'||W.k==='farmer') euAct(G,i,W.k==='farmer'?'keep':'pass'); else if(W.k==='bid2'){ if(euAct(G,i,'pass')) euAct(G,i,'call',[0,1,2,3].find(s=>s!==G.up.s)); }
+      else if(W.k==='discard') euAct(G,i,'discard',0); else euAct(G,i,'play',euLegal(G.hands[i],G.trump,G.trick.length?euSuit(G.trick[0].c,G.trump):null)[0]); return null; } }
+  function ehAct(p,a,arg,alone){ if(eu.phase!=='play') return rej(p,'No euchre match running.'); const G=eu.G, i=eu.cids.indexOf(p.cid); if(i<0||eu.folded[p.cid]) return rej(p,"You're not in this match.");
+    if(!G.await||G.await.i!==i) return rej(p,'Not your turn, hoss.'); const err=euAct(G,i,a,arg,alone); if(err) return rej(p,err); const t=now(); eu.stepAt=t+ehEvents(); if(eu.phase==='play') ehAwait(t); dirty(); }
+  function ehTick(t){
+    if(eu.phase==='lobby'){ if(eu.deadline){ const here=eu.seats.filter(c=>c&&H.P[c]&&H.P[c].conn); if(here.length&&here.every(c=>eu.ready[c])) eu.deadline=Math.min(eu.deadline,t+1500); if(t>=eu.deadline) ehStart(); } return; }
+    if(eu.phase==='over'){ if(t>=eu.doneAt) ehReset(); return; }
+    if(eu.phase!=='play') return; const G=eu.G;
+    if(G.phase==='between'||G.phase==='idle'){ if(t<eu.stepAt) return;
+      if(!eu.dealGo){ if(!eu.sbOpen){ eu.sbOpen=true; eu.sbDeadline=t+MPC.EU_SB_MS; eu.ready={}; dirty(); return; }
+        const here=eu.cids.filter(c=>c&&!eu.folded[c]&&H.P[c]&&H.P[c].conn&&H.P[c].table==='eu'); if(!here.length||here.every(c=>eu.ready[c])) eu.sbDeadline=Math.min(eu.sbDeadline,t+(here.length?1000:2500));
+        if(t>=eu.sbDeadline){ eu.sbOpen=false; eu.sbLive=eu.sbNext; eu.sbNext={}; eu.ready={}; eu.dealGo=true; dirty(); } return; }
+      eu.dealGo=false; euDeal(G); eu.stepAt=t+ehEvents(); ehAwait(t); dirty(); return; }
+    const W=G.await; if(!W) return; const c=eu.cids[W.i];
+    if(c&&!eu.folded[c]){ const p=H.P[c]; let why=null; if(!p) why='is gone'; else if(p.table!=='eu') why='wandered off'; else if(!p.conn&&t-p.dcAt>1500) why='disconnected'; else if(t>=eu.turnAt) why='timed out';
+      if(!why||t<eu.stepAt) return; ehBot(G); ehL(`⏰ ${G.players[W.i].name} ${why}. Autopilot ${W.k==='play'?'played a card':W.k==='discard'?'buried a card':'made the call'}.`); }
+    else { if(t<eu.stepAt) return; ehBot(G); }
+    eu.stepAt=t+ehEvents(); if(eu.phase==='play') ehAwait(t); dirty(); }
+  function ehView(rem,byId){ const G=eu.G, W=G&&G.await, hw=W&&eu.cids[W.i]&&!eu.folded[eu.cids[W.i]];
+    return {phase:eu.phase,ante:eu.ante,opts:Object.assign({},eu.opts),boss:eu.boss?idOf(eu.boss):null,seats:eu.seats.map(c=>c?idOf(c):null),ready:Object.keys(eu.ready).map(idOf),matchNo:eu.matchNo,pot:eu.pot,sbOpen:eu.sbOpen,res:eu.res,
+      log:eu.log.slice(-14),say:eu.say.slice(),sb:byId(eu.sbNext),live:byId(eu.sbLive),
+      rem:eu.phase==='lobby'?rem(eu.deadline):eu.phase==='over'?rem(eu.doneAt):eu.sbOpen?rem(eu.sbDeadline):hw?rem(eu.turnAt):0,
+      G:G?Object.assign(euView(G,null),{players:G.players.map((q,i)=>({name:q.name,npc:q.npc,pid:eu.cids[i]?idOf(eu.cids[i]):null,color:q.color||null,folded:!!(eu.cids[i]&&eu.folded[eu.cids[i]])})),me:null}):null}; }
   // ---------------- KENO (one shared draw; everybody's tickets settle on it; multi-race tickets ride automatically) ----------------
   const kn=H.kn={ phase:'bet', tickets:{}, ready:{}, deadline:0, draw:null, shown:0, nextBall:0, raceNo:0, inRace:[], res:{}, last:null, doneAt:0, tn:0 };
   function knTicket(p,spots,bet,races){ if(kn.phase==='draw') return rej(p,'Balls are flying. Get your ticket in for the next race.'); if(p.table!=='kn') return rej(p,'Walk over to the keno lounge first.');
@@ -2141,7 +2544,7 @@ function mpHostCreate(io){ // io: {send(cid,msg), now(), room, sess}
     if(kn.phase==='draw'){ let ch=false; while(kn.shown<20&&t>=kn.nextBall){ kn.shown++; kn.nextBall+=MPC.KN_BALL_MS; ch=true; } if(ch) dirty(); if(kn.shown>=20&&t>=kn.nextBall+400) knSettle(t); return; }
     if(kn.phase==='done'&&t>=kn.doneAt){ kn.phase='bet'; kn.ready={}; kn.deadline=Object.keys(kn.tickets).length?t+MPC.KN_NEXT_MS:0; dirty(); } }
   // ---------------- clock ----------------
-  H.tick=function(){ if(H.closed) return; const t=now(); try{ bjTick(t); crTick(t); rlTick(t); sbTick(t); f7Tick(t); knTick(t);
+  H.tick=function(){ if(H.closed) return; const t=now(); try{ bjTick(t); crTick(t); rlTick(t); sbTick(t); f7Tick(t); knTick(t); ehTick(t);
     for(const c of H.order.slice()){ const p=H.P[c]; if(p&&!p.conn&&t-p.dcAt>MPC.DC_MS) remove(c,'timed out and got kicked',false); } }catch(e){ console.warn('mp host tick error',e); } };
   // ---------------- close (host leaving): void & refund everything still at risk ----------------
   H.close=function(why){ if(H.closed) return; const all=c=>pl(c);
@@ -2155,6 +2558,10 @@ function mpHostCreate(io){ // io: {send(cid,msg), now(), room, sess}
       for(const c in f7.sbNext) led(all(c),f7SbW(),f7SbTot(f7.sbNext[c]),0,'Table closed: Flip 7 side bets returned');
       for(const c in f7.sbLive) led(all(c),'f7s'+f7.gameNo+'.'+f7.G.round,f7SbTot(f7.sbLive[c]),0,'Table closed: Flip 7 side bets returned'); f7.phase='closed'; }
     for(const c in kn.tickets){ const T=kn.tickets[c]; if(T.left>0) led(all(c),T.w,r2(T.left*T.bet),0,'Table closed: keno ticket refunded'); } kn.tickets={};
+    if(eu.phase==='lobby'){ for(const c of eu.seats) if(c) led(all(c),'eug'+(eu.matchNo+1),eu.ante,0,'Table closed: euchre ante returned'); eu.seats=[null,null,null,null]; }
+    else if(eu.phase==='play'){ eu.cids.forEach(c=>{ if(c&&!eu.folded[c]) led(all(c),'eug'+eu.matchNo,eu.ante,0,'Table closed: euchre match voided, ante returned'); });
+      for(const c in eu.sbNext) led(all(c),euSbW(),euSbTot(eu.sbNext[c]),0,'Table closed: euchre side bets returned');
+      for(const c in eu.sbLive) led(all(c),'eus'+eu.matchNo+'.'+eu.G.handNo,euSbTot(eu.sbLive[c]),0,'Table closed: euchre side bets returned'); eu.sbNext={}; eu.sbLive={}; eu.phase='closed'; }
     H.fin=Object.assign(H.lb(),{room:H.room,mins:Math.max(1,Math.round((now()-H.t0)/60000)),bets:H.rt.n,w:H.rt.w,r:H.rt.r});
     H.closed=true; for(const c of H.order) if(H.P[c].conn) io.send(c,{t:'close',why:why||'The host closed the table.',fin:H.fin}); };
   // ---------------- public snapshot (no shoe, no hole card, no secret ids) ----------------
@@ -2171,7 +2578,7 @@ function mpHostCreate(io){ // io: {send(cid,msg), now(), room, sess}
       sb:{day:sb.day,phase:sb.phase,rem:rem(sb.phase==='final'?sb.finalAt:sb.deadline),t:sb.t,ready:Object.keys(sb.ready).map(idOf),ticker:sb.ticker.slice(-16),stats:byId(sb.stats),
         games:sb.games.map(g=>{ const L=g.lines.DQ; return {id:g.id,sp:g.sp,slot:g.slot,a:{ab:g.a.ab,nm:g.a.nm},h:{ab:g.h.ab,nm:g.h.nm},L:{spread:L.spread,spH:L.spH,spA:L.spA,total:L.total,tO:L.tO,tU:L.tU,mlH:L.mlH,mlA:L.mlA},live:g.live||null,fin:sb.phase==='final'&&g.res?{sa:g.res.sa,sh:g.res.sh,ot:g.res.ot}:null}; }),
         bets:sb.bets.map(b=>({id:b.id,pid:idOf(b.cid),name:nm(b.cid),legs:b.legs,stake:b.stake,odds:b.odds,status:b.status,ret:b.ret,net:b.net,res:b.res}))},
-      f7:f7View(rem,byId), kn:knView(rem,byId) }; };
+      f7:f7View(rem,byId), kn:knView(rem,byId), eu:ehView(rem,byId) }; };
   function f7View(rem,byId){ const G=f7.G, W=G&&G.await;
     return {phase:f7.phase,buy:f7.buy,target:f7.target,seats:f7.seats.map(idOf),ready:Object.keys(f7.ready).map(idOf),gameNo:f7.gameNo,pot:f7.pot,sbOpen:f7.sbOpen,res:f7.res,log:f7.log.slice(-14),
       rem:f7.phase==='lobby'?rem(f7.deadline):f7.phase==='over'?rem(f7.doneAt):f7.sbOpen?rem(f7.sbDeadline):W?rem(f7.turnAt):0, sb:byId(f7.sbNext), live:byId(f7.sbLive),
@@ -2180,7 +2587,10 @@ function mpHostCreate(io){ // io: {send(cid,msg), now(), room, sess}
         await:W?{k:W.k,i:W.i,a:W.a||null,card:W.card||null,cands:W.cands||null,bp:W.k==='decide'?Math.round(f7BustP(G,G.players[W.i])*100):null}:null}:null}; }
   function knView(rem,byId){ const tk={}; for(const c in kn.tickets){ const id=idOf(c), T=kn.tickets[c]; if(id) tk[id]={spots:T.spots,bet:T.bet,races:T.races,left:T.left}; }
     return {phase:kn.phase,rem:rem(kn.deadline),raceNo:kn.raceNo,shown:kn.phase==='draw'?kn.draw.slice(0,kn.shown):(kn.last?kn.last.draw:[]),tickets:tk,ready:Object.keys(kn.ready).map(idOf),inRace:kn.phase==='draw'?kn.inRace.map(idOf):[],res:kn.res}; }
-  H.flush=function(){ if(!H.dirty||H.closed) return; H.dirty=false; const s=H.view(); for(const c of H.order){ const p=H.P[c]; if(p.conn) io.send(c,{t:'st',s}); } };
+  // everyone gets the same public snapshot; a seated euchre player's copy also carries THEIR hand (+ legal plays)
+  H.flush=function(){ if(!H.dirty||H.closed) return; H.dirty=false; const s=H.view(); for(const c of H.order){ const p=H.P[c]; if(!p.conn) continue; let out=s;
+    const i=eu.phase==='play'||eu.phase==='over'?eu.cids.indexOf(c):-1; if(i>=0&&s.eu.G&&eu.G){ const v=euView(eu.G,i); out=Object.assign({},s,{eu:Object.assign({},s.eu,{G:Object.assign({},s.eu.G,{me:i,mine:v.mine,legal:v.legal})})}); }
+    io.send(c,{t:'st',s:out}); } };
   return H; }
 // ===================== MULTIPLAYER: TRANSPORT (PeerJS/WebRTC) + CLIENT LEDGER =====================
 const MP={ st:'idle', role:null, peer:null, conn:null, conns:{}, H:null, R:null, prevR:null, rAt:0, me:null, code:'', sess:'', err:'', why:'', sessNet:0,
@@ -2213,7 +2623,7 @@ function mpBindSess(sess){ if(!S) return; S.mp=S.mp||{}; if(S.mp.sess!==sess){ i
 function mpApply(list){ if(!S||!S.mp||!Array.isArray(list)) return; const es=list.filter(e=>e&&typeof e.seq==='number').sort((a,b)=>a.seq-b.seq); let any=false;
   for(const e of es){ if(e.seq<=S.mp.lastSeq) continue; S.mp.lastSeq=e.seq; any=true; const d=Number(e.d); if(e.loan!=null&&d>0&&Number(e.loan)===d) mpLoanApply(d); else if(Number.isFinite(d)&&d!==0){ addCash(d); MP.sessNet=r2(MP.sessNet+d); }
     const w=String(e.w||'').slice(0,20), out=Number(e.out)||0;
-    if(Array.isArray(e.lf)&&e.lf.length<=60){ const sb=(w.match(/^(bj|cr|rl|sb|f7|kn)/)||[])[1]||''; for(const pr of e.lf) if(Array.isArray(pr)) lifeRec('online',pr[0],pr[1],String(e.why||'Online bet'),sb); } if(out>0) S.mp.open[w]=r2(out); else delete S.mp.open[w];
+    if(Array.isArray(e.lf)&&e.lf.length<=60){ const sb=(w.match(/^(bj|cr|rl|sb|f7|kn|eu)/)||[])[1]||''; for(const pr of e.lf) if(Array.isArray(pr)) lifeRec('online',pr[0],pr[1],String(e.why||'Online bet'),sb); } if(out>0) S.mp.open[w]=r2(out); else delete S.mp.open[w];
     if(e.net!=null&&Number.isFinite(Number(e.net))) mpResultFx(Number(e.net),String(e.why||''));
     if(e.vice&&typeof e.vice==='object'&&d<0) mpViceApply(e.vice); }
   if(any){ save(); renderTop(); } mpSend({t:'ack',seq:S.mp.lastSeq}); }
@@ -2231,7 +2641,7 @@ function mpBorrow(v){ if(MP.st!=='in'||!S) return; v=Number(v); if(!MPC.LOANS.in
   if(mpMyHandBusy()) return toast('✋ No re-upping mid-hand. Finish the hand first.');
   if(U.mpLoanPend) return; U.mpLoanPend=v; mpSend({t:'loan',amt:v,lvl:S.lvl,debt:S.debt,loans:S.loans,whale:!!S.whaleMode}); renderMPSafe();
   setTimeout(()=>{ if(U.mpLoanPend===v){ U.mpLoanPend=0; renderMPSafe(); } },8000); }
-function mpResultFx(net,why){ if(net>0){ addTilt(-Math.min(6,2+net/Math.max(20,S.cash)*10)); gainXp(2+Math.min(25,net/40)); sfx.win(); fx.text('+'+money(net),'#5dff8a'); if(/BLACKJACK/.test(why)) unlock('bj'); if(/Flip 7 pot/.test(why)) unlock('f7pot'); const kc=why.match(/caught (\d+)\//); if(kc&&+kc[1]>=7) unlock('keno'); if(net>=500) fx.money(20); }
+function mpResultFx(net,why){ if(net>0){ addTilt(-Math.min(6,2+net/Math.max(20,S.cash)*10)); gainXp(2+Math.min(25,net/40)); sfx.win(); fx.text('+'+money(net),'#5dff8a'); if(/BLACKJACK/.test(why)) unlock('bj'); if(/Flip 7 pot/.test(why)) unlock('f7pot'); if(/Euchre match #\d+ won/.test(why)) unlock('euhall'); const kc=why.match(/caught (\d+)\//); if(kc&&+kc[1]>=7) unlock('keno'); if(net>=500) fx.money(20); }
   else if(net<0){ addTilt(Math.min(10,2+(-net)/Math.max(20,S.cash)*20)); gainXp(1); sfx.lose(); fx.text(money(net),'#ff5d5d'); } }
 // ---------- sending ----------
 function mpSend(msg){ if(MP.role==='host'&&MP.H){ MP.H.msg(mpStore().cid,msg); mpFlushSoon(); return; } const c=MP.conn; if(c&&c.open){ try{ c.send(msg); }catch(e){} } }
@@ -2304,15 +2714,17 @@ function mpTeardown(){ clearInterval(MP.tick); MP.tick=0; clearTimeout(MP.flushT
   if(peer) setTimeout(()=>{ try{ peer.destroy(); }catch(e){} },350); }
 function mpFail(msg){ mpTeardown(); MP.st='error'; MP.err=msg; MP.role=null; if(U.screen==='mp') render(); }
 function mpClosed(why,clean,fin){ if(MP.st==='closed') return; mpDrainLocal(); MP.st='closed'; MP.why=why; MP.fin=fin||MP.fin||(/host left/i.test(why)&&MP.R&&MP.R.lb?Object.assign({room:MP.code},MP.R.lb):null); if(mpOpenTotal()>0&&(clean||/host left/i.test(why))) mpVoidOpen('table closed'); mpTeardown(); if(U.screen==='mp') render(); }
-function mpMyHandBusy(){ const R=MP.R; if(!R) return false; const X=R.bj.hands[MP.me]; if(X&&(R.bj.phase==='play'||R.bj.phase==='dealer')) return true; if(R.rl.phase==='spin'&&R.rl.bets[MP.me]) return true; if(R.cr.phase==='roll'&&R.cr.bets[MP.me]&&R.cr.bets[MP.me].on>0) return true;
+function mpMyHandBusy(forLeave){ const R=MP.R; if(!R) return false; const X=R.bj.hands[MP.me]; if(X&&(R.bj.phase==='play'||R.bj.phase==='dealer')) return true; if(R.rl.phase==='spin'&&R.rl.bets[MP.me]) return true; if(R.cr.phase==='roll'&&R.cr.bets[MP.me]&&R.cr.bets[MP.me].on>0) return true;
   const F=R.f7; if(F&&F.phase==='play'&&F.G&&(F.G.phase==='deal'||F.G.phase==='turns')&&(F.G.players.some(q=>q.pid===MP.me&&!q.folded)||(F.live&&F.live[MP.me]))) return true;
+  const E=R.eu; if(!forLeave&&E&&E.phase==='play'&&E.G&&E.G.phase!=='between'&&E.G.phase!=='idle'&&((E.G.me!=null&&!E.G.players[E.G.me].folded)||(E.live&&E.live[MP.me]))) return true;
   if(R.kn&&R.kn.phase==='draw'&&R.kn.inRace.includes(MP.me)) return true; return false; }
 function mpLeave(){ if(MP.st==='closed'||MP.st==='error'||MP.st==='idle') return mpFinishLeave();
   if(MP.st==='loading'||MP.st==='connecting') return mpCancel();
-  if(MP.st==='in'&&mpMyHandBusy()){ toast('✋ Finish your hand / let the spin land first.'); return; }
+  if(MP.st==='in'&&mpMyHandBusy(true)){ toast('✋ Finish your hand / let the spin land first.'); return; } // a euchre match lasts a while: walking out is allowed (forfeit warning below)
   if(MP.role==='host'){ if(Date.now()-MP.closeArm>4000){ MP.closeArm=Date.now(); toast('⚠️ You are the host. Tap again to close the table for everyone.'); return; }
     MP.leaving=true; if(MP.H){ MP.H.close('The host left. Table closed.'); } mpDrainLocal(); if(MP.st==='closed') return; mpTeardown(); return mpFinishLeave(); } // host sees FINAL STANDINGS (via its own close message), then Back
   const F=MP.R&&MP.R.f7; if(F&&F.phase==='play'&&F.G&&F.G.players.some(q=>q.pid===MP.me&&!q.folded)&&Date.now()-MP.closeArm>4000){ MP.closeArm=Date.now(); toast(`⚠️ You're in a Flip 7 game. Leaving forfeits your ${money(F.buy)} buy-in. Tap again to walk.`); return; }
+  const E=MP.R&&MP.R.eu; if(E&&E.phase==='play'&&E.G&&E.G.me!=null&&!E.G.players[E.G.me].folded&&Date.now()-MP.closeArm>4000){ MP.closeArm=Date.now(); toast(`⚠️ You're in a euchre match. Leaving forfeits your ${money(E.ante)} ante (a bot takes your chair). Tap again to walk.`); return; }
   MP.leaving=true; mpSend({t:'bye'}); setTimeout(()=>{ if(MP.leaving&&MP.st!=='idle') mpFinishLeave(); },2500); }
 function mpCancel(){ mpTeardown(); MP.st='idle'; MP.role=null; render(); }
 function mpFinishLeave(){ mpDrainLocal(); const net=MP.sessNet, played=MP.charged; mpTeardown();
@@ -2321,9 +2733,9 @@ function mpFinishLeave(){ mpDrainLocal(); const net=MP.sessNet, played=MP.charge
   U.mpv='lobby'; U.mpVice=false; U.mpVicePend=0; U.mpSlop=null; go(S&&!S.ended?(U.mpFrom==='casino'&&U.cs?'casino':'hub'):'title'); }
 window.addEventListener('pagehide',()=>{ try{ if(MP.role==='host'&&MP.H&&!MP.H.closed){ MP.H.close('The host left. Table closed.'); mpDrainLocal(); } }catch(e){} });
 // ===================== MULTIPLAYER: SCREENS =====================
-const MP_TNAME={lobby:'🛋️ Lobby',bj:'🂡 Blackjack',cr:'🎲 Craps',rl:'🎡 Roulette',sb:'📺 Sportsbook',f7:'7️⃣ Flip 7',kn:'🎱 Keno'};
-const MP_TSHORT={lobby:'🛋️ Lobby',bj:'🂡 BJ',cr:'🎲 Craps',rl:'🎡 Wheel',sb:'📺 Book',f7:'7️⃣ Flip7',kn:'🎱 Keno'};
-const MP_TDESC={bj:'5 seats, turn timer, S17, 3:2',cr:'Shared shooter, full bets',rl:'One wheel, everyone\'s chips',sb:'Shared slate + live sweat',f7:'Buy in, winner takes the pot',kn:'One draw, everyone\'s tickets'};
+const MP_TNAME={lobby:'🛋️ Lobby',bj:'🂡 Blackjack',cr:'🎲 Craps',rl:'🎡 Roulette',sb:'📺 Sportsbook',f7:'7️⃣ Flip 7',kn:'🎱 Keno',eu:'🃏 Euchre Hall'};
+const MP_TSHORT={lobby:'🛋️ Lobby',bj:'🂡 BJ',cr:'🎲 Craps',rl:'🎡 Wheel',sb:'📺 Book',f7:'7️⃣ Flip7',kn:'🎱 Keno',eu:'🃏 Euchre'};
+const MP_TDESC={bj:'5 seats, turn timer, S17, 3:2',cr:'Shared shooter, full bets',rl:'One wheel, everyone\'s chips',sb:'Shared slate + live sweat',f7:'Buy in, winner takes the pot',kn:'One draw, everyone\'s tickets',eu:'2v2 partners, bots fill seats, ante pot'};
 const MP_SEATX=[.1,.3,.5,.7,.9];
 const MP_WHEEL=[0,28,9,26,30,11,7,20,32,17,5,22,34,15,3,24,36,13,1,37,27,10,25,29,12,8,19,31,18,6,21,33,16,4,23,35,14,2];
 function mpP(id){ return MP.R&&MP.R.players.find(p=>p.id===id); }
@@ -2381,7 +2793,7 @@ function mpLoanHtml(){ if(!S) return '';
   if(busy) h+=`<div class="small a">✋ Finish your hand / let the spin land first. No re-upping mid-hand.</div>`;
   h+=`<div class="grid2">${MPC.LOANS.map(v=>{ const fee=Math.round(v*(.1+.05*S.loans)); return `<button class="btn" ${v<=cap&&!busy&&!pend?'':'disabled'} onclick="mpBorrow(${v})">${pend===v?'⏳ Counting…':'Borrow '+money(v)}<small>+${money(v+fee)} debt</small></button>`; }).join('')}</div></div>`; return h; }
 function mpViewHtml(){ const R=MP.R; try{ return mpSlopHtml()+mpViceHtml()+mpLoanHtml()+mpTableHtml(R); }catch(e){ console.error(e); return `<div class="panel r">Render glitch: ${esc(e.message)}</div>`; } }
-function mpTableHtml(R){ { switch(U.mpv){ case 'bj': return mpBJHtml(R); case 'cr': return mpCrHtml(R); case 'rl': return mpRlHtml(R); case 'sb': return mpSbHtml(R); case 'f7': return mpF7Html(R); case 'kn': return mpKnHtml(R); default: return mpLobbyHtml(R); } } }
+function mpTableHtml(R){ { switch(U.mpv){ case 'bj': return mpBJHtml(R); case 'cr': return mpCrHtml(R); case 'rl': return mpRlHtml(R); case 'sb': return mpSbHtml(R); case 'f7': return mpF7Html(R); case 'kn': return mpKnHtml(R); case 'eu': return mpEuHtml(R); default: return mpLobbyHtml(R); } } }
 function mpGo(tb){ if(!MP_TABLES.includes(tb)||!MP.R) return; if(U.mpv==='bj'&&tb!=='bj'){ const B=MP.R.bj, X=B.hands[MP.me]; if(X&&B.phase==='play'&&!X.done){ toast('✋ Finish your blackjack hand first.'); return; } }
   if(U.mpv===tb) return; U.mpSlop=null; U.mpv=tb; mpSend({t:'go',table:tb}); sfx.click(); window.scrollTo(0,0); mpRenderRoom(false); }
 function mpChatShell(){ return `<div class="panel mpchat"><div class="log mplog" id="mpclog"></div><div class="mpemo">${MP_EMOJI.map((e,i)=>`<button class="tab" onclick="mpEmote(${100+i})">${e}</button>`).join('')}</div><div class="mpemo">${MP_TALK.map((t,i)=>`<button class="mptalk" onclick="mpEmote(${i})">${esc(t)}</button>`).join('')}</div><form class="row" onsubmit="mpChatSend();return false"><input type="text" id="mpmsg" maxlength="${MPC.CHATLEN}" placeholder="Talk trash (max ${MPC.CHATLEN} chars)" autocomplete="off" style="flex:1;min-width:0"><button class="btn c" style="width:auto;margin:0;min-width:66px">Send</button></form></div>`; }
@@ -2410,6 +2822,11 @@ function mpStateFx(R,P){ const me=MP.me, tb=U.mpv; mpLbMoves(R,P);
     if(myI>=0&&W&&W.i===myI&&!(PW&&PW.i===myI&&PW.k===W.k)){ sfx.coin(); if(tb!=='f7') toast('7️⃣ Your move at Flip 7! (autopilot in '+Math.round(MPC.F7_TURN_MS/1000)+'s)'); }
     if(myI>=0&&F.G.players[myI].f7&&!(PF&&PF.G&&PF.G.players[myI]&&PF.G.players[myI].f7)) unlock('flip7');
     if(tb==='f7'&&PF&&PF.G){ F.G.players.forEach((q,i)=>{ const o=PF.G.players[i]; if(!o) return; const id=q.pid?'mp_'+q.pid:'f7b_'+i; if(q.st==='busted'&&o.st!=='busted'){ pose(id,q.pid?'facepalm':'cry',1800,'idle'); say(id,pick(['NOOOO','I hate it here','RIGGED','bro…']),1500); if(q.pid===me) sfx.lose(); } if(q.f7&&!o.f7){ pose(id,'celebrate',2200,'idle'); sfx.win(); } }); } }
+  const E=R.eu, PE=P.eu; if(E&&E.G&&E.phase==='play'){ const G=E.G, my=G.me, W=G.await, PW=PE&&PE.G&&PE.G.await;
+    if(my!=null&&W&&W.i===my&&!(PW&&PW.i===my&&PW.k===W.k&&PE.G.handNo===G.handNo&&(PE.G.trick||[]).length===G.trick.length)){ sfx.coin(); if(tb!=='eu') toast('🃏 Your move at the Euchre Hall! (autopilot in '+Math.round(MPC.EU_TURN_MS/1000)+'s)'); }
+    const L=G.lastHand, PL=PE&&PE.G&&PE.G.lastHand; if(L&&my!=null&&(!PL||PL.n!==L.n||(PE.matchNo!==E.matchNo))){ if(L.euchred&&L.team===my%2) unlock('euchred'); if(L.alone&&L.march&&L.maker===my) unlock('loner'); } }
+  if(E&&tb==='eu'){ const seen=(P&&P.eu&&P.eu.say||[]).reduce((a,x)=>Math.max(a,x.n),0); for(const x of (E.say||[])) if(x.n>seen) say('eub_'+x.i,x.txt,2600);
+    if(E.G&&P.eu&&P.eu.G&&E.G.lastTrick&&(!P.eu.G.last||P.eu.G.last.n!==E.G.last.n||P.eu.G.last.hand!==E.G.last.hand)) sfx.tick(); }
   if(tb==='kn'&&R.kn&&P.kn){ if(R.kn.phase==='draw'&&R.kn.shown.length>(P.kn.phase==='draw'?P.kn.shown.length:0)){ sfx.tick(); pose('kr','point',400,'idle'); }
     if(R.kn.phase==='done'&&P.kn.phase!=='done') for(const id in R.kn.res){ const n=R.kn.res[id].net; pose('mp_'+id,n>0?'celebrate':'facepalm',2000,'idle'); } }
   if(tb==='sb'&&R.sb.ticker.length&&P.sb.ticker.length){ const a=R.sb.ticker[R.sb.ticker.length-1], b=P.sb.ticker[P.sb.ticker.length-1]; if(a.txt!==b.txt&&a.cls==='big'){ const here=R.players.filter(p=>p.table==='sb'); if(here.length) pose('mp_'+pick(here).id,rnd()<.5?'cheer':'groan',1400,'sit'); } } }
@@ -2426,6 +2843,11 @@ function mpSceneFor(tb){ const R=MP.R; if(!R) return null; const ps=R.players; c
       opts.f7p=G.players.map((q,i)=>({x:xs[i],n:q.cards.length,bust:q.st==='busted',f7:q.f7,tag:q.st==='busted'?'BUST':q.st==='frozen'?'❄ '+f7Pts(q):q.st==='stayed'&&G.phase!=='between'?'✋ '+f7Pts(q):(q.cards.length?String(f7Pts(q)):'')})); }
     else { ps.filter(p=>p.table==='f7').forEach((p,i)=>actors.push(mpActor(p,i,{x:.14+i*.18,s:.62}))); actors.push({id:'f7d',x:.9,hat:'fedora',label:'TONY',color:'#ddd',pose:'deal',s:.62}); opts.f7p=[]; }
     opts.over=f7Over; opts.caption='7️⃣ FLIP 7 · DEGEN-'+MP.code; }
+  else if(tb==='eu'){ bg='euchre'; const T=R.eu, G=T&&T.G, xs=[.16,.39,.62,.85];
+    if(G&&T.phase!=='lobby'){ G.players.forEach((q,i)=>{ const p=q.pid&&mpP(q.pid); if(p&&!q.folded) actors.push(mpActor(p,i,{x:xs[i],s:.62})); else { const N=EU_NPCS[q.npc]||{}; actors.push({id:'eub_'+i,x:xs[i],s:.62,label:(N.n||q.name).split(' ').slice(-1)[0].slice(0,9).toUpperCase(),hat:N.hat||'cap',hatc:N.hatc,color:N.color||'#ccc',pose:'idle',ph:i*.9}); } });
+      const W=G.await; opts.eup=G.players.map((q,i)=>({x:xs[i],n:G.out===i?0:G.counts[i],on:!!(W&&W.i===i),tag:(G.dealer===i?'D ':'')+(G.out===i?'☕':G.trump!=null?G.tricks[i]+' tk':'')})); }
+    else { (T?T.seats:[]).forEach((id,i)=>{ const p=id&&mpP(id); if(p) actors.push(mpActor(p,i,{x:xs[i],s:.62})); }); if(!actors.length) ps.filter(p=>p.table==='eu').forEach((p,i)=>actors.push(mpActor(p,i,{x:xs[i%4],s:.62}))); const fr=xs.find(x=>!actors.some(a=>Math.abs(a.x-x)<.05)); if(fr!=null) actors.push({id:'eue',x:fr,hat:'visor',hatc:'#2e7d32',label:'EARL',color:'#e8e0c8',pose:'idle',s:.6}); opts.eup=[]; }
+    opts.over=euOver; opts.caption='🃏 EUCHRE HALL · DEGEN-'+MP.code; }
   else if(tb==='kn'){ bg='keno'; ps.filter(p=>p.table==='kn').forEach((p,i)=>actors.push(mpActor(p,i,{x:.3+i*.11,s:.6,held:'slip'}))); actors.push({id:'kr',x:.88,flip:true,hat:'visor',label:'KENO KAREN',color:'#ffd9a0',pose:'idle',held:'slip',s:.66});
     const mine=R.kn.tickets[MP.me]; opts.keno={drawn:R.kn.shown,picks:mine?mine.spots:((U.mpKn&&U.mpKn.picks)||[])}; opts.caption='🎱 DEGEN-'+MP.code; }
   else { bg='casino'; ps.forEach((p,i)=>actors.push(mpActor(p,i,{x:.12+i*.19,s:.72,pose:p.table==='lobby'?'idle':'phone',held:p.table==='lobby'?'beer':'phone'}))); opts.caption='🌐 THE BACK ROOM · DEGEN-'+MP.code; }
@@ -2460,7 +2882,7 @@ function mpOverRL(c,W,H,t){ const R=MP.R; if(!R) return; const T=R.rl, N=38, seg
 function mpLobbyHtml(R){ const url=mpLink();
   let h=`<h2>🌐 THE BACK ROOM <span class="small dim">${R.players.length}/${MPC.MAXP} degenerates</span></h2><div class="panel" style="text-align:center"><div class="small dim">Room code — send it to your friends</div><div class="mpcode">DEGEN-${esc(MP.code)}</div><div class="grid2"><button class="btn c" onclick="mpCopy()">📋 Copy invite link</button><button class="btn c" onclick="mpShare()">📤 Share</button></div><div class="small dim" style="word-break:break-all">${esc(url)}</div></div>`;
   h+=`<h3>🪑 Who's here</h3><table><tr><th>Degen</th><th>At</th><th>Bankroll</th><th>Session</th></tr>${R.players.map(p=>`<tr><td>${mpDot(p.color)}<b>${esc(p.name)}</b>${p.host?' 👑':''}${p.id===MP.me?' <span class="g small">(you)</span>':''}${p.conn?'':' <span class="r small">📵</span>'}</td><td>${MP_TSHORT[p.table]||''}</td><td>${money(p.bal)}${p.loaned?` <span class="small a" title="borrowed from Sal this session">🥪${money(p.loaned)}</span>`:''}</td><td class="${p.net>=0?'g':'r'}">${p.net>=0?'+':''}${money(p.net)}</td></tr>`).join('')}</table>`;
-  h+=`<h3>🎰 Tables</h3><div class="grid2">${['bj','cr','rl','sb','f7','kn'].map(t=>`<button class="btn" onclick="mpGo('${t}')">${MP_TNAME[t]}<small>${MP_TDESC[t]} · ${R.players.filter(p=>p.table===t).length} here</small></button>`).join('')}</div>`;
+  h+=`<h3>🎰 Tables</h3><div class="grid2">${['bj','cr','rl','sb','f7','kn','eu'].map(t=>`<button class="btn" onclick="mpGo('${t}')">${MP_TNAME[t]}<small>${MP_TDESC[t]} · ${R.players.filter(p=>p.table===t).length} here</small></button>`).join('')}</div>`;
   h+=mpLbFullHtml(R)+mpRoomTotHtml(R)+`<div class="small dim">Your online bankroll is your single-player save (${money(S?S.cash:0)}). Wins & losses write back to your run. The day doesn't advance while you're here.</div>`;
   h+=`<button class="btn c ${MP.role==='host'?'bad':''}" onclick="mpLeave()">${MP.role==='host'?'🔒 Close the table (kicks everyone)':'🚪 Leave the room'}</button>`; return h; }
 function mpChipsAdd(vals,fn,max){ return `<div class="row">${vals.map(v=>`<button class="chip" ${v>max?'disabled':''} onclick="${fn}(${v})">+$${v>=1000?(v/1000)+'k':v}</button>`).join('')}</div>`; }
@@ -2581,6 +3003,37 @@ function mpF7Html(R){ const T=R.f7, me=MP.me, myP=mpP(me)||{bal:0}; U.mpF7=U.mpF
   return h+mpF7Log(T); }
 function mpF7Act(a,to){ mpDrunk(a==='hit'?'HIT':a==='stay'?'STAY':'PICK A TARGET',()=>{ mpSend({t:'f7.act',a,to}); sfx.click(); }); }
 function mpF7Sb(k,i,v){ mpSend({t:'f7.sb',k,i,v}); sfx.click(); }
+// ---------- EUCHRE HALL (online) ----------
+function mpEuNames(G){ return G.players.map(q=>q.name+(q.folded?' 🤖':'')); }
+function mpEuHtml(R){ const T=R.eu, me=MP.me, myP=mpP(me)||{bal:0}; U.mpEu=U.mpEu||{ante:25}; U.mpEuAnim=U.mpEuAnim||{};
+  let h=`<h2>🃏 EUCHRE HALL <span class="small dim">Post 1717 · 2 vs 2 · ante pot, winning team splits it (5% rake)</span></h2>`;
+  if(T.phase==='lobby'||!T.G){ const mySeat=T.seats.indexOf(me), anyone=T.seats.some(Boolean), captain=T.boss===me||(MP.role==='host'), ante=anyone?T.ante:U.mpEu.ante, O=T.opts;
+    h+=`<div class="panel small">${anyone?`⏳ Match #${T.matchNo+1} deals in <b data-cd="eu">${mpSec(T.rem)}</b> (or when everyone seated taps Ready). Ante <b class="a">${money(T.ante)}</b> · pot ${money(T.ante*4)} · empty chairs get house bots.`:"💤 Nobody's sitting. First one down sets the ante. Pick a chair = pick your team (partners sit across)."}</div>`;
+    if(!anyone) h+=`<div class="small dim">Ante</div><div class="row">${MPC.EU_ANTES.map(v=>`<button class="chip ${U.mpEu.ante===v?'on':''}" onclick="U.mpEu.ante=${v};mpRenderRoom(false)">${money(v)}</button>`).join('')}</div>`;
+    h+=`<div class="euseats">${[0,1,2,3].map(i=>{ const id=T.seats[i], p=id&&mpP(id); return `<div class="eusch t${i%2} ${id===me?'me':''}"><div class="small">${['🪑 South','🪑 West','🪑 North','🪑 East'][i]} · <b>${EU_TEAMS[i%2]}</b></div>${p?`<b>${mpDot(p.color)}${esc(p.name)}${id===me?' (you)':''}${T.ready.includes(id)?' ✅':''}${T.boss===id?' 📋':''}</b>`:`<span class="dim">🤖 house bot</span><button class="chip" ${mySeat<0&&ante>myP.bal?'disabled':''} onclick="mpEuSit(${i})">${mySeat>=0?'Move here':'Sit · ante '+money(ante)}</button>`}</div>`; }).join('')}</div>`;
+    h+=`<div class="small dim">House rules ${captain?'(you\'re the captain)':'(set by the table captain 📋 or host)'}</div><div class="row"><button class="chip ${O.stick?'on':''}" ${captain?'':'disabled'} onclick="mpSend({t:'eu.opt',stick:${O.stick?0:1}})">📌 Stick the dealer: ${O.stick?'ON':'OFF'}</button><button class="chip ${O.to===10?'on':''}" ${captain?'':'disabled'} onclick="mpSend({t:'eu.opt',to:10})">To 10</button><button class="chip ${O.to===11?'on':''}" ${captain?'':'disabled'} onclick="mpSend({t:'eu.opt',to:11})">To 11</button><button class="chip ${O.farmer?'on':''}" ${captain?'':'disabled'} onclick="mpSend({t:'eu.opt',farmer:${O.farmer?0:1}})">🧑‍🌾 Farmer's hand: ${O.farmer?'ON':'OFF'}</button></div>`;
+    if(mySeat>=0) h+=`<div class="grid2"><button class="btn go" ${T.ready.includes(me)?'disabled':''} onclick="mpSend({t:'eu.ready'})">${T.ready.includes(me)?'✅ Ready':'✅ Ready — deal'}</button><button class="btn c" onclick="mpSend({t:'eu.rand'});sfx.click()">🎲 Random teams</button></div><button class="btn c" onclick="mpSend({t:'eu.stand'})">↩ Stand up (ante back)</button>`;
+    h+=`<div class="panel small">24 cards (9–A). Partners sit across. Call trump, take 3 of 5 tricks. <b>Right bower</b> (J of trump) &gt; <b>left bower</b> (same-color J — counts as trump) &gt; A K Q 10 9. Makers 3–4 = 1, march = 2, alone march = 4, euchred = 2 to the defenders. ${MPC.EU_TURN_MS/1000}s turn timer, then autopilot. Side bets between hands.</div>`;
+    return h+(T.log.length?mpEuLog(T):''); }
+  const G=T.G, my=G.me, W=G.await, seated=my!=null, V=Object.assign({},G,{mine:seated?G.mine:null}), view=seated?my:0;
+  let st; if(T.phase==='over'&&T.res) st=`🏁 <b>${EU_TEAMS[T.res.team]}</b> (${esc(T.res.names)}) win ${T.res.score[T.res.team]}–${T.res.score[1-T.res.team]}: ${money(T.res.share)} each.${T.res.house?' The house wins.':''}${seated&&T.res.team===my%2&&!G.players[my].folded?' <b class="g">THAT\'S YOU!</b>':''} New lobby in <span data-cd="eu">${mpSec(T.rem)}</span>.`;
+  else if(T.sbOpen) st=`💸 Side bets for hand ${G.handNo+1} · deal in <b data-cd="eu">${mpSec(T.rem)}</b> (or when all players tap Ready)`;
+  else if(W) st=W.i===my?`<b class="a">🎯 YOUR ${W.k==='play'?'PLAY':W.k==='discard'?'DISCARD':'CALL'}</b> · <b data-cd="eu">${mpSec(T.rem)}</b> before autopilot`:`🎯 ${esc(G.players[W.i].name)} is ${W.k==='play'?'playing':'deciding'}…${T.rem?` <span data-cd="eu">${mpSec(T.rem)}</span>`:''}`;
+  else st='🃏 Shuffling…';
+  h+=`<div class="panel small">${st}<br>Match #${T.matchNo} · hand ${G.handNo||1} · pot <b class="a">${money(T.pot)}</b>${seated?` · you're <b>${EU_TEAMS[my%2]}</b>`:' · 👀 spectating'}</div>`;
+  h+=euTableHtml(V,view,{names:mpEuNames(G).map((n,i)=>i===my?'You':n),anim:U.mpEuAnim,lbl:seated?['US','THEM']:['SKYLINE','GOLD STAR'],tags:G.players.map((q,i)=>i===(view+2)%4&&seated?'<span class="eupart">partner</span>':'')});
+  if(seated&&!G.players[my].folded){ h+=euHandHtml(V,my,'mpEuCard'); if(T.phase==='play') h+=euCtlHtml(V,my,'mpEuAct'); }
+  if(G.lastHand&&T.phase==='play') h+=`<div class="small dim">Last hand: ${euHandSummary(G.lastHand,i=>esc(i===my?'You':G.players[i].name))}</div>`;
+  if(T.phase==='play'&&T.sbOpen){ const B=T.sb[me]||{euchred:0,march:0};
+    h+=`<div class="panel"><span class="small dim">Side bets on hand ${G.handNo+1} (house-banked, anyone at the hall can play):</span>${['euchred','march'].map(k=>{ const S2=EU_SIDE[k], cur=B[k]||0; return `<div class="small">${S2.ic} <b>${S2.n}</b> — pays <b>${S2.pay}:1</b></div><div class="row">${MPC.EU_SBV.map(v=>`<button class="chip ${cur===v?'on':''}" ${v-cur>myP.bal?'disabled':''} onclick="mpEuSb('${k}',${v})">${v?'$'+v:'none'}</button>`).join('')}</div>`; }).join('')}<div class="small dim">A thrown-in hand refunds side bets.</div></div>${seated?`<button class="btn go" ${T.ready.includes(me)?'disabled':''} onclick="mpSend({t:'eu.ready'})">${T.ready.includes(me)?'✅ Ready':'🃏 Ready — deal it'}</button>`:''}`; }
+  else if(T.live&&T.live[me]){ const B=T.live[me]; h+=`<div class="small a">💸 Riding this hand: ${['euchred','march'].filter(k=>B[k]).map(k=>`${EU_SIDE[k].ic} ${money(B[k])}`).join(' · ')}</div>`; }
+  return h+mpEuLog(T); }
+function mpEuLog(T){ return `<div class="log mplog" style="max-height:150px">${T.log.slice(-10).map(x=>`<div>${esc(x)}</div>`).join('')}</div>`; }
+function mpEuSit(i){ const T=MP.R&&MP.R.eu; if(!T) return; const first=!T.seats.some(Boolean); mpSend(first?{t:'eu.sit',seat:i,ante:U.mpEu.ante}:{t:'eu.sit',seat:i}); sfx.coin(); }
+function mpEuAct(a,arg,alone){ const lbl=a==='play'?'PLAY THAT CARD':a==='discard'?'BURY THAT CARD':a==='order'?(alone?'GO ALONE':'ORDER IT UP'):a==='call'?'CALL '+EU_SNAME[arg]:a.toUpperCase();
+  mpDrunk(lbl,()=>{ const m={t:'eu.act',a}; if(arg!=null) m.arg=arg; if(alone) m.alone=1; mpSend(m); sfx.click(); }); }
+function mpEuCard(i){ const G=MP.R&&MP.R.eu&&MP.R.eu.G; if(!G||!G.await||G.await.i!==G.me) return; mpEuAct(G.await.k==='discard'?'discard':'play',i); }
+function mpEuSb(k,v){ mpSend({t:'eu.sb',k,v}); sfx.click(); }
 // ---------- KENO (online) ----------
 function mpKnHtml(R){ const T=R.kn, me=MP.me, myP=mpP(me)||{bal:0}, mine=T.tickets[me]; const K=U.mpKn=U.mpKn||{picks:[],bet:5,races:1};
   const picks=mine?mine.spots:K.picks, drawing=T.phase==='draw', D=new Set(T.shown), hits=picks.filter(n=>D.has(n)).length;
@@ -2624,7 +3077,7 @@ function mpLbMoves(R,P){ const L=mpLbData(R), PL=P?mpLbData(P):null; if(!PL||L.v
   const a=L.ord.all||[], b=PL.ord.all||[]; a.forEach((id,i)=>{ const j=b.indexOf(id); if(j>=0&&j!==i) MP.lbMv[id]={d:j-i,t:Date.now()}; });
   if(a.length>1&&a[0]===MP.me&&b[0]!==MP.me){ toast('👑 You took the chip lead. Act humble. (You won\'t.)'); sfx.coin(); }
   else if(a.length>1&&a[a.length-1]===MP.me&&b[b.length-1]!==MP.me&&b.includes(MP.me)) toast("🤡 Dead last. You're Sal's favorite customer now."); }
-const MP_LB_TABS=['all','bj','cr','rl','sb','f7','kn'];
+const MP_LB_TABS=['all','bj','cr','rl','sb','f7','kn','eu'];
 function mpLbName(r){ return `${mpDot(r.color)}<b>${esc(r.name)}</b>${r.host?' 🏠':''}${r.id===MP.me?' <span class="g small">(you)</span>':''}${r.left?' <span class="dim small">(left)</span>':r.conn===false?' <span class="r small">📵</span>':''}`; }
 function mpLbFullHtml(R){ const L=mpLbData(R), tb=MP_LB_TABS.includes(U.lbTb)?U.lbTb:'all', list=mpLbList(L,tb);
   let h=`<h3>🏆 LIVE LEADERBOARD <span class="small dim">ranked by session net · updates after every settled bet</span></h3><div class="row lbtabs">${MP_LB_TABS.map(t=>`<button class="chip ${t===tb?'on':''}" onclick="mpLbSet('${t}')">${t==='all'?'🌐 All tables':MP_TSHORT[t]}</button>`).join('')}</div>`;
@@ -2688,9 +3141,18 @@ function mpSlopNo(){ U.mpSlop=null; toast('🥴 You put the chips down and prete
 // Every update since the game was created, rebuilt from the crow99999/arcade git history, the build/test notes and the
 // bugs fixed during testing. Returning players get a pop-up card on the title screen with only the entries newer than
 // the version they last saw (META.wnSeen); brand-new players aren't spammed. The full log lives on a scrollable screen.
-const GAME_VER='1.10.0';
+const GAME_VER='1.11.0';
 const WN_BEFORE_LOG='1.4.1'; // what returning players had before this log existed (last deploy before v1.5.0)
 const CHANGELOG=[
+ {v:'1.11.0',d:'Oct 7, 2026 · evening',t:'🃏 Euchre Hall',items:[
+  'New room on the casino floor: the Euchre Hall at Post 1717. Folding chairs, flickering fluorescent lights, a coffee urn, and a bulletin board that says NO RENEGING.',
+  'Standard euchre: 24 cards (9 through A), partners sit across from each other, 5 cards each plus a kitty with one card turned up. There are two rounds of bidding. The dealer picks up and discards when the up card gets ordered. The right bower (J of trump) is the top card, then the left bower (the other J of the same color), and the left bower counts as trump when you follow suit. You can go alone and your partner sits out. Makers who take 3–4 tricks get 1 point, all 5 gets 2, an alone march gets 4, and getting euchred gives the defenders 2.',
+  'House rules you can toggle: stick the dealer (on by default), game to 10 or 11, and farmer\'s hand (all 9s and 10s can be swapped for the kitty).',
+  'Solo: you and a bot partner against two bots for real money. All four ante, the house stakes the bots, and the winning team splits the pot minus a 5% rake. The bots are Uncle Dale, Church Lady Marge, VFW Earl, Skyline Steve and Bingo Bev. They bid on hand strength, lead trump when they call it, read their partner\'s voids, never make an illegal play, and talk plenty of trash.',
+  'Online: the Euchre Hall is a new table in every room. Pick a chair to pick your team (or hit 🎲 Random teams). House bots fill any empty chairs. The first player to sit sets the ante and is the table captain for house rules. There\'s a 25s turn timer, then autoplay takes over. Each player\'s hand is only sent to that player.',
+  'The table shows the cards you can legally play, animates each trick to the winner, and has a score marker, a trump indicator, the dealer chip, and the maker\'s name with an ALONE tag.',
+  'Optional side bets before each hand: 💥 "Makers get euchred" pays 6:1, and 🚶 "Somebody goes alone and marches" pays 50:1. Both are priced from bot simulations with a small house edge, and a thrown-in hand refunds them. Online, results are settled by the host and count in the live leaderboard and lifetime stats. Chat, emotes and the cocktail waitress all work at the hall.',
+  'New achievements: 🚶 Loner (go alone and march), 💥 Euchred! (euchre the makers), and 🎖️ Post 1717 Champion (win a match for money). Euchre rules are in How to Play.']},
  {v:'1.10.0',d:'Oct 7, 2026',t:'🏆 Live Leaderboard + 🍺 Tilt Relief at the Tables',items:[
   'Online rooms now have a LIVE leaderboard. The host does the math and sends it to everyone after every settled bet. Players are ranked by session net, with bankroll, wagered, hands played, biggest win and win streak (🔥) next to each name.',
   'Loans from Big Sal\'s cousin (🥪) get their own column and never count as profit. Money still riding on a bet isn\'t counted as a loss until it settles.',
@@ -3849,6 +4311,7 @@ function renderHelp(){ scene('title',[{id:'a',x:.5,pose:'point',hat:'cap',hatc:'
   <p><b>Edges:</b> the house always has one, but you can beat it with perks: Sharp (see +EV bets), Rain Man (count cards), Vig Killer, Promo Abuser, Eagle Eye (monte), Bottom Dealer (cheat at poker). Fading El Jefe has historically... worked.</p>
   <p><b>Flip 7 (Tony's back room):</b> buy in against 2–3 degenerates. Each round hit or stay; draw a number you already have and you BUST (0). 7 different numbers ends the round (+15). Freeze banks someone out, Flip Three forces 3 cards, Second Chance saves one bust. First to 200 wins the pot (5% rake).</p>
   <p><b>🕹️ DegenClip Arcade:</b> skill games with real bets. <b>Home Run Derby</b>: move/tap to set your bat height, tap/click (or Space) to swing; early = pull, late = oppo; 10 outs (non-HR swings and taken strikes). <b>Mini Putt</b>: drag back from anywhere like a slingshot, release to putt; water is +1 stroke; max 6 a hole. <b>Bowling</b>: drag sideways at the bottom to move, swipe up to bowl: swipe direction aims, a curved swipe hooks, a fast swipe throws harder. Tickets pay by score, props pay fixed odds, hustles pay 2× (ties push). Payouts are priced from bot simulations of an average player with a ~7–9% house edge, so if you're actually good, you're the hustler.</p>
+  <p><b>🃏 Euchre Hall:</b> 24 cards (9–A), two teams of two, and partners sit across from each other. Each player gets 5 cards and one card from the kitty is turned up. <b>Round 1:</b> going around from the dealer's left, each player either orders it up (that suit is trump and the dealer picks up the card and buries one) or passes. <b>Round 2:</b> if everyone passed, players can name any other suit or pass. With <i>stick the dealer</i> on, the dealer can't pass. With it off, four more passes throw the hand in. Whoever names trump can go <b>alone</b>, and their partner sits out the hand. Card ranking: <b>right bower</b> (J of trump) &gt; <b>left bower</b> (the other J of the same color, which counts as trump, including when you follow suit) &gt; A K Q 10 9 of trump &gt; everything else. You must follow the suit that was led if you can. Scoring: makers who take 3–4 tricks get 1, all 5 (a march) gets 2, a march while alone gets 4, and makers held to 2 or fewer tricks are <b>euchred</b>, which gives the defenders 2. First team to 10 (or 11) wins the pot. Farmer's hand (optional rule): a hand of all 9s and 10s can trade its 3 lowest cards for the kitty.</p>
   <p><b>🌐 Online casino leaderboard:</b> every online room keeps a live leaderboard ranked by session net (what you've actually won or lost on settled bets). Money still riding doesn't count against you yet, and 🥪 loans from Sal are listed separately because borrowing isn't winning. The leader gets a 👑 and last place is Sal's favorite customer. When the host closes the table, everyone gets final standings.</p><p><b>🍺 Tilt relief online:</b> tap <b>Cocktail Waitress / Smoke</b> in the top bar at any online table. Drinks and smokes lower your tilt, cost cash from your free bankroll and are allowed mid-hand. They follow the bar rules: booze adds Buzz and liquor costs HP. Nicotine has a cooldown and works less each time. Too much Buzz turns off strategy hints and can trigger a SLOPPY confirmation before you act.</p><p><b>Keno:</b> pick 1–10 numbers of 80, 20 get drawn, payout depends on how many you catch. RTP is ~75–87%. It's a lottery with a cocktail menu.</p>
   <p><b>Craps quick guide:</b> Pass Line on the come-out, add Odds once a point is set (true odds, no house edge). Place 6/8 pay 7:6. Hardways and Any 7 are fun sucker bets.</p>
   <p><b>Safety net:</b> new-user promos, Mom's emergency Venmo, plasma, and side jobs mean you can always claw back.</p></div>
