@@ -178,6 +178,7 @@ pre.ascii{color:var(--green);font-size:11px;line-height:1.1;overflow-x:auto;marg
 .scard.bw .mk{display:flex;justify-content:flex-end;gap:2px;min-height:13px}.scard.bw .mk span{min-width:8px;font-weight:bold}.scard.bw .cum{font-weight:bold;color:#ffc24a;min-height:14px}
 .carl{display:flex;gap:6px;align-items:center}.carl canvas{flex:0 0 auto;width:52px;height:67px}.carl .bub{background:#f2efe4;color:#111;border-radius:8px;padding:5px 8px;font-size:12px;position:relative}
 .chips{display:flex;flex-wrap:wrap;gap:4px;margin:4px 0}.achip{background:#222;color:#e9e4d2;border:1px solid #555;border-radius:12px;padding:4px 10px;font:inherit;font-size:12px;cursor:pointer}.achip.on{background:#ffc24a;color:#000;border-color:#ffc24a;font-weight:bold}
+.arcmeter{display:flex;flex-wrap:wrap;justify-content:space-between;gap:2px 10px;margin:6px 0;padding:6px 8px;border:1px solid #444;border-radius:6px;background:#111}.arcbar{flex-basis:100%;height:6px;background:#2a2a2a;border-radius:3px;overflow:hidden}.arcbar i{display:block;height:100%;background:linear-gradient(90deg,#5dff8a,#ffc24a,#ff5d5d)}.arccut{border-color:#ff5d5d!important;background:#2a1010!important;color:#ffd0d0}.arccap td{color:#ffc24a;font-size:.92em;text-align:left!important}.achip[disabled]{opacity:.35;cursor:not-allowed}
 .paytab{display:flex;flex-wrap:wrap;gap:4px 10px;color:var(--dim)}.prow{display:flex;justify-content:space-between;align-items:center;gap:6px;flex-wrap:wrap;border-top:1px dashed #333;padding-top:3px;margin-top:3px}
 .lifebar{display:flex;width:100%;align-items:stretch;margin:12px 0 4px;padding:0;border:2px solid #ff6600;background:#111;color:#ffcc00;font:bold 12px/1 monospace;cursor:pointer;border-radius:3px;overflow:hidden;box-shadow:0 0 0 2px #000,0 3px 0 #552200}
 .lifebar .lbl{flex:0 0 auto;background:linear-gradient(#ff8a00,#c34a00);color:#fff;padding:7px 8px;text-shadow:1px 1px 0 #000;border-right:2px solid #000}
@@ -3141,9 +3142,18 @@ function mpSlopNo(){ U.mpSlop=null; toast('🥴 You put the chips down and prete
 // Every update since the game was created, rebuilt from the crow99999/arcade git history, the build/test notes and the
 // bugs fixed during testing. Returning players get a pop-up card on the title screen with only the entries newer than
 // the version they last saw (META.wnSeen); brand-new players aren't spammed. The full log lives on a scrollable screen.
-const GAME_VER='1.11.0';
+const GAME_VER='1.12.0';
 const WN_BEFORE_LOG='1.4.1'; // what returning players had before this log existed (last deploy before v1.5.0)
 const CHANGELOG=[
+ {v:'1.12.0',d:'Oct 8, 2026 · morning',t:'🧢 Arcade anti-grind patch',items:[
+  'The DegenClip Arcade was too easy to farm (especially bowling). You could grind a few thousand in a couple of in-game days. It\'s for fun now, not rent. The sportsbook and casino are the main way up again.',
+  'Daily cap: your NET arcade winnings across Home Run Derby, Mini Putt and Bowling are capped at +$150 per in-game day. Losses count toward it. Once you hit it, the attendant cuts you off: "You\'re too good, pal. Come back tomorrow." No more tickets, props or hustles until the next day. A game that would push you past the cap pays out only up to it, and the attendant keeps the rest. A meter on the arcade screens shows where you are today.',
+  'Smaller payouts: the arcade pays at most $40 a game (ticket + props). Tickets are now $2/$5/$10, and the top tiers pay small: bowling 220+ pays 1.6×, 190+ pays 1.15×, and 160+ just gets your money back. Home Run Derby 15+ HRs pays 1.4×. Mini Putt at 19 or under pays 1.5×.',
+  'Prop side bets are now $2 or $5 and repriced: Bowl 170+ (1.55×), a double (1.45×), a turkey (3.3×), longest HR 450+ (1.1×), moonshot 480+ (4.5×), 10+ dingers (2.2×), 22 or better at putt (1.85×), hole-in-one (1.15×), no blow-up hole (1.55×).',
+  'Everything was priced from big bot simulations. An average player gets back about 62–75¢ per $1 on tickets and less on most props. A near-perfect player gets back about $1.02–1.07, so they barely win and stay well under the daily cap.',
+  'Hustles stay at 2× (ties push) but are now $5/$10/$25. After you\'ve won 2 hustles in a day, Ricky, Pete and Barb all refuse to play you until tomorrow (word gets around).',
+  'Free practice (no stake, no payout) is always open, even after you\'ve been cut off.',
+  'Lifetime stats record each arcade bet with what it actually paid after the caps. Quitting mid-game still counts as a loss, both in lifetime stats and against today\'s net.']},
  {v:'1.11.0',d:'Oct 7, 2026 · evening',t:'🃏 Euchre Hall',items:[
   'New room on the casino floor: the Euchre Hall at Post 1717. Folding chairs, flickering fluorescent lights, a coffee urn, and a bulletin board that says NO RENEGING.',
   'Standard euchre: 24 cards (9 through A), partners sit across from each other, 5 cards each plus a kitty with one card turned up. There are two rounds of bidding. The dealer picks up and discards when the up card gets ordered. The right bower (J of trump) is the top card, then the left bower (the other J of the same color), and the left bower counts as trump when you follow suit. You can go alone and your partner sits out. Makers who take 3–4 tricks get 1 point, all 5 gets 2, an alone march gets 4, and getting euchred gives the defenders 2.',
@@ -3272,6 +3282,8 @@ function hrFly(ev,la,spray){ const v=ev*1.4667, a=la*Math.PI/180; let vx=v*Math.
   return {ev:Math.round(ev*10)/10,la:Math.round(la),spray:Math.round(spray),dist,peak:Math.round(peak),hang:Math.round(t*10)/10,fence,foul,wall,hr:!foul&&cleared===true,path}; }
 // bot ("average arcade degen") for odds sims; sk = {t: timing sd (s), y: height sd (ft), sw: swing% in zone, ch: chase%}
 const HR_BOT={t:.06,y:.3,sw:.9,ch:.3}, HR_NPC={t:.057,y:.29,sw:.91,ch:.27};
+// "near-perfect" player (about half the average bot's execution error) used to price the v1.12 anti-grind paytables
+const HR_PRO={t:.035,y:.18,sw:.95,ch:.12};
 function hrBotRound(sk){ sk=sk||HR_BOT; let outs=0, hrs=0, long=0, tot=0, n=0;
   while(outs<HR_OUTS&&n<150){ n++; const p=hrPitch(n), z=hrInZone(p); if(rnd()>(z?sk.sw:sk.ch)){ if(z) outs++; continue; }
     const hard=p.k==='cb'||p.k==='kn'?1.25:p.k==='sl'?1.1:1; const r=hrContact(p,gauss()*sk.t*hard,p.yP+gauss()*sk.y);
@@ -3358,7 +3370,7 @@ function ptField(H){ if(H._f) return H._f; const gw=Math.ceil(PT_W/PT_G), gh=Mat
   return H._f={D,gw,gh,cell}; }
 function ptCost(st){ if(st.sunk) return -1e6; const F=ptField(st.H); const d=F.D[F.cell(st.x,st.y)]; return (d>=1e9?2000:d)+st.pen*400; }
 // bot: tries sk.n candidate putts with perfect foresight, picks the best, then executes with human-ish error
-const PT_BOT={n:12,ea:.06,ep:.1}, PT_NPC={n:12,ea:.0595,ep:.099};
+const PT_BOT={n:12,ea:.06,ep:.1}, PT_NPC={n:12,ea:.0595,ep:.099}; const PT_PRO={n:24,ea:.03,ep:.05}; // PRO = near-perfect (pricing only)
 function ptLOS(H,x1,y1,x2,y2){ for(const s of ptSegs(H)){ const d=(x2-x1)*(s[3]-s[1])-(y2-y1)*(s[2]-s[0]); if(!d) continue; const u=((s[0]-x1)*(s[3]-s[1])-(s[1]-y1)*(s[2]-s[0]))/d, v=((s[0]-x1)*(y2-y1)-(s[1]-y1)*(x2-x1))/d; if(u>0&&u<1&&v>=0&&v<=1) return false; } return true; }
 // follow the distance field downhill; aim at the farthest point still in a straight line of sight
 function ptAim(st){ const H=st.H, F=ptField(H); let k=F.cell(st.x,st.y), ax=H.cup[0], ay=H.cup[1]; if(ptLOS(H,st.x,st.y,ax,ay)) return [ax,ay];
@@ -3422,7 +3434,7 @@ function bwNext(rolls){ let i=0, f=0; for(;f<9;f++){ if(rolls[i]===undefined) re
 function bwMark(F,k,f){ const r=F.r, v=r[k]; if(v===undefined) return ''; if(f<9){ if(k===0&&v===10) return 'X'; if(k===1&&r[0]+v===10) return '/'; return v?String(v):'-'; }
   if(v===10&&(k===0||r[k-1]===10||(k===2&&r[0]+r[1]===10))) return 'X'; if(k>0&&r[k-1]!==10&&!(k===2&&r[0]+r[1]===10)&&r[k-1]+v===10) return '/'; return v?String(v):'-'; }
 // bot: pocket on a fresh rack (hook), straight at the leftover pins otherwise; sk = execution noise
-const BW_BOT={ex:2.3,ea:.62,es:1.6,esp:.16,spin:.65}, BW_NPC={ex:2.25,ea:.6,es:1.55,esp:.15,spin:.67};
+const BW_BOT={ex:2.3,ea:.62,es:1.6,esp:.16,spin:.65}, BW_NPC={ex:2.25,ea:.6,es:1.55,esp:.15,spin:.67}; const BW_PRO={ex:1.1,ea:.3,es:.8,esp:.08,spin:.65}; // PRO = near-perfect (pricing only)
 function bwBotPlan(pins,fresh,sk){ sk=sk||BW_BOT; let x0, mph=17+gauss()*0, spin, xT, yT=BW.L;
   const up=pins.filter(p=>p.st==='up'); if(fresh||up.length>=8){ spin=sk.spin; x0=11; xT=2.6; }
   else { spin=0; const cx=up.reduce((s,p)=>s+p.x,0)/Math.max(1,up.length); const front=up.reduce((a,p)=>p.y<a.y?p:a,up[0]||{x:0,y:BW.L}); xT=(cx+front.x)/2; yT=front.y; x0=clamp(-xT*.8,-14,14); }
@@ -3440,16 +3452,17 @@ const ARC_KEY='degenRPG_arcade_v1';
 let ARC=arcLoad();
 function arcLoad(){ try{ const o=JSON.parse(localStorage.getItem(ARC_KEY)||'null'); if(o&&o.hi) return Object.assign({plays:{hrd:0,putt:0,bowl:0}},o); }catch(e){} return {v:1,hi:{hrd:[],putt:[],bowl:[]},plays:{hrd:0,putt:0,bowl:0}}; }
 function arcSave(){ try{ localStorage.setItem(ARC_KEY,JSON.stringify(ARC)); }catch(e){} }
-// paytables/odds: priced from bot simulations (see tests/arcade.js "odds" checks) for an average player, ~8% house edge.
-// Skill games: good players can beat these. That's the hustle. The house knows. The house does not care.
+// paytables/odds (v1.12 anti-grind): priced from big offline bot sims. Average player (*_BOT) clearly loses: tickets return ~0.62-0.75 per $1,
+// props ~0.05-0.7. Near-perfect player (*_PRO, about half the bot's error) barely wins: ~1.02-1.07 per $1. Plus hard caps (ARC_MAX_PAY, ARC_DAY_CAP).
+// Sportsbook + casino are the way up. The arcade is for fun and beer money.
 const ARC_PAY={
- hrd:{label:'HRs',better:'hi',tab:[[12,10],[10,6],[8,3.5],[7,2.5],[6,1.8],[5,1.3],[4,.8]]},
- putt:{label:'strokes',better:'lo',tab:[[21,10],[22,6],[23,4],[24,3],[25,2],[26,1.3],[27,.9],[28,.5],[29,.25]]},
- bowl:{label:'pins',better:'hi',tab:[[200,8],[180,4],[165,2.5],[150,1.8],[140,1.3],[130,.6]]}};
+ hrd:{label:'HRs',better:'hi',tab:[[15,1.4],[10,1.1],[6,1],[4,.85],[2,.6]]},
+ putt:{label:'strokes',better:'lo',tab:[[19,1.5],[22,1.05],[25,.95],[28,.85],[31,.5]]},
+ bowl:{label:'pins',better:'hi',tab:[[220,1.6],[190,1.15],[160,1],[140,.95],[120,.8],[100,.5]]}};
 const ARC_PROPS={
- hrd:[{id:'l450',n:'Longest HR 450+ ft',pay:1.5,f:r=>r.long>=450},{id:'l480',n:'Moonshot: 480+ ft',pay:13,f:r=>r.long>=480},{id:'h8',n:'8+ dingers',pay:12,f:r=>r.score>=8}],
- putt:[{id:'par',n:'Break par (under 27)',pay:4,f:r=>r.score<PT_PAR},{id:'ace',n:'Hole-in-one anywhere',pay:1.6,f:r=>r.aces>=1},{id:'six',n:'No blow-up hole (never max 6)',pay:4.5,f:r=>r.maxh<PT_MAX}],
- bowl:[{id:'b150',n:'Bowl 150+',pay:3.6,f:r=>r.score>=150},{id:'dbl',n:'A double (2 strikes in a row)',pay:2.3,f:r=>r.turkey>=2},{id:'trk',n:'Turkey (3 strikes in a row)',pay:8,f:r=>r.turkey>=3}]};
+ hrd:[{id:'l450',n:'Longest HR 450+ ft',pay:1.1,f:r=>r.long>=450},{id:'l480',n:'Moonshot: 480+ ft',pay:4.5,f:r=>r.long>=480},{id:'h10',n:'10+ dingers',pay:2.2,f:r=>r.score>=10}],
+ putt:[{id:'par',n:'22 or better (5 under)',pay:1.85,f:r=>r.score<=22},{id:'ace',n:'Hole-in-one anywhere',pay:1.15,f:r=>r.aces>=1},{id:'six',n:'No blow-up hole (never max 6)',pay:1.55,f:r=>r.maxh<PT_MAX}],
+ bowl:[{id:'b170',n:'Bowl 170+',pay:1.55,f:r=>r.score>=170},{id:'dbl',n:'A double (2 strikes in a row)',pay:1.45,f:r=>r.turkey>=2},{id:'trk',n:'Turkey (3 strikes in a row)',pay:3.3,f:r=>r.turkey>=3}]};
 const ARC_NPC={hrd:{n:'Ricky "Roids" Romano',k:'ricky',hat:'cap',c:'#ff9d5c'},putt:{n:'Shifty Pete',k:'pete',hat:'fedora',c:'#c9b8ff'},bowl:{n:'Bowling Barb',k:'barb',hat:'beanie',c:'#ffb3d9'}};
 const ARC_FAKE={hrd:[['xX_D1NGER_Xx',496,15],['bigsal_fan69',471,11],['RICKY_ROIDS',463,9],['m0mz_spaghetti',441,6],['n00bslayer2005',418,4]],
  putt:[['ShiftyPete',21],['putt_putt_daddy',23],['xXwindmillXx',25],['caddie_carl',27],['lol_lake',31]],
@@ -3458,7 +3471,13 @@ const ARC_INFO={
  hrd:{t:'⚾ HOME RUN DERBY',ic:'⚾',stars:'★★★★½',desc:'10 outs. Any swing that isn\'t a dinger is an out. Taken strikes are outs. Balls are free.',ctl:'Move/tap at the HEIGHT you want the bat, tap/click to swing. Early = pull, late = oppo.'},
  putt:{t:'⛳ MINI PUTT',ic:'⛳',stars:'★★★★',desc:'9 holes, par '+PT_PAR+'. Windmill, ramp, lake with a moving bridge, tunnels, bumpers, a volcano. Max 6 a hole.',ctl:'Drag BACK from anywhere (slingshot) to aim + set power, let go to putt.'},
  bowl:{t:'🎳 BOWLING',ic:'🎳',stars:'★★★★½',desc:'10 frames, real scoring. Strikes, spares, a 10th frame, pin action replays.',ctl:'Drag sideways at the bottom to move. Swipe UP to bowl: direction = aim, curve your swipe = hook, swipe speed = power.'}};
-const ARC_TICKETS=[5,10,25,50], ARC_PSTAKE=[0,5,10,25], ARC_HSTAKE=[0,10,25,50,100];
+const ARC_TICKETS=[2,5,10], ARC_PSTAKE=[0,2,5], ARC_HSTAKE=[0,5,10,25];
+// v1.12 anti-grind caps: house payout per game, net arcade winnings per in-game day (all 3 games combined), hustle wins per day before the hustlers quit
+const ARC_MAX_PAY=40, ARC_DAY_CAP=150, ARC_HUSTLE_WINS=2;
+const ARC_CUTOFF="You're too good, pal. Come back tomorrow.", ARC_HUSTLE_NO="Nah. You already took me. Word gets around, pal. Find another mark tomorrow.";
+function arcToday(){ if(!S.arcDay||S.arcDay.d!==S.day) S.arcDay={d:S.day,net:0,hw:0}; return S.arcDay; }
+function arcCapped(){ return arcToday().net>=ARC_DAY_CAP; }
+function arcHustleOk(){ return arcToday().hw<ARC_HUSTLE_WINS; }
 function arcEnter(from){ if(from==='hub'&&!useEnergy(1)){ toast('Too tired for the arcade. And that\'s saying something.'); return; } U.arc={from,g:null}; sfx.coin(); go('arcade'); }
 function arcLeave(){ const A=U.arc; arcStop(); if(A&&A.from==='casino'){ U.arc=null; go('casino'); } else { U.arc=null; save(); go('hub'); } }
 function arcStop(){ if(U.arcRaf) cancelAnimationFrame(U.arcRaf); U.arcRaf=null; }
@@ -3477,51 +3496,76 @@ function renderArcade(){ const A=U.arc||(U.arc={from:'hub',g:null});
   setMain(`<div class="apwrap"><div class="apbar"><span class="aplogo">DEGEN<b>CLIP</b><i>.com</i></span><span class="aptag">free online games!!! no download!!1</span></div>
     <div class="apnav"><span>Home</span> | <span>Sports</span> | <span>Action</span> | <span>Puzzle</span> | <span>Hi-Scores</span> | <span class="dim">Forum (you're banned)</span></div>
     <div class="apad" onclick="toast('🐀 You slapped the rat. You won nothing. Just like real life.')">🐀 SLAP THE RAT &amp; WIN A FREE MP3 PLAYER!!! <u>CLICK HERE</u> 🐀</div>
-    <div class="aphead">⭐ TOP GAMES THIS WEEK</div><div class="apgrid">${cards}</div>
+    ${S?arcMeterHtml():''}<div class="aphead">⭐ TOP GAMES THIS WEEK</div><div class="apgrid">${cards}</div>
     <div class="aphead">🏆 HIGH SCORES</div><div class="aphis"><div><b>⚾ Longest dingers</b>${arcHiTable('hrd')}</div><div><b>⛳ Lowest rounds</b>${arcHiTable('putt')}</div><div><b>🎳 Top games</b>${arcHiTable('bowl')}</div></div>
-    <div class="apfoot">© 2005 DegenClip Interactive. Best viewed in 800x600 with your mom's dial-up. Pay-to-play tickets, props &amp; hustles are priced from simulations with a small house edge. Free practice always available.</div></div>
+    <div class="apfoot">© 2005 DegenClip Interactive. Best viewed in 800x600 with your mom's dial-up. Pay-to-play is for fun, not rent: max ${money(ARC_MAX_PAY)} paid out per game, +${money(ARC_DAY_CAP)} net per day across all games, hustlers quit after you beat them ${ARC_HUSTLE_WINS}× in a day. Free practice always available.</div></div>
     <button class="btn c" onclick="arcLeave()">🚪 Back to the ${A.from==='casino'?'casino floor':'neighborhood'}</button>`);
   document.querySelectorAll('.apthumb').forEach(cv=>arcThumb(cv,cv.dataset.g)); }
 // ---- setup / bets ----
-function arcPick(g){ sfx.click(); const A=U.arc; A.g=g; A.ph=null; A.bet=A.bet&&A.bet.g===g?A.bet:{g,ticket:0,props:{},hustle:0}; arcRenderSetup(); }
+function arcPick(g){ sfx.click(); const A=U.arc; A.g=g; A.ph=null; A.refused=false; A.bet=A.bet&&A.bet.g===g?A.bet:{g,ticket:0,props:{},hustle:0}; if(!arcHustleOk()) A.bet.hustle=0; arcRenderSetup(); }
 function arcCost(b){ return (b.ticket||0)+Object.values(b.props).reduce((a,v)=>a+v,0)+(b.hustle||0); }
 function arcPayFor(g,score){ const P=ARC_PAY[g]; for(const [th,m] of P.tab){ if(P.better==='hi'?score>=th:score<=th) return m; } return 0; }
 function arcSetBet(k,v,id){ const b=U.arc.bet; if(k==='ticket') b.ticket=v; else if(k==='hustle') b.hustle=v; else if(k==='prop'){ b.props[id]=v; if(!v) delete b.props[id]; } sfx.click(); arcRenderSetup(); }
-function arcRenderSetup(){ const A=U.arc, g=A.g, I=ARC_INFO[g], b=A.bet, P=ARC_PAY[g], N=ARC_NPC[g]; arcStop(); A.ph=null;
-  scene('casino',[youActor({x:.28,pose:'idle',held:'beer'}),{id:'npc',x:.72,hat:N.hat,label:N.n.toUpperCase().slice(0,14),pose:'idle',color:N.c}],{caption:I.t});
-  const chip=(k,v,cur,id)=>`<button class="achip ${cur===v?'on':''}" onclick="arcSetBet('${k}',${v}${id?`,'${id}'`:''})">${v?money(v):'none'}</button>`;
+function arcRenderSetup(){ const A=U.arc, g=A.g, I=ARC_INFO[g], b=A.bet, P=ARC_PAY[g], N=ARC_NPC[g]; arcStop(); A.ph=null; const capped=arcCapped(), hok=arcHustleOk();
+  if(capped) scene('casino',[youActor({x:.28,pose:'facepalm',held:'beer'}),{id:'kid',x:.72,s:.8,hat:'cap',hatc:'#5c8cff',label:'ATTENDANT',pose:'point',color:'#cfe8ff'}],{caption:'"'+ARC_CUTOFF+'"'});
+  else scene('casino',[youActor({x:.28,pose:'idle',held:'beer'}),{id:'npc',x:.72,hat:N.hat,label:N.n.toUpperCase().slice(0,14),pose:'idle',color:N.c}],{caption:I.t});
+  const chip=(k,v,cur,id,off)=>`<button class="achip ${cur===v?'on':''}" ${off&&v?'disabled':''} onclick="arcSetBet('${k}',${v}${id?`,'${id}'`:''})">${v?money(v):'none'}</button>`;
   const cost=arcCost(b);
   setMain(`<h2>${I.t}</h2><div class="small">${I.desc}</div><div class="small dim">🎮 ${I.ctl}</div>
-   <div class="panel"><b>🎟️ Pay-to-play ticket</b> <span class="small dim">payout × ticket by ${P.label}</span><div class="chips">${chip('ticket',0,b.ticket)}${ARC_TICKETS.map(v=>chip('ticket',v,b.ticket)).join('')}</div>
+   ${arcMeterHtml()}
+   ${capped?`<div class="panel arccut"><b>🧒 ARCADE ATTENDANT:</b> "${ARC_CUTOFF}"<div class="small dim">You hit the +${money(ARC_DAY_CAP)} daily arcade limit. No more paid play (tickets, props or hustles) until tomorrow. Free practice is still open.</div></div>`:''}
+   <div class="panel"><b>🎟️ Pay-to-play ticket</b> <span class="small dim">payout × ticket by ${P.label} · max ${money(ARC_MAX_PAY)} paid out per game</span><div class="chips">${chip('ticket',0,b.ticket)}${ARC_TICKETS.map(v=>chip('ticket',v,b.ticket,null,capped)).join('')}</div>
     <div class="small paytab">${P.tab.map(([th,m])=>`<span>${P.better==='hi'?th+'+':'≤'+th} ${P.label}: <b>${m}×</b></span>`).join(' ')}</div></div>
-   <div class="panel"><b>🎲 Prop side bets</b> <span class="small dim">pays × stake (incl. stake)</span>${ARC_PROPS[g].map(p=>`<div class="prow"><span>${p.n} <b class="g">${p.pay}×</b></span><span class="chips">${ARC_PSTAKE.map(v=>chip('prop',v,b.props[p.id]||0,p.id)).join('')}</span></div>`).join('')}</div>
-   <div class="panel"><b>🤝 Hustle: you vs ${N.n}</b> <span class="small dim">winner gets 2× · tie = push</span><div class="chips">${ARC_HSTAKE.map(v=>chip('hustle',v,b.hustle)).join('')}</div><div class="small dim">${arcNpcBlurb(g)}</div></div>
+   <div class="panel"><b>🎲 Prop side bets</b> <span class="small dim">pays × stake (incl. stake)</span>${ARC_PROPS[g].map(p=>`<div class="prow"><span>${p.n} <b class="g">${p.pay}×</b></span><span class="chips">${ARC_PSTAKE.map(v=>chip('prop',v,b.props[p.id]||0,p.id,capped)).join('')}</span></div>`).join('')}</div>
+   <div class="panel"><b>🤝 Hustle: you vs ${N.n}</b> <span class="small dim">winner gets 2× · tie = push</span><div class="chips">${ARC_HSTAKE.map(v=>chip('hustle',v,b.hustle,null,capped||!hok)).join('')}</div><div class="small ${hok?'dim':'r'}">${hok?arcNpcBlurb(g):`${N.n}: "${ARC_HUSTLE_NO}" (you've won ${ARC_HUSTLE_WINS} hustles today)`}</div></div>
    <div class="kv"><span>Total action</span><b class="${cost>S.cash?'r':''}">${money(cost)}</b></div>
-   <button class="btn go c" ${cost>S.cash?'disabled':''} onclick="arcStart()">${cost?'💵 PAY '+money(cost)+' &amp; PLAY':'🕹️ FREE PRACTICE'}</button>
+   ${capped?`<button class="btn go c" onclick="arcPractice()">🕹️ FREE PRACTICE</button>${cost?`<button class="btn c" onclick="arcStart()">💵 Try to pay ${money(cost)} anyway</button>`:''}`
+     :`<button class="btn go c" ${cost>S.cash?'disabled':''} onclick="arcStart()">${cost?'💵 PAY '+money(cost)+' &amp; PLAY':'🕹️ FREE PRACTICE'}</button>`}
    <button class="btn c" onclick="U.arc.g=null;renderArcade()">⬅ Back to DegenClip</button>`); }
+function arcPractice(){ const A=U.arc; A.bet={g:A.g,ticket:0,props:{},hustle:0}; arcStart(); }
+// today's arcade money meter (net incl. losses, vs the daily cap) + hustle wins
+function arcMeterHtml(){ const T=arcToday(), pct=Math.max(0,Math.min(100,T.net/ARC_DAY_CAP*100));
+  return `<div class="arcmeter small"><span>📊 Today's arcade net: <b class="${T.net>0?'g':T.net<0?'r':''}">${T.net>0?'+':''}${money(T.net)}</b> / +${money(ARC_DAY_CAP)} cap</span><span>🤝 hustles won ${Math.min(T.hw,ARC_HUSTLE_WINS)}/${ARC_HUSTLE_WINS}</span><div class="arcbar"><i style="width:${pct}%"></i></div></div>`; }
+function arcOverCapHtml(A){ if(!A.paid) return ''; return arcMeterHtml()+(arcCapped()?`<div class="panel arccut"><b>🧒 ARCADE ATTENDANT:</b> "${ARC_CUTOFF}"<div class="small dim">Paid play is closed until tomorrow. Free practice is still open.</div></div>`:''); }
 function arcNpcBlurb(g){ return g==='hrd'?'Ricky swears it\'s "just creatine." He takes his 10 outs after you.':g==='putt'?'Pete plays the same 9 holes. He keeps his own scorecard. You should not trust it (you have to, though).':'Barb has bowled every Tuesday since 1987. She has a wrist brace and no mercy.'; }
-function arcStart(){ const A=U.arc, b=A.bet, cost=arcCost(b); if(cost>S.cash){ toast('Not enough cash, arcade rat.'); return; }
+function arcStart(){ const A=U.arc, b=A.bet, T=arcToday();
+  if(b.hustle&&!arcHustleOk()){ b.hustle=0; toast(`${ARC_NPC[A.g].n}: "${ARC_HUSTLE_NO}"`); return arcRenderSetup(); }
+  const cost=arcCost(b); if(cost&&arcCapped()){ A.refused=true; sfx.lose(); toast(`🧒 "${ARC_CUTOFF}"`); return arcRenderSetup(); }
+  if(cost>S.cash){ toast('Not enough cash, arcade rat.'); return; }
   if(cost){ addCash(-cost); if(A.from==='casino'&&U.cs) U.cs.net=r2(U.cs.net-cost); sfx.coin(); }
   A.paid=cost; A.settled=false; A.ph='play'; A.res=null; A.t=0; A.msg=''; A.fx=[];
   ARC.plays[A.g]=(ARC.plays[A.g]||0)+1; arcSave();
   if(A.g==='hrd') hrdInit(A); else if(A.g==='putt') puttInit(A); else bowlInit(A);
-  if(b.hustle) A.npcRes=A.g==='hrd'?hrBotRound(HR_NPC):A.g==='bowl'?(()=>{ const r=bwBotGame(BW_NPC); return {score:r.score,rolls:r.rolls}; })():{holes:[]};
+  if(b.hustle) A.npcRes=A.g==='hrd'?(()=>{ const r=hrBotRound(HR_NPC); return {score:r.hrs,long:r.long}; })():A.g==='bowl'?(()=>{ const r=bwBotGame(BW_NPC); return {score:r.score,rolls:r.rolls}; })():{holes:[]};
   save(); arcRenderGame(); }
 // ---- settlement (one lifeRec per decided bet; hustle ties are pushes = refunded, not counted) ----
-function arcSettle(res){ const A=U.arc; if(!A||A.settled) return; A.settled=true; const b=A.bet, g=A.g, out=[]; let ret=0; const sub=g;
-  if(b.ticket){ const m=arcPayFor(g,res.score), r=r2(b.ticket*m); ret+=r; lifeRec('arc',b.ticket,r,`${ARC_INFO[g].t} ticket (${res.score} ${ARC_PAY[g].label})`,sub); out.push([`🎟️ Ticket ${money(b.ticket)} · ${m}×`,r-b.ticket]); }
-  for(const p of ARC_PROPS[g]){ const st=b.props[p.id]; if(!st) continue; const w=p.f(res), r=w?r2(st*p.pay):0; ret+=r; lifeRec('arc',st,r,`${p.n}`,sub); out.push([`🎲 ${p.n}`,r-st]); }
-  if(b.hustle&&A.npcRes){ const ns=A.npcRes.score, me=res.score, better=g==='putt'?me<ns:me>ns; const tie=me===ns; const r=tie?b.hustle:better?b.hustle*2:0; ret+=r;
-    if(!tie) lifeRec('arc',b.hustle,r,`Hustle vs ${ARC_NPC[g].n}`,sub); out.push([`🤝 vs ${ARC_NPC[g].n} (${ns})${tie?' — PUSH':''}`,r-b.hustle]); A.npcWon=!tie&&!better; }
-  if(ret>0){ addCash(ret); if(A.from==='casino'&&U.cs) U.cs.net=r2(U.cs.net+ret); }
-  A.payout=r2(ret); A.lines=out; A.net=r2(ret-A.paid);
+function arcSettle(res){ const A=U.arc; if(!A||A.settled) return; A.settled=true; const b=A.bet, g=A.g, out=[], bets=[]; const sub=g, T=arcToday();
+  if(b.ticket){ const m=arcPayFor(g,res.score); bets.push({st:b.ticket,r:r2(b.ticket*m),what:`${ARC_INFO[g].t} ticket (${res.score} ${ARC_PAY[g].label})`,line:`🎟️ Ticket ${money(b.ticket)} · ${m}×`}); }
+  for(const p of ARC_PROPS[g]){ const st=b.props[p.id]; if(!st) continue; bets.push({st,r:p.f(res)?r2(st*p.pay):0,what:p.n,line:`🎲 ${p.n}`}); }
+  // cap 1: the house (ticket + props) pays out at most ARC_MAX_PAY a game; trims the props first, then the ticket
+  const house=bets.reduce((a,x)=>a+x.r,0); A.cutG=house>ARC_MAX_PAY?r2(house-ARC_MAX_PAY):0; if(A.cutG) arcTrim(bets.slice().reverse(),A.cutG);
+  let hu=null; if(b.hustle&&A.npcRes){ const ns=A.npcRes.score, me=res.score, better=g==='putt'?me<ns:me>ns; const tie=me===ns;
+    hu={st:b.hustle,r:tie?b.hustle:better?b.hustle*2:0,tie,won:!tie&&better,what:`Hustle vs ${ARC_NPC[g].n}`,line:`🤝 vs ${ARC_NPC[g].n} (${ns})${tie?' — PUSH':''}`}; bets.push(hu); A.npcWon=!tie&&!better; }
+  // cap 2: today's NET arcade winnings (all 3 games, losses included) never go above +ARC_DAY_CAP; trims house bets first, then the hustle (pushes untouched)
+  const net0=r2(bets.reduce((a,x)=>a+x.r,0)-A.paid), room=Math.max(0,r2(ARC_DAY_CAP-T.net)); A.cutD=A.paid&&net0>room?r2(net0-room):0;
+  if(A.cutD) arcTrim(bets.filter(x=>x!==hu).reverse().concat(hu&&!hu.tie?[hu]:[]),A.cutD);
+  // one lifeRec per decided bet with what it ACTUALLY paid after the caps; hustle ties are pushes = refunded, not counted
+  let ret=0; for(const x of bets){ ret+=x.r; if(!x.tie) lifeRec('arc',x.st,x.r,x.what,sub); out.push([x.line,r2(x.r-x.st)]); }
+  if(A.cutG) out.push([`🧢 $${ARC_MAX_PAY} max payout per game: house kept ${money(A.cutG)}`,null]);
+  if(A.cutD) out.push([`🧢 $${ARC_DAY_CAP}/day arcade cap: attendant kept ${money(A.cutD)}`,null]);
+  ret=r2(ret); if(ret>0){ addCash(ret); if(A.from==='casino'&&U.cs) U.cs.net=r2(U.cs.net+ret); }
+  A.payout=ret; A.lines=out; A.net=r2(ret-A.paid);
+  if(A.paid){ T.net=r2(T.net+A.net); if(hu&&hu.won) T.hw++; }
   if(A.paid){ if(A.net>0){ sfx.big(); addTilt(-5); unlock('arcadecash'); } else if(A.net<0){ sfx.lose(); addTilt(Math.min(10,2+A.paid/Math.max(20,S.cash)*10)); } }
   gainXp(4+Math.min(20,A.paid/10)); A.rank=arcHiAdd(g,g==='hrd'?res.long:res.score,g==='hrd'?res.score:undefined);
   const pl=['hrd','putt','bowl'].filter(k=>(ARC.plays[k]||0)>0).length; if(pl===3) unlock('arcade3');
   save(); }
+// take `amt` back out of the listed bets' returns, in order (never below 0)
+function arcTrim(list,amt){ for(const x of list){ if(amt<=0) break; const c=Math.min(x.r,amt); x.r=r2(x.r-c); amt=r2(amt-c); } }
 // leaving mid-game forfeits the action (counted as lost)
 function arcForfeit(){ const A=U.arc; if(!A||A.settled||!A.paid){ if(A) A.settled=true; return; } A.settled=true; const b=A.bet, g=A.g;
-  if(b.ticket) lifeRec('arc',b.ticket,0,`${ARC_INFO[g].t} ticket (quit)`,g); for(const id in b.props) if(b.props[id]) lifeRec('arc',b.props[id],0,'Prop (quit)',g); if(b.hustle) lifeRec('arc',b.hustle,0,`Hustle vs ${ARC_NPC[g].n} (quit)`,g); }
+  if(b.ticket) lifeRec('arc',b.ticket,0,`${ARC_INFO[g].t} ticket (quit)`,g); for(const id in b.props) if(b.props[id]) lifeRec('arc',b.props[id],0,'Prop (quit)',g); if(b.hustle) lifeRec('arc',b.hustle,0,`Hustle vs ${ARC_NPC[g].n} (quit)`,g);
+  const T=arcToday(); T.net=r2(T.net-A.paid); }
 function arcQuit(){ const A=U.arc; if(A.ph==='play'&&A.paid&&!A.settled&&!A.qArm){ A.qArm=1; toast('Tap Quit again to forfeit your '+money(A.paid)+' of action.'); setTimeout(()=>{ if(U.arc) U.arc.qArm=0; },4000); return; }
   if(A.ph==='play') arcForfeit(); arcStop(); A.ph=null; A.qArm=0; save(); arcRenderSetup(); }
 // ---- game screen shell ----
@@ -3555,9 +3599,10 @@ function arcRenderOver(){ const A=U.arc, g=A.g, r=A.res, I=ARC_INFO[g]; document
   setMain(`<div class="arcwin"><div class="arctitle"><span>${I.t}</span><span class="small">GAME OVER</span></div>
    <div class="arcover"><div class="arcbig">${big}</div>${A.rank&&A.rank<=8?`<div class="arcnew">★ NEW HIGH SCORE — #${A.rank} on DegenClip ★</div>`:''}
    <div class="small">${esc(arcOverLine(g,r))}</div>
-   ${A.lines&&A.lines.length?`<table class="small arcset">${A.lines.map(([t,n])=>`<tr><td>${esc(t)}</td><td class="${n>0?'g':n<0?'r':''}">${n>0?'+':''}${money(n)}</td></tr>`).join('')}<tr><td><b>Net</b></td><td class="${A.net>0?'g':A.net<0?'r':''}"><b>${A.net>0?'+':''}${money(A.net)}</b></td></tr></table>`:'<div class="small dim">Free practice. No money changed hands. Weird feeling, right?</div>'}
+   ${A.lines&&A.lines.length?`<table class="small arcset">${A.lines.map(([t,n])=>n===null?`<tr class="arccap"><td colspan="2">${esc(t)}</td></tr>`:`<tr><td>${esc(t)}</td><td class="${n>0?'g':n<0?'r':''}">${n>0?'+':''}${money(n)}</td></tr>`).join('')}<tr><td><b>Net</b></td><td class="${A.net>0?'g':A.net<0?'r':''}"><b>${A.net>0?'+':''}${money(A.net)}</b></td></tr></table>`:'<div class="small dim">Free practice. No money changed hands. Weird feeling, right?</div>'}
    ${g==='putt'?puttCard(A):g==='bowl'?bowlCard(A.bw.rolls,'You')+(A.npcRes&&A.bet.hustle?bowlCard(A.npcRes.rolls,N.n):''):''}</div>
-   <button class="btn go c" onclick="arcAgain()">🔁 Play again (same bets: ${money(arcCost(A.bet))})</button><button class="btn c" onclick="arcPick('${g}')">🎟️ Change bets</button><button class="btn c" onclick="U.arc.g=null;U.arc.ph=null;renderArcade()">⬅ DegenClip portal</button></div>`); }
+   ${arcOverCapHtml(A)}
+   ${A.paid&&arcCapped()?`<button class="btn go c" onclick="arcPractice()">🕹️ Free practice (paid play closed till tomorrow)</button>`:`<button class="btn go c" onclick="arcAgain()">🔁 Play again (same bets: ${money(arcCost(A.bet))})</button>`}<button class="btn c" onclick="arcPick('${g}')">🎟️ Change bets</button><button class="btn c" onclick="U.arc.g=null;U.arc.ph=null;renderArcade()">⬅ DegenClip portal</button></div>`); }
 function arcAgain(){ const A=U.arc; if(arcCost(A.bet)>S.cash){ toast('Can\'t cover the same action. Lower the bets.'); return arcPick(A.g); } arcStart(); }
 function arcOverLine(g,r){ if(g==='hrd') return r.score>=10?'The commissioner wants a urine sample.':r.score>=6?'Solid. The bleacher bums are naming babies after you.':r.score>=3?'Some dingers. Some shame. Balanced.':'You swung like you were swatting bees.';
   if(g==='putt') return r.score<PT_PAR?'Under par at mini golf. Peak of your athletic career.':r.score===PT_PAR?'Even par. Carl is mildly impressed.':r.score<=PT_PAR+5?'Over par. The windmill won.':'A 7-year-old birthday party lapped you.';
@@ -4310,7 +4355,7 @@ function renderHelp(){ scene('title',[{id:'a',x:.5,pose:'point',hat:'cap',hatc:'
   <p><b>Tilt:</b> Losing raises tilt. At 60+ you're forced to bet at least 10% of your roll; 85+ is 20% plus worse odds. At 100 you do something stupid. Beer, wins, sleep and touching grass lower it.</p>
   <p><b>Edges:</b> the house always has one, but you can beat it with perks: Sharp (see +EV bets), Rain Man (count cards), Vig Killer, Promo Abuser, Eagle Eye (monte), Bottom Dealer (cheat at poker). Fading El Jefe has historically... worked.</p>
   <p><b>Flip 7 (Tony's back room):</b> buy in against 2–3 degenerates. Each round hit or stay; draw a number you already have and you BUST (0). 7 different numbers ends the round (+15). Freeze banks someone out, Flip Three forces 3 cards, Second Chance saves one bust. First to 200 wins the pot (5% rake).</p>
-  <p><b>🕹️ DegenClip Arcade:</b> skill games with real bets. <b>Home Run Derby</b>: move/tap to set your bat height, tap/click (or Space) to swing; early = pull, late = oppo; 10 outs (non-HR swings and taken strikes). <b>Mini Putt</b>: drag back from anywhere like a slingshot, release to putt; water is +1 stroke; max 6 a hole. <b>Bowling</b>: drag sideways at the bottom to move, swipe up to bowl: swipe direction aims, a curved swipe hooks, a fast swipe throws harder. Tickets pay by score, props pay fixed odds, hustles pay 2× (ties push). Payouts are priced from bot simulations of an average player with a ~7–9% house edge, so if you're actually good, you're the hustler.</p>
+  <p><b>🕹️ DegenClip Arcade:</b> skill games with real bets. <b>Home Run Derby</b>: move/tap to set your bat height, tap/click (or Space) to swing; early = pull, late = oppo; 10 outs (non-HR swings and taken strikes). <b>Mini Putt</b>: drag back from anywhere like a slingshot, release to putt; water is +1 stroke; max 6 a hole. <b>Bowling</b>: drag sideways at the bottom to move, swipe up to bowl: swipe direction aims, a curved swipe hooks, a fast swipe throws harder. Tickets ($2/$5/$10) pay by score, props ($2/$5) pay fixed odds, hustles ($5/$10/$25) pay 2× (ties push). <b>Anti-grind rules:</b> the arcade pays out at most <b>$40 a game</b>, your <b>net</b> arcade winnings are capped at <b>+$150 per in-game day</b> across all three games (losses count, so a bad game lowers your net), and once you hit it the attendant cuts you off until tomorrow. The hustlers stop taking your bets after you beat them twice in a day. An average player loses money here and a near-perfect one barely wins. Free practice is always open. The sportsbook and casino are how you actually move up.</p>
   <p><b>🃏 Euchre Hall:</b> 24 cards (9–A), two teams of two, and partners sit across from each other. Each player gets 5 cards and one card from the kitty is turned up. <b>Round 1:</b> going around from the dealer's left, each player either orders it up (that suit is trump and the dealer picks up the card and buries one) or passes. <b>Round 2:</b> if everyone passed, players can name any other suit or pass. With <i>stick the dealer</i> on, the dealer can't pass. With it off, four more passes throw the hand in. Whoever names trump can go <b>alone</b>, and their partner sits out the hand. Card ranking: <b>right bower</b> (J of trump) &gt; <b>left bower</b> (the other J of the same color, which counts as trump, including when you follow suit) &gt; A K Q 10 9 of trump &gt; everything else. You must follow the suit that was led if you can. Scoring: makers who take 3–4 tricks get 1, all 5 (a march) gets 2, a march while alone gets 4, and makers held to 2 or fewer tricks are <b>euchred</b>, which gives the defenders 2. First team to 10 (or 11) wins the pot. Farmer's hand (optional rule): a hand of all 9s and 10s can trade its 3 lowest cards for the kitty.</p>
   <p><b>🌐 Online casino leaderboard:</b> every online room keeps a live leaderboard ranked by session net (what you've actually won or lost on settled bets). Money still riding doesn't count against you yet, and 🥪 loans from Sal are listed separately because borrowing isn't winning. The leader gets a 👑 and last place is Sal's favorite customer. When the host closes the table, everyone gets final standings.</p><p><b>🍺 Tilt relief online:</b> tap <b>Cocktail Waitress / Smoke</b> in the top bar at any online table. Drinks and smokes lower your tilt, cost cash from your free bankroll and are allowed mid-hand. They follow the bar rules: booze adds Buzz and liquor costs HP. Nicotine has a cooldown and works less each time. Too much Buzz turns off strategy hints and can trigger a SLOPPY confirmation before you act.</p><p><b>Keno:</b> pick 1–10 numbers of 80, 20 get drawn, payout depends on how many you catch. RTP is ~75–87%. It's a lottery with a cocktail menu.</p>
   <p><b>Craps quick guide:</b> Pass Line on the come-out, add Odds once a point is set (true odds, no house edge). Place 6/8 pay 7:6. Hardways and Any 7 are fun sucker bets.</p>
