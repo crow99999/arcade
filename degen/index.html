@@ -84,6 +84,7 @@ h3{font-size:15px;color:var(--blue)}
 .pcat{font-size:12px;font-weight:bold;color:var(--amber);margin:8px 0 2px;border-bottom:1px solid var(--line)}
 .prow{justify-content:space-between;margin:2px 0}
 .gsel{width:100%;min-height:38px;background:#181d15;color:inherit;border:1px solid var(--line);border-radius:5px;margin:4px 0;font-size:13px}
+/* pick-off */.btn.sm{display:inline-block;width:auto;min-height:30px;padding:4px 7px;margin:2px;font-size:12.5px;text-align:center}.btn.on{background:var(--amber);color:#111;border-color:#fff}table.pk td{padding:1px}table.pk .btn.sm{width:100%;margin:1px 0}
 table.box{width:100%;border-collapse:collapse;font-size:12px;margin:3px 0}table.box th,table.box td{text-align:center;padding:2px 3px;border-bottom:1px solid #222}table.box th{color:var(--dim);font-weight:normal}table.box td:first-child{text-align:left;padding-left:8px}
 .sched.today{border-color:var(--amber)}
 .scoreline.my{background:#1b2a14}
@@ -446,6 +447,7 @@ const ITEMS = {
 const SHOP_ITEMS = ['beer','energy','sushi','coney','pepto','tums','vape','airhorn','burner','rabbit','chain','brass','jersey'];
 
 const ACHS = {
+  pkchamp:{ n:'Certified Tout', ic:'🏆', d:'Win a Pick-Off bracket (beat 3 NPC handicappers in a row).' },
   moonshot:{ n:'Moonshot', ic:'🚀', d:'Hit a 480+ ft home run in the arcade Home Run Derby.' },
   holeinone:{ n:'Ace of Degens', ic:'⛳', d:'Make a hole-in-one at DegenClip Mini Putt.' },
   turkey:{ n:'Gobble Gobble', ic:'🦃', d:'Bowl a turkey (3 strikes in a row).' },
@@ -527,7 +529,7 @@ const ROASTS = {
 //    the client records exactly those, once (ledger entries are de-duplicated by sequence number).
 //  * Biggest win / loss = largest net profit / loss on a single decided bet (a blackjack hand, a spin spot, a ticket...).
 const LIFE_KEY='degenRPG_life_v1';
-const LIFE_GAMES={sb:'📱 Sportsbook',bj:'🂡 Blackjack',craps:'🎲 Craps',roul:'🎡 Roulette',slots:'🎰 Slots',scr:'🎟️ Scratchers',keno:'🎱 Keno',f7:'7️⃣ Flip 7',eu:'🃏 Euchre',poker:'♠️ Poker',monte:'👸 Monte',online:'🌐 Online tables',arc:'🕹️ Arcade'};
+const LIFE_GAMES={sb:'📱 Sportsbook',pk:'🏆 Pick-Off',bj:'🂡 Blackjack',craps:'🎲 Craps',roul:'🎡 Roulette',slots:'🎰 Slots',scr:'🎟️ Scratchers',keno:'🎱 Keno',f7:'7️⃣ Flip 7',eu:'🃏 Euchre',poker:'♠️ Poker',monte:'👸 Monte',online:'🌐 Online tables',arc:'🕹️ Arcade'};
 const LIFE_SUB={bj:'Blackjack',cr:'Craps',rl:'Roulette',sb:'Sportsbook',f7:'Flip 7',kn:'Keno',eu:'Euchre',hrd:'HR Derby',putt:'Mini Putt',bowl:'Bowling'};
 function lifeBlank(){ return {v:1,wag:0,won:0,n:0,big:null,bigL:null,since:null,g:{}}; }
 function lifeLoad(){ let L=null; try{ L=JSON.parse(localStorage.getItem(LIFE_KEY)||'null'); }catch(e){} if(!L||typeof L!=='object'||L.v!==1) L=lifeBlank(); L.g=L.g||{}; return L; }
@@ -928,7 +930,7 @@ function energyMax(){ return 3+(st('hustle')>=6?1:0)+(st('hustle')>=9?1:0); }
 function sleep(){
   const out=[];
   // settle any unsimmed sportsbook games
-  if(S.slate&&!S.slate.done){ simAllInstant(); out.push('📺 You fell asleep before the games. Results are in your bet history (and your nightmares).'); }
+  if(S.slate&&!S.slate.done){ simAllInstant(); out.push('📺 You fell asleep before the games. Results are in your bet history (and your nightmares).'); for(const m of (U.pkOut||[])) out.push(m); U.pkOut=[]; }
   // weekly due
   const d=S.day;
   if(!S.whaleMode && d%7===0 && d<fdy()){
@@ -1506,7 +1508,7 @@ function finalizeGame(g, r, rec){ g.res={sa:r.sa,sh:r.sh,ps:r.ps,ot:r.ot}; try{ 
   if(sp==='MMA'){ const A=teamOf(sp,g.a.i), H=teamOf(sp,g.h.i); if(A.rec&&H.rec){ if(r.sa>r.sh){ A.rec[0]++; H.rec[1]++; } else { H.rec[0]++; A.rec[1]++; } } }
   if(g.post) try{ postResult(g); }catch(e){}
 }
-function simAllInstant(){ for(const g of S.slate.games){ if(!g.res){ const rec={events:[],snaps:[]}; const r=simRun(g,null,rec); finalizeGame(g,r,rec); } } S.slate.done=true; jefeSettle(); return settleBets(); }
+function simAllInstant(){ for(const g of S.slate.games){ if(!g.res){ const rec={events:[],snaps:[]}; const r=simRun(g,null,rec); finalizeGame(g,r,rec); } } S.slate.done=true; jefeSettle(); const rs=settleBets(); U.pkOut=pkSettleDay(); return rs; }
 function archiveResults(){ if(!S.slate) return; S.lastResults={day:S.slate.day,ed:S.slate.ed,games:S.slate.games.filter(g=>g.res).map(g=>({sp:g.sp,a:g.a,h:g.h,slot:g.slot,tag:g.tag,round:g.round,neutral:g.neutral,sa:g.res.sa,sh:g.res.sh,ot:g.res.ot,box:g.res.box,head:g.id===S.slate.head}))}; }
 function jefeSettle(){ const j=S.slate.jefe; if(!j||j.settled) return; for(const l of j.legs){ const g=gameById(l.gid); if(!g||!g.res) return; } j.settled=true; let allW=true; for(const l of j.legs){ const g=gameById(l.gid); const v=legValue(l,g.res.sa,g.res.sh,g.res.ps); if(v<0) allW=false; } if(allW) S.jefe.w++; else S.jefe.l++; j.won=allW; }
 function genJefe(){ // Jefe loves popular, overvalued sides (fair prob < break-even) ~70% of the time
@@ -1614,7 +1616,7 @@ function renderBook(){
   h+=`<h2>📱 THE SPORTSBOOK</h2>`;
   h+=hypeBanner();
   h+=bookHeader();
-  const tabs=[['slate','Slate'],['props','Props'],['sched','📅 Schedule'],['res','Results'],['jefe','🔒 Jefe'],['open','Open ('+S.bets.length+')'],['hist','History']];
+  const tabs=[['slate','Slate'],['props','Props'],['sched','📅 Schedule'],['res','Results'],['jefe','🔒 Jefe'],['pk','🏆 Pick-Off'],['open','Open ('+S.bets.length+')'],['hist','History']];
   if(!tabs.some(t=>t[0]===U.tab)) U.tab='slate';
   h+=`<div class="tabs">${tabs.map(([k,n])=>`<button class="tab ${U.tab===k?'on':''}" onclick="U.tab='${k}';renderBook()">${n}</button>`).join('')}</div>`;
   h+=tiltNote();
@@ -1623,6 +1625,7 @@ function renderBook(){
   else if(U.tab==='props') h+=propsHtml();
   else if(U.tab==='sched') h+=schedHtml();
   else if(U.tab==='res') h+=resultsHtml();
+  else if(U.tab==='pk') h+=pkHtml();
   else if(U.tab==='jefe'){
     const j=sl.jefe; if(!j||!j.legs.length) h+=`<div class="panel dim">El Jefe is "taking a personal day" (hungover). No lock today.</div>`;
     else { h+=`<div class="paper"><div class="mast">BARCRAWL SPORTS</div><div class="sub">El Jefe Danny Doubledown's LOCK OF THE DAY · Season record: ${S.jefe.w}-${S.jefe.l}</div>
@@ -1787,7 +1790,148 @@ function liveFinish(){ const L=U.live; if(L.done) return; L.done=true; clearInte
     liveLog(`${b.status==='won'?'✅':b.status==='lost'?'❌':'↩️'} <b>${esc(lbl)}</b>: ${b.status.toUpperCase()} ${b.status==='won'?'+'+money(b.net):b.status==='lost'?money(b.net):''}.${b.status==='won'?' '+pick(ROASTS.winBet):b.status==='lost'?' '+pick(ROASTS.loseBet):''}${extra}${b.saved?' 🍀 (Luck saved you: hook loss → push!)':''}`, b.status==='won'?'big':'roast'); }
   const j=S.slate.jefe; if(j&&j.settled) liveLog(`🔒 El Jefe's lock ${j.won?'HIT. He\'s doing a victory lap on stream in his underwear.':'LOST. He\'s blaming "the algorithm."'} (${S.jefe.w}-${S.jefe.l})`);
   if(res.length){ if(netT>0){ pose('you','celebrate',4000,'dance'); fx.money(30); sfx.big(); fx.text('+'+money(r2(netT)),'#5dff8a'); } else if(netT<0){ pose('you','cry'); sfx.lose(); fx.text(money(r2(netT)),'#ff5d5d'); } }
+  for(const m of pkSettleDay()) liveLog(m,'big');
   S.dayPhase='night'; gainXp(10); save(); renderLive(); }
+// ===================== 🏆 PICK-OFF CHALLENGE (v1.14) =====================
+// Pick'em contests on the day's slate, against the spread. Solo bracket vs NPC handicappers (multi-day, entry fee,
+// prize pool), one-day duels vs an NPC, and live head-to-head vs other players in an online room (55_mp_host.js).
+// Shared engine bits (sheet building, grading, NPC picks) are pure so the MP host can run them on its throwaway S.
+const PK_NPCS=[
+ {n:'Lock City Larry',ic:'🔒',sk:.035,sty:'chalk',q:'"Five-star lock. I bet my truck. Again."'},
+ {n:'Sweaty Steve the Tout',ic:'💦',sk:.02,sty:'dog',q:'"Dogs bark. Dogs BITE. Subscribe for $49.99."'},
+ {n:'Grandma Parlay',ic:'👵',sk:.045,sty:'home',q:'"I pick the teams with the nicest colors, dear."'},
+ {n:'The Guy From The Gas Station',ic:'⛽',sk:.0,sty:'rand',q:'"I got a feeling about the Chili Dogs. A bad one."'},
+ {n:'Vegas Vinnie (Never Been)',ic:'🎲',sk:.015,sty:'chalk',q:'"In Vegas we call this a SQUARE play. I\'ve read about Vegas."'},
+ {n:'Discord Mod Derek',ic:'🖥️',sk:.03,sty:'model',q:'"My model says 61.3%. My model is a spreadsheet my cousin made."'},
+ {n:'Fadeable Phil',ic:'🙃',sk:-.03,sty:'chalk',q:'"Fade me? You WISH you could fade me." (Everyone fades him.)'},
+ {n:'Coin-Flip Carl',ic:'🪙',sk:0,sty:'rand',q:'"Heads, home team. Tails, also home team. I flip a two-headed coin."'},
+ {n:'Underdog Ursula',ic:'🐕',sk:.025,sty:'dog',q:'"Never lay points. Laying points is for people who have money."'},
+ {n:'Steam-Chasing Stan',ic:'🚂',sk:.04,sty:'model',q:'"The line moved half a point, I MOVED with it. That\'s called being a professional."'},
+ {n:'Professor Backdoor',ic:'🎓',sk:.03,sty:'dog',q:'"Garbage-time covers are a lifestyle, not a strategy."'},
+ {n:'Uncle Rick (Has A System)',ic:'📒',sk:-.01,sty:'home',q:'"Martingale, baby. Double down until you\'re right."'},
+ {n:'Tanning Bed Tony',ic:'🛏️',sk:.02,sty:'chalk',q:'"I picked these in tanning bed #3. They\'re cooked. Like me."'},
+ {n:'Chalk Eater Chad',ic:'🦴',sk:.01,sty:'chalk',q:'"Favorites win for a reason, bro. The reason is they\'re favorites."'}];
+const PK_TIERS={ 10:{n:'Corner Bar Bracket',sk:0}, 25:{n:'Strip Mall Open',sk:.01}, 50:{n:'High Roller Invitational',sk:.02} };
+const PK_PAY={ champ:4.5, runner:1.5, semi:.5 }; // × entry; 8-man pool = 8 × fee, house rakes 12.5% (pays 7 × fee total)
+const PK_RAKE=.05; // duels: winner takes both stakes minus 5%
+const PK_ROUNDS=['Quarterfinal','Semifinal','Championship'];
+const PK_RANKS=[[0,'Bracket Bum'],[3,'Pick\'em Peasant'],[8,'Weekend Handicapper'],[15,'Certified Tout'],[25,'Sharp (Allegedly)'],[40,'Pick-Off Legend']];
+function pkBusy(){ return !!(U.live&&!U.live.done); }
+function pkRankOf(pts){ let r=PK_RANKS[0][1]; for(const [p,n] of PK_RANKS) if(pts>=p) r=n; return r; }
+function pkRec(){ if(!S.pkRec) S.pkRec={w:0,l:0,t:0,titles:0,cash:0,duelW:0,duelL:0,h2hW:0,h2hL:0,best:0,hist:[]}; return S.pkRec; }
+function pkPts(R){ R=R||pkRec(); return R.w+R.duelW+R.h2hW*2+R.titles*5; }
+// ---------- sheet building (pure: takes a games array) ----------
+function pkSheetFrom(games,headId,n,any){ n=n||10; const ok=games.filter(g=>g.sp!=='MMA'&&g.lines&&g.lines.DQ&&g.lines.DQ.spread!=null&&(any||!g.res));
+  const pri=g=>(g.id===headId?1000:0)+(g.prime?100:0)+({FB:40,CF:35,BB:30,CB:25,HK:15,BS:10,SOC:5}[g.sp]||0)-g.t/1000;
+  const pickd=ok.slice().sort((a,b)=>pri(b)-pri(a)).slice(0,n).sort((a,b)=>a.t-b.t);
+  if(!pickd.length) return null; const tbG=pickd.find(g=>g.id===headId)||pickd[pickd.length-1];
+  return { games:pickd.map(g=>({gid:g.id,sp:g.sp,a:g.a.ab,h:g.h.ab,an:g.a.nm,hn:g.h.nm,line:g.lines.DQ.spread,slot:g.slot,neutral:!!g.neutral})), tb:tbG.id, tbLbl:`${tbG.a.ab} @ ${tbG.h.ab}` }; }
+function pkCover(row,side,res){ const m=res.sh-res.sa; const v=(side==='h'?m+row.line:-m-row.line); return v>0?'w':v<0?'l':'p'; }
+function pkGrade(sheet,picks,resOf){ let w=0,l=0,p=0; const per=[]; for(const r of sheet.games){ const res=resOf(r.gid); const s=picks[r.gid]; if(!res||!s){ per.push(null); continue; } const o=pkCover(r,s,res); per.push(o); if(o==='w') w++; else if(o==='l') l++; else p++; }
+  const t=resOf(sheet.tb); return {w,l,p,pts:w+p*.5,per,tbAct:t?t.sa+t.sh:null}; }
+// NPC handicapper picks: tilt toward the side the sim likes (skill), plus a style bias (chalk/dogs/home/random)
+function pkNpcPicks(sheet,npc,gameOf,extraSk){ const picks={}; const sk=(npc.sk||0)+(extraSk||0);
+  for(const r of sheet.games){ const g=gameOf(r.gid); let pH=.5; try{ if(g&&g.fair) pH=probCover(g,'h',r.line); }catch(e){}
+    const smart=pH>=.5?'h':'a'; let pr=.5+Math.min(.25,Math.abs(pH-.5)*4)*(sk>0?1:-1)+sk; let side=rnd()<clamp(pr,.05,.95)?smart:(smart==='h'?'a':'h');
+    const favH=r.line<0; if(npc.sty==='chalk'&&rnd()<.3) side=favH?'h':'a'; if(npc.sty==='dog'&&rnd()<.3) side=favH?'a':'h'; if(npc.sty==='home'&&rnd()<.3) side='h'; if(npc.sty==='rand'&&rnd()<.5) side=rnd()<.5?'h':'a';
+    picks[r.gid]=side; }
+  const tg=gameOf(sheet.tb); const tb=Math.max(0,Math.round(((tg&&tg.fairTotal)||40)+gauss()*((tg&&kindOf(tg.sp)==='bb')?12:5)));
+  return {picks,tb}; }
+// head-to-head decision: points, then tiebreaker distance, then coin flip. returns 1 (A wins), -1 (B wins), 0 (true tie)
+function pkDecide(ga,gb,tbA,tbB,coin){ if(ga.pts!==gb.pts) return ga.pts>gb.pts?1:-1; if(ga.tbAct!=null&&tbA!=null&&tbB!=null){ const da=Math.abs(tbA-ga.tbAct), db=Math.abs(tbB-ga.tbAct); if(da!==db) return da<db?1:-1; } return coin?(rnd()<.5?1:-1):0; }
+function pkRecStr(g){ return `${g.w}-${g.l}${g.p?'-'+g.p:''}`; }
+// ---------- single player state ----------
+function pkToday(){ const sl=S.slate; if(!sl||sl.done) return null; const C=S.pkCur; if(C&&C.day===S.day) return C;
+  if(S.pk&&S.pk.placed&&S.pk.placed.day!==S.day) S.pk.placed=null; const sh=pkSheetFrom(sl.games,sl.head,10); if(!sh||sh.games.length<4) return null; S.pkCur={day:S.day,sheet:sh,picks:{},tb:'',locked:false}; return S.pkCur; }
+function pkResOf(gid){ const g=gameById(gid); return g&&g.res?{sa:g.res.sa,sh:g.res.sh}:null; }
+function pkPick(gid,side){ const C=pkToday(); if(!C||C.locked||pkBusy()) return; const g=gameById(gid); if(!g||g.res) return; C.picks[gid]=C.picks[gid]===side?undefined:side; if(!C.picks[gid]) delete C.picks[gid]; sfx.click(); save(); renderBook(); }
+function pkSetTb(v){ const C=pkToday(); if(!C||C.locked) return; const n=Math.round(+v); C.tb=Number.isFinite(n)&&n>=0&&n<=500?n:''; save(); }
+function pkAutoFill(mode){ const C=pkToday(); if(!C||C.locked) return; for(const r of C.sheet.games){ if(C.picks[r.gid]) continue; C.picks[r.gid]=mode==='dogs'?(r.line<0?'a':'h'):mode==='home'?'h':mode==='rand'?(rnd()<.5?'h':'a'):(r.line<0?'h':'a'); } if(C.tb===''){ const g=gameById(C.sheet.tb); C.tb=Math.round(g&&g.fairTotal||44); } sfx.click(); save(); renderBook(); }
+function pkComplete(C){ return C&&C.sheet.games.every(r=>C.picks[r.gid])&&C.tb!==''&&C.tb!=null; }
+// solo bracket: 8 entrants, you + 7 NPC handicappers; one round per in-game day (a sheet per day)
+function pkEnter(fee){ const T=PK_TIERS[fee]; if(!T||pkBusy()) return; if(S.pk&&S.pk.status==='open') return toast('You\'re already in a bracket. Finish it, coward.'); if(S.cash<fee) return toast('Entry fee is '+money(fee)+'. You have '+money(S.cash)+'. Sad.');
+  if(!pkToday()) return toast('No pick\'em sheet today (not enough games with spreads). Try tomorrow.');
+  addCash(-fee); const pool=shuffle(PK_NPCS.map((x,i)=>i)).slice(0,7); const seeds=[-1,...pool]; // -1 = you
+  S.pk={id:'pk'+Date.now().toString(36),fee,tier:T.n,sk:T.sk,round:0,day0:S.day,status:'open',ent:seeds,alive:seeds.slice(),log:[],res:[],placed:null};
+  S.pk.log.push(`🎟️ Entered the ${T.n} for ${money(fee)}. 8 handicappers, ${money(r2(fee*8))} pool (house takes ${money(r2(fee*8*.125))} because of course it does).`); gainXp(5); sfx.coin(); save(); renderBook(); }
+function pkNm(i){ return i<0?(S.name||'You'):PK_NPCS[i].ic+' '+PK_NPCS[i].n; }
+function pkMyOpp(){ const P=S.pk; if(!P||P.status!=='open') return null; const k=P.alive.indexOf(-1); if(k<0) return null; return P.alive[k^1]; }
+// duel vs one NPC today
+function pkDuel(stake){ if(S.slate&&S.slate.done||pkBusy()) return toast('Games are already going. Nice try.'); if(S.pkDuel&&S.pkDuel.day===S.day) return toast('One duel per day. Even Lock City Larry needs rest.'); const C=pkToday(); if(!C) return toast('No sheet today.'); if(!C.locked&&!pkComplete(C)) return toast('Fill out (and lock) your sheet first.'); if(stake>S.cash) return toast('Not enough cash, champ.');
+  if(!C.locked) pkLock(true); addCash(-stake); const npc=pick(PK_NPCS.map((x,i)=>i)); const np=pkNpcPicks(C.sheet,PK_NPCS[npc],gameById,0);
+  S.pkDuel={day:S.day,npc,stake,np,status:'open'}; toast(`🤺 Duel on: you vs ${pkNm(npc)} for ${money(stake)}. ${PK_NPCS[npc].q}`); sfx.coin(); save(); renderBook(); }
+function pkLock(silent){ const C=pkToday(); if(!C||C.locked||pkBusy()) return; if(!pkComplete(C)) return toast('Pick every game and enter a tiebreaker first.'); C.locked=true;
+  const P=S.pk; if(P&&P.status==='open'&&P.alive.includes(-1)&&!P.placed){ // generate everyone's sheets for this round
+    P.placed={day:S.day,round:P.round,sheet:C.sheet,picks:Object.assign({},C.picks),tb:C.tb,npc:{}}; for(const i of P.alive) if(i>=0) P.placed.npc[i]=pkNpcPicks(C.sheet,PK_NPCS[i],gameById,P.sk); }
+  if(!silent){ sfx.coin(); toast('🔒 Sheet locked. No take-backs. Start sweating.'); } save(); renderBook(); }
+// settle hooks (called after the slate is final)
+function pkSettleDay(){ if(!S.slate||!S.slate.done) return []; const out=[]; const R=pkRec();
+  const P=S.pk; if(P&&P.ranDay===S.day){ /* already ran today */ } else if(P&&P.status==='open'&&P.placed&&P.placed.day===S.day){ out.push(...pkRunRound()); }
+  else if(P&&P.status==='open'&&!P.placed&&P.alive.includes(-1)){ // never locked a sheet today: the commish auto-picks chalk
+    let C=S.pkCur&&S.pkCur.day===S.day?S.pkCur:null; if(!C){ const sh=pkSheetFrom(S.slate.games,S.slate.head,10,true); if(sh&&sh.games.length>=4) C=S.pkCur={day:S.day,sheet:sh,picks:{},tb:'',locked:false}; }
+    if(C){ for(const r of C.sheet.games) if(!C.picks[r.gid]) C.picks[r.gid]=r.line<0?'h':'a'; if(C.tb===''||C.tb==null) C.tb=40; C.locked=true;
+      P.placed={day:S.day,round:P.round,sheet:C.sheet,picks:Object.assign({},C.picks),tb:C.tb,npc:{}}; for(const i of P.alive) if(i>=0) P.placed.npc[i]=pkNpcPicks(C.sheet,PK_NPCS[i],gameById,P.sk);
+      P.log.push('😴 You forgot to lock a sheet. The commish auto-picked every favorite for you. Lol.'); out.push('😴 Pick-Off: you never locked a sheet, so the commish auto-picked all the favorites.'); out.push(...pkRunRound()); } }
+  const D=S.pkDuel; if(D&&D.status==='open'&&D.day===S.day){ const C=S.pkCur; const me=pkGrade(C.sheet,C.picks,pkResOf), npc=pkGrade(C.sheet,D.np.picks,pkResOf); const d=pkDecide(me,npc,+C.tb,D.np.tb,false);
+    D.status='done'; D.me=me; D.them=npc; D.out=d; const pay=d>0?r2(D.stake*2*(1-PK_RAKE)):d===0?D.stake:0; if(pay) addCash(pay); D.pay=pay;
+    if(d!==0){ lifeRec('pk',D.stake,pay,`Duel vs ${PK_NPCS[D.npc].n} (${pkRecStr(me)} vs ${pkRecStr(npc)})`,'duel'); if(d>0) R.duelW++; else R.duelL++; }
+    R.hist.unshift({k:'duel',day:S.day,vs:PK_NPCS[D.npc].n,me:pkRecStr(me),them:pkRecStr(npc),net:r2(pay-D.stake)}); if(R.hist.length>40) R.hist.length=40;
+    out.push(`🤺 Duel vs ${pkNm(D.npc)}: you went ${pkRecStr(me)}, they went ${pkRecStr(npc)}. ${d>0?`YOU WIN ${money(pay)}. ${pick(['Screenshot it.','Tell everyone.','They\'re deleting their account.'])}`:d<0?`You lose ${money(D.stake)}. ${pick(['Got cooked by an NPC.','Even '+PK_NPCS[D.npc].n+' is laughing.','Pathetic. Truly.'])}`:'Dead even. Stakes returned.'}`); }
+  if(out.length) save(); return out; }
+function pkRunRound(){ const P=S.pk, R=pkRec(), out=[]; P.ranDay=S.day; const pl=P.placed; const grade=i=>pkGrade(pl.sheet,i<0?pl.picks:pl.npc[i].picks,pkResOf); const tbOf=i=>i<0?+pl.tb:pl.npc[i].tb;
+  const nxt=[], round=PK_ROUNDS[P.round]; const lines=[];
+  for(let k=0;k<P.alive.length;k+=2){ const a=P.alive[k], b=P.alive[k+1]; const ga=grade(a), gb=grade(b); const d=pkDecide(ga,gb,tbOf(a),tbOf(b),true); const w=d>0?a:b, l=d>0?b:a;
+    nxt.push(w); lines.push({a,b,ga:pkRecStr(ga),gb:pkRecStr(gb),w,tb:ga.pts===gb.pts});
+    if(a===-1||b===-1){ const me=a===-1?ga:gb, them=a===-1?gb:ga; R.w+=me.w; R.l+=me.l; R.t+=me.p; R.best=Math.max(R.best,me.w);
+      out.push(`🏆 PICK-OFF ${round}: you went <b>${pkRecStr(me)}</b> vs ${pkNm(a===-1?b:a)} (${pkRecStr(them)})${ga.pts===gb.pts?' · decided on the tiebreaker':''}. ${w===-1?'<b class="g">YOU ADVANCE.</b>':'<b class="r">ELIMINATED.</b>'}`); } }
+  P.res.push({round,lines}); P.alive=nxt; P.round++; P.placed=null;
+  const imIn=P.alive.includes(-1);
+  if(!imIn||P.alive.length===1){ // finish (sim the rest of the bracket for flavor if you're out)
+    const myExit=P.alive.length===1&&P.alive[0]===-1?'champ':(P.round===3?'runner':P.round===2?'semi':'qf');
+    while(P.alive.length>1){ const nx=[]; const ls=[]; for(let k=0;k<P.alive.length;k+=2){ const a=P.alive[k], b=P.alive[k+1]; const w=rnd()<.5+((PK_NPCS[a]||{}).sk-(PK_NPCS[b]||{}).sk)*2?a:b; nx.push(w); ls.push({a,b,w,sim:1}); } P.res.push({round:PK_ROUNDS[P.round],lines:ls,sim:1}); P.alive=nx; P.round++; }
+    const pay=r2(P.fee*(myExit==='champ'?PK_PAY.champ:myExit==='runner'?PK_PAY.runner:myExit==='semi'?PK_PAY.semi:0)); if(pay) addCash(pay); P.pay=pay; P.exit=myExit; P.status='done'; P.champ=P.alive[0];
+    lifeRec('pk',P.fee,pay,`${P.tier}: ${myExit==='champ'?'CHAMPION':myExit==='runner'?'runner-up':myExit==='semi'?'semifinal exit':'first-round exit'}`,'solo'); R.cash=r2(R.cash+pay-P.fee);
+    if(myExit==='champ'){ R.titles++; gainXp(60); unlock&&ACHS.pkchamp&&unlock('pkchamp'); out.push(`👑 <b>PICK-OFF CHAMPION!</b> ${money(pay)} prize. ${pick(['Your face goes on the bar\'s wall of shame/fame.','Lock City Larry demands a rematch. Denied.','You are now legally allowed to sell picks on the internet.'])}`); fx&&fx.money&&fx.money(30); }
+    else out.push(`${pay?`💵 ${myExit==='runner'?'Runner-up':'Semifinal'} payout: ${money(pay)}.`:'💸 No payout.'} Champion: ${pkNm(P.champ)}. ${P.champ>=0?PK_NPCS[P.champ].q:''}`);
+    R.hist.unshift({k:'solo',day:S.day,tier:P.tier,exit:myExit,net:r2(pay-P.fee)}); if(R.hist.length>40) R.hist.length=40; }
+  else out.push(`📅 Next round (${PK_ROUNDS[P.round]}) is tomorrow vs ${pkNm(pkMyOpp())}. Fill out tomorrow's sheet.`);
+  P.log.push(...out); return out; }
+// ---------- UI (Sportsbook → 🏆 Pick-Off tab) ----------
+function pkLineTxt(r,side){ const v=side==='h'?r.line:-r.line; return v===0?'PK':(v>0?'+':'')+v; }
+function pkSheetHtml(C,opts){ opts=opts||{}; const lock=C.locked||opts.ro; const grade=S.slate.done?pkGrade(C.sheet,C.picks,pkResOf):null; let h=`<table class="box pk"><tr><th>Game</th><th>Away</th><th>Home</th><th></th></tr>`;
+  C.sheet.games.forEach((r,i)=>{ const p=C.picks[r.gid]; const g=gameById(r.gid); const o=grade&&grade.per[i]; const b=side=>`<button class="btn sm ${p===side?'on':''}" ${lock?'disabled':''} onclick="pkPick('${r.gid}','${side}')">${esc(side==='h'?r.h:r.a)} ${pkLineTxt(r,side)}</button>`;
+    h+=`<tr class="${o==='w'?'win':o==='l'?'dim':''}"><td class="small">${SPORTS[r.sp].icon} ${esc(r.slot||'')}${r.gid===C.sheet.tb?' 🎯':''}</td><td>${b('a')}</td><td>${b('h')}</td><td>${g&&g.res?`${g.res.sa}-${g.res.sh} ${o==='w'?'✅':o==='l'?'❌':o==='p'?'↩️':''}`:''}</td></tr>`; });
+  h+=`</table><div class="small">🎯 Tiebreaker: total points in <b>${esc(C.sheet.tbLbl)}</b>: ${lock?`<b>${esc(String(C.tb))}</b>`:`<input id="pktb" type="number" min="0" max="500" style="width:70px" value="${C.tb}" oninput="pkSetTb(this.value)">`}</div>`;
+  if(grade) h+=`<div class="hl">Your sheet: <b>${pkRecStr(grade)}</b>${grade.tbAct!=null?` · tiebreaker actual ${grade.tbAct}`:''}</div>`;
+  return h; }
+function pkHtml(){ const R=pkRec(); const C=pkToday(); let h=`<div class="paper"><div class="mast">THE PICK-OFF</div><div class="sub">10 games against the spread. Beat the other idiots. Get paid (rarely).</div>
+  <div class="small">Rank: <b>${pkRankOf(pkPts(R))}</b> · Sheets ${R.w}-${R.l}${R.t?'-'+R.t:''} ATS · 👑 Titles ${R.titles} · Duels ${R.duelW}-${R.duelL} · Online H2H ${R.h2hW}-${R.h2hL}</div></div>`;
+  const P=S.pk;
+  if(!C&&!(S.pkCur&&S.pkCur.day===S.day)) h+=`<div class="panel dim">No pick'em sheet right now${S.slate&&S.slate.done?' (today\'s games are final, come back tomorrow)':' (not enough games with spreads today)'}.</div>`;
+  const CC=C||(S.pkCur&&S.pkCur.day===S.day?S.pkCur:null);
+  if(CC){ const n=Object.keys(CC.picks).length; h+=`<div class="panel"><h3>📝 Today's sheet (Day ${S.day}) ${CC.locked?'🔒 LOCKED':`· ${n}/${CC.sheet.games.length} picked`}</h3>${pkSheetHtml(CC)}
+    ${CC.locked||S.slate.done?'':`<div class="row"><button class="btn sm" onclick="pkAutoFill('chalk')">🦴 Fill favorites</button><button class="btn sm" onclick="pkAutoFill('dogs')">🐕 Fill dogs</button><button class="btn sm" onclick="pkAutoFill('rand')">🪙 Coin-flip the rest</button><button class="btn go" ${pkComplete(CC)?'':'disabled'} onclick="pkLock()">🔒 Lock sheet</button></div><div class="small dim">Lines are frozen from DraftQueens when the sheet posts. Picks lock for the whole day. Games settle when you watch/sim the slate.</div>`}</div>`; }
+  // bracket
+  h+=`<div class="panel"><h3>🏆 Bracket Challenge</h3>`;
+  if(P&&P.status==='open'){ const opp=pkMyOpp(); h+=`<div><b>${esc(P.tier)}</b> · entry ${money(P.fee)} · ${PK_ROUNDS[P.round]||''}${opp!=null?` vs <b>${pkNm(opp)}</b>`:''}</div>${opp!=null?`<div class="small"><i>${esc(PK_NPCS[opp].q)}</i></div>`:''}
+      <div class="small">${P.placed?'✅ Your sheet is in for this round. Watch the games to settle it.':'⚠️ Lock today\'s sheet to play this round (forget and the commish picks all favorites for you).'}</div>`; }
+  else { if(P&&P.status==='done') h+=`<div class="small">Last bracket: ${esc(P.tier)} · ${P.exit==='champ'?'👑 CHAMPION':P.exit==='runner'?'🥈 runner-up':P.exit==='semi'?'semifinal exit':'first-round exit'} · ${P.pay?'won '+money(P.pay):'no payout'} · champ ${pkNm(P.champ)}</div>`;
+    h+=`<div class="small">8 handicappers, 3 rounds (one sheet per day). Champ ${PK_PAY.champ}× entry, runner-up ${PK_PAY.runner}×, semifinal losers ${PK_PAY.semi}×. The house keeps the rest, obviously.</div><div class="row">${Object.keys(PK_TIERS).map(f=>`<button class="btn sm" ${C?'':'disabled'} onclick="pkEnter(${f})">🎟️ ${PK_TIERS[f].n} · ${money(+f)}</button>`).join('')}</div>`; }
+  if(P&&P.res.length) h+=`<div class="small">${P.res.map(rd=>`<b>${rd.round}${rd.sim?' (simmed)':''}:</b> ${rd.lines.map(l=>`${l.w===l.a?'<b>':''}${pkNm(l.a)}${l.ga?' '+l.ga:''}${l.w===l.a?'</b>':''} vs ${l.w===l.b?'<b>':''}${pkNm(l.b)}${l.gb?' '+l.gb:''}${l.w===l.b?'</b>':''}`).join(' · ')}`).join('<br>')}</div>`;
+  h+=`</div>`;
+  // duel
+  const D=S.pkDuel&&S.pkDuel.day===S.day?S.pkDuel:null;
+  h+=`<div class="panel"><h3>🤺 Head-to-Head Duel</h3>`;
+  if(D){ h+=`<div>You vs <b>${pkNm(D.npc)}</b> for ${money(D.stake)} (winner takes ${money(r2(D.stake*2*(1-PK_RAKE)))}).</div><div class="small"><i>${esc(PK_NPCS[D.npc].q)}</i></div>`;
+    if(D.status==='done') h+=`<div class="hl">${D.out>0?'✅ You won':D.out<0?'❌ You lost':'↩️ Push'}: ${pkRecStr(D.me)} vs ${pkRecStr(D.them)} (their tiebreaker ${D.np.tb})</div>`;
+    else h+=`<div class="small">Their picks: ${CC?CC.sheet.games.map(r=>esc(D.np.picks[r.gid]==='h'?r.h:r.a)).join(', '):''} · TB ${D.np.tb}</div>`; }
+  else h+=`<div class="small">Same sheet, one random NPC handicapper, winner takes both stakes (5% rake). Ties push. Want a real human? Play it in 🌐 Online rooms.</div><div class="row">${[10,25,50,100].map(s=>`<button class="btn sm" ${CC&&!S.slate.done?'':'disabled'} onclick="pkDuel(${s})">${money(s)}</button>`).join('')}</div>`;
+  h+=`</div>`;
+  if(R.hist.length) h+=`<div class="panel"><h3>📜 Pick-Off history</h3>${R.hist.slice(0,12).map(x=>`<div class="kv"><span>Day ${x.day} · ${x.k==='solo'?esc(x.tier)+' · '+(x.exit==='champ'?'👑 champ':x.exit):x.k==='h2h'?'🌐 Online '+esc(x.vs):'🤺 vs '+esc(x.vs)+' '+x.me+' / '+x.them}</span><b class="${x.net>0?'g':x.net<0?'r':''}">${x.net>0?'+':''}${money(x.net)}</b></div>`).join('')}</div>`;
+  return h; }
+// online result (ledger extra e.pk) → career record + Pick-Off history
+function pkOnlineRec(e){ if(!S||!e||!e.pk) return; const R=pkRec(); const h=e.pkh?'h2h':'duel'; if(e.pk==='W') R[h+'W']++; else if(e.pk==='L') R[h+'L']++;
+  R.hist.unshift({k:'h2h',day:S.day,vs:String(e.why||'').replace(/^Pick-Off /,'').slice(0,60),me:e.pk,them:'',net:Number(e.net)||0}); if(R.hist.length>40) R.hist.length=40; }
 // ===================== CASINO ENGINES =====================
 function casinoMax(){ return S.whaleMode?5000:S.cash>10000?2000:500; }
 function bookMax(b){ const bk=S.books[b]; return bk.limited?bk.max:(S.whaleMode?2500:bk.max); }
@@ -2571,7 +2715,7 @@ function euPayPot(team){ const F=U.eu; if(!F||F.paid) return; F.paid=true; const
 // Everything a client sends is validated here. Money moves via a per-player LEDGER of numbered
 // settlements {seq,w(wager id),d(cash delta),out(amount still at risk on that wager),net?} that each
 // client applies to its OWN single-player save (the bankroll lives in the save, the host tracks a mirror).
-const MPC = { VER:1, MAXP:5, SEATS:5, BJ_MIN:5, BJ_MAX:1000, TMAX:500, SB_MAXBETS:12,
+const MPC = { VER:1, PK_STAKES:[0,10,25,50,100,250], PK_MAXM:6, PK_INV_MS:30000, PK_PICK_MS:90000, PK_REVEAL_MS:6000, PK_KEEP_MS:120000, MAXP:5, SEATS:5, BJ_MIN:5, BJ_MAX:1000, TMAX:500, SB_MAXBETS:12,
   BET_MS:15000, TURN_MS:20000, DEAL_MS:650, DONE_MS:5000, RL_MS:20000, RL_SPIN_MS:3200, RL_DONE_MS:4500,
   CR_MS:25000, CR_ROLL_MS:700, SB_MS:90000, SB_LIVE_MS:45000, SB_FINAL_MS:25000, DC_MS:60000, MAXCASH:1e8, CHATLEN:120, LOANS:[250,500,1000,2500], LOAN_GAP:2000,
   F7_BUYS:[25,100,500], F7_LOBBY_MS:20000, F7_SB_MS:12000, F7_DONE_MS:10000, F7_SBV:[0,5,10,25,50], F7_TURN_MS:20000,
@@ -2599,7 +2743,7 @@ const MP_VICE_TALK={ beer:["🍺 {n} cracked a warm cheap beer. Peak performance
   pouch:["🫙 {n} tucked a nicotine pouch. Lip bulge of a man with a system.","🫙 {n} threw in a pouch and started explaining 'expected value' to nobody."],
   cigar:["🏆 {n} lit a VICTORY CIGAR. Insufferable. Earned, but insufferable.","🏆 {n} is puffing a fat victory cigar like they own the place. They don't. Sal does."] };
 const MP_EMOJI=['😂','💀','🤡','🔥','🐋','💩','🍺','😭'];
-const MP_TABLES=['lobby','bj','cr','rl','sb','f7','kn','eu'];
+const MP_TABLES=['lobby','bj','cr','rl','sb','f7','kn','eu','pk'];
 const RL_KEYS=new Set(['red','black','odd','even','low','high','d1','d2','d3','c1','c2','c3']);
 function mpCleanText(s,n){ return String(s==null?'':s).replace(/[\u0000-\u001f\u007f\u200b-\u200f\u2028-\u202e\u2066-\u2069\ufeff]/g,'').replace(/\s+/g,' ').trim().slice(0,n); }
 function mpInt(v,lo,hi){ if(typeof v==='string'&&v.trim()!=='') v=Number(v); if(typeof v!=='number'||!Number.isFinite(v)) return null; v=Math.floor(v); return (v<lo||v>hi)?null:v; }
@@ -2611,8 +2755,8 @@ function mpRoomS(){ const ach={}; for(const k in ACHS) ach[k]=1; return {v:1,nam
 function mpWithS(tmp,fn){ const oS=S, oN=U.noSave, oQ=U.silent; S=tmp; U.noSave=true; U.silent=true; try{ return fn(); } finally{ S=oS; U.noSave=oN; U.silent=oQ; } }
 
 // ---- LIVE SESSION LEADERBOARD helpers (pure; the host ranks, clients only render) ----
-const MP_LB_TB=['bj','cr','rl','sb','f7','kn','eu'];
-function mpLbTable(w){ const m=String(w||'').match(/^(bj|cr|rl|sb|f7|kn|eu)/); return m?m[1]:null; }
+const MP_LB_TB=['bj','cr','rl','sb','f7','kn','eu','pk'];
+function mpLbTable(w){ const m=String(w||'').match(/^(bj|cr|rl|sb|f7|kn|eu|pk)/); return m?m[1]:null; }
 function mpLbKey(r,tb){ return tb==='all'?r.net:((r.t&&r.t[tb])||{}).net||0; }
 // rank by session net (loans excluded), ties -> more action (wagered), then name; a per-table board lists who played or sits there
 function mpLbRank(rows,tb){ const w=r=>tb==='all'?r.w:((r.t&&r.t[tb])||{}).w||0;
@@ -2648,6 +2792,60 @@ function mpHostCreate(io){ // io: {send(cid,msg), now(), room, sess}
     return {id:p.id,name:p.name,color:p.color,net:lbNet(p),bal:p.bal,ride,w:p.rw||0,r:p.rr||0,n:S.n,big:S.big,worst:S.worst,st:S.st,bst:S.bst,loan:p.loaned||0,loanN:p.loanN||0,tab:p.tab||0,
       left:!H.P[p.cid],conn:!!(H.P[p.cid]&&p.conn),host:p.isHost,table:H.P[p.cid]?p.table:null,t:JSON.parse(JSON.stringify(S.t))}; }); }
   H.lb=function(){ const rows=lbRows(), ord={all:mpLbRank(rows,'all')}; for(const tb of MP_LB_TB) ord[tb]=mpLbRank(rows,tb); return {v:H.lbv,rows,ord}; };
+  // ---------------- 🏆 PICK-OFF (head-to-head pick'em vs another player in the room, or vs an NPC handicapper) ----------------
+  // Each match gets its own 10-game ATS sheet (own throwaway S so it never touches the room sportsbook slate). Both stakes sit in escrow.
+  // Picks stay hidden until both sheets are in; then the games "play" (short reveal) and the host settles: higher record wins, tiebreaker on total points, true tie pushes.
+  const pk=H.pk={ M:[], n:0, day:0, stand:{} }; H.pkS=null;
+  const pkLive=x=>x.phase==='invite'||x.phase==='pick'||x.phase==='live';
+  const pkMine=cid=>pk.M.find(x=>pkLive(x)&&(x.a===cid||x.b===cid));
+  const pkW=x=>'pk'+x.id;
+  function pkStand(c){ return pk.stand[c]||(pk.stand[c]={w:0,l:0,t:0,net:0}); }
+  function pkChal(p,to,stake){ if(stake==null||!MPC.PK_STAKES.includes(stake)) return rej(p,'Pick a real stake.'); if(pkMine(p.cid)) return rej(p,'You already have a Pick-Off going. One sheet at a time, sicko.');
+    if(stake>p.bal+1e-9) return rej(p,'Not enough cash, champ.'); if(pk.M.filter(pkLive).length>=MPC.PK_MAXM) return rej(p,'Too many Pick-Offs running. Wait a sec.');
+    let b='npc', npc=null; if(to==='npc'){ npc=ri(0,PK_NPCS.length-1); } else { const tc=H.order.find(c=>H.P[c].id===to); if(!tc||tc===p.cid) return rej(p,'Who? They\'re not here.'); if(!H.P[tc].conn) return rej(p,'They\'re disconnected.'); if(pkMine(tc)) return rej(p,'They\'re already in a Pick-Off.'); b=tc; }
+    const x={id:++pk.n,a:p.cid,b,npc,stake,phase:b==='npc'?'pick':'invite',deadline:now()+(b==='npc'?MPC.PK_PICK_MS:MPC.PK_INV_MS),picks:{a:null,b:null},tb:{a:null,b:null},games:[],sheet:null,res:null,out:null,auto:{}};
+    pk.M.push(x); if(stake) led(p,pkW(x),-stake,stake,`Pick-Off escrow vs ${b==='npc'?PK_NPCS[npc].n:nm(b)}`);
+    if(b==='npc'){ pkBuild(x); const g=id=>x.games.find(q=>q.id===id); mpWithS(H.pkS,()=>{ const np=pkNpcPicks(x.sheet,PK_NPCS[npc],g,0); x.picks.b=np.picks; x.tb.b=np.tb; }); sys(`🏆 ${p.name} challenged ${PK_NPCS[npc].ic} ${PK_NPCS[npc].n} to a Pick-Off${stake?' for '+money(stake):''}. ${PK_NPCS[npc].q}`); }
+    else sys(`🏆 ${p.name} challenged ${nm(b)} to a Pick-Off${stake?' for '+money(stake):' (bragging rights only)'}. 30 seconds to answer, chicken.`);
+    dirty(); }
+  function pkBuild(x){ if(!H.pkS){ H.pkS=mpRoomS(); } mpWithS(H.pkS,()=>{ if(!H.pkS.league||H.pkS.league.v!==2) H.pkS.league=genLeague(); if(H.pkS.seed==null) H.pkS.seed=ri(1,1e9); if(H.pkS.cal0==null) H.pkS.cal0=edOf(CAL_DEFAULT); const K=['fb','bb','hk','bs'];
+      let d=pk.day; for(let i=0;i<14;i++){ d++; if(schedFor(d,{peek:true}).games.filter(g=>K.includes(kindOf(g.sp))).length>=10) break; } pk.day=d; H.pkS.day=d; genSlate({max:14,kinds:K,noProps:true}); });
+    const sl=H.pkS.slate; x.games=sl.games; x.sheet=pkSheetFrom(sl.games,sl.head,10); x.deadline=now()+MPC.PK_PICK_MS; }
+  function pkAns(p,id,ok){ const x=pk.M.find(q=>q.id===id); if(!x||x.phase!=='invite'||x.b!==p.cid) return rej(p,'That challenge is gone.');
+    if(!ok){ pkVoid(x,`${p.name} chickened out`); return; } if(x.stake>p.bal+1e-9) return rej(p,'You can\'t cover that stake.');
+    if(x.stake) led(p,pkW(x),-x.stake,x.stake,`Pick-Off escrow vs ${nm(x.a)}`); x.escB=!!x.stake; x.phase='pick'; pkBuild(x); sys(`🤝 ${p.name} accepted. Same ${x.sheet.games.length}-game sheet for both. ${Math.round(MPC.PK_PICK_MS/1000)}s to pick.`); dirty(); }
+  function pkPicks(p,id,picks,tb){ const x=pk.M.find(q=>q.id===id); if(!x||x.phase!=='pick') return rej(p,'Picks are closed.'); const side=x.a===p.cid?'a':x.b===p.cid?'b':null; if(!side) return rej(p,'Not your sheet.'); if(x.picks[side]) return rej(p,'Already locked. No take-backs.');
+    if(!picks||typeof picks!=='object') return rej(p,'Bad sheet.'); const out={}; for(const r of x.sheet.games){ const v=picks[r.gid]; if(v!=='h'&&v!=='a') return rej(p,'Pick every game.'); out[r.gid]=v; }
+    const t=mpInt(tb,0,500); if(t==null) return rej(p,'Tiebreaker must be 0–500.'); x.picks[side]=out; x.tb[side]=t; sys(`🔒 ${p.name} locked their Pick-Off sheet.`); if(x.picks.a&&x.picks.b) pkGo(x); dirty(); }
+  function pkChalk(x,side){ const o={}; for(const r of x.sheet.games) o[r.gid]=r.line<0?'h':'a'; x.picks[side]=o; const g=x.games.find(q=>q.id===x.sheet.tb); x.tb[side]=Math.round((g&&g.fairTotal)||40); x.auto[side]=1; }
+  function pkGo(x){ mpWithS(H.pkS,()=>{ const res={}; for(const r of x.sheet.games){ const g=x.games.find(q=>q.id===r.gid); const s=simRun(g,null,{events:[],snaps:[]}); res[r.gid]={sa:s.sa,sh:s.sh}; } x.res=res; });
+    x.phase='live'; x.revealAt=now(); x.deadline=now()+MPC.PK_REVEAL_MS; dirty(); }
+  function pkSettle(x){ const ro=gid=>x.res[gid]||null; const ga=pkGrade(x.sheet,x.picks.a,ro), gb=pkGrade(x.sheet,x.picks.b,ro); const d=pkDecide(ga,gb,x.tb.a,x.tb.b,false);
+    x.phase='final'; x.out=d; x.ga=pkRecStr(ga); x.gb=pkRecStr(gb); x.doneAt=now(); const pot=r2(x.stake*2*(1-PK_RAKE)); const w=pkW(x);
+    const nB=x.b==='npc'?PK_NPCS[x.npc].n:nm(x.b); const why=(me,them,vs)=>`Pick-Off ${me} vs ${them} (${vs})`.slice(0,90);
+    const A=pl(x.a), B=x.b==='npc'?null:pl(x.b);
+    if(d===0){ led(A,w,x.stake,0,why(x.ga,x.gb,nB)+': push',0,{lf:x.stake?[[x.stake,x.stake]]:[],pk:'T'}); if(B) led(B,w,x.stake,0,why(x.gb,x.ga,nm(x.a))+': push',0,{lf:x.stake?[[x.stake,x.stake]]:[],pk:'T'}); pkStand(x.a).t++; if(B) pkStand(x.b).t++; sys(`🤝 Pick-Off DEAD EVEN: ${nm(x.a)} ${x.ga} vs ${nB} ${x.gb}, same tiebreaker. Stakes returned.`); }
+    else { const aw=d>0; const payA=aw?pot:0, payB=aw?0:pot;
+      led(A,w,payA,0,why(x.ga,x.gb,nB)+(aw?': WON':': lost'),r2(payA-x.stake),{lf:x.stake?[[x.stake,payA]]:[],pk:aw?'W':'L',pkh:x.b!=='npc'?1:0});
+      if(B) led(B,w,payB,0,why(x.gb,x.ga,nm(x.a))+(aw?': lost':': WON'),r2(payB-x.stake),{lf:x.stake?[[x.stake,payB]]:[],pk:aw?'L':'W',pkh:1});
+      const SA=pkStand(x.a); SA[aw?'w':'l']++; SA.net=r2(SA.net+payA-x.stake); if(B){ const SB=pkStand(x.b); SB[aw?'l':'w']++; SB.net=r2(SB.net+payB-x.stake); }
+      const tbn=ga.pts===gb.pts?' on the tiebreaker':''; sys(`🏆 Pick-Off: ${aw?nm(x.a):nB} (${aw?x.ga:x.gb}) beat ${aw?nB:nm(x.a)} (${aw?x.gb:x.ga})${tbn}${x.stake?` and takes ${money(pot)}`:''}. ${pick(['Absolute cinema.','Somebody call a doctor.','The loser is "taking a break from gambling" (for 4 minutes).','Sheet-to-sheet violence.'])}`); }
+    dirty(); }
+  function pkVoid(x,why){ if(!pkLive(x)) return; x.phase='void'; x.doneAt=now(); x.why=why; if(x.stake){ led(pl(x.a),pkW(x),x.stake,0,'Pick-Off voided: stake returned'); if(x.escB) led(pl(x.b),pkW(x),x.stake,0,'Pick-Off voided: stake returned'); } sys(`🚫 Pick-Off voided: ${why}.`); dirty(); }
+  function pkCancel(p,id){ const x=pk.M.find(q=>q.id===id); if(!x||(x.a!==p.cid&&x.b!==p.cid)) return; if(x.phase==='invite'||(x.phase==='pick'&&x.b==='npc')) return pkVoid(x,`${p.name} bailed`); rej(p,'Sheets are out. Too late to bail (you can let the timer auto-pick the favorites, coward).'); }
+  function pkTick(t){ for(const x of pk.M){ if(x.phase==='invite'&&t>=x.deadline) pkVoid(x,`${nm(x.b)} never answered`);
+      else if(x.phase==='pick'&&t>=x.deadline){ for(const s of ['a','b']) if(!x.picks[s]) pkChalk(x,s); sys('⏰ Pick-Off clock hit zero. Missing sheets got auto-picked: all favorites (the coward\'s special).'); pkGo(x); }
+      else if(x.phase==='live'&&t>=x.deadline) pkSettle(x); }
+    const keep=pk.M.filter(x=>pkLive(x)||t-(x.doneAt||0)<MPC.PK_KEEP_MS); if(keep.length!==pk.M.length){ pk.M=keep.slice(-12); dirty(); } else if(pk.M.length>12) pk.M=pk.M.slice(-12); }
+  function pkRemove(cid){ for(const x of pk.M) if((x.a===cid||x.b===cid)&&(x.phase==='invite'||x.phase==='pick')) pkVoid(x,`${nm(cid)} left`); }
+  function pkView(rem){ const vis=x=>x.phase==='live'||x.phase==='final';
+    return { stakes:MPC.PK_STAKES, stand:Object.keys(pk.stand).map(c=>({id:idOf(c),name:nm(c),...pk.stand[c]})).filter(r=>r.id),
+      M:pk.M.map(x=>({id:x.id,a:idOf(x.a),an:nm(x.a),b:x.b==='npc'?'npc':idOf(x.b),bn:x.b==='npc'?PK_NPCS[x.npc].ic+' '+PK_NPCS[x.npc].n:nm(x.b),stake:x.stake,phase:x.phase,rem:rem(x.deadline),why:x.why||'',
+        sheet:x.sheet?{games:x.sheet.games,tb:x.sheet.tb,tbLbl:x.sheet.tbLbl}:null, lockA:!!x.picks.a, lockB:!!x.picks.b, auto:x.auto,
+        pa:vis(x)?x.picks.a:null, pb:vis(x)?x.picks.b:null, ta:vis(x)?x.tb.a:null, tb:vis(x)?x.tb.b:null,
+        res:x.res?(x.phase==='final'?x.res:pkRevealRes(x)):null, out:x.out, ga:x.ga||null, gb:x.gb||null})) }; }
+  // during the reveal, games "go final" one by one
+  function pkRevealRes(x){ const n=x.sheet.games.length, f=clamp((now()-x.revealAt)/MPC.PK_REVEAL_MS,0,1), k=Math.floor(f*n); const o={}; x.sheet.games.slice(0,k).forEach(r=>{ o[r.gid]=x.res[r.gid]; }); return o; }
   // ---------------- join / leave ----------------
   H.join=function(cid,m,isHost){ if(H.closed) return {err:'Table is closing.'}; cid=String(cid||'').slice(0,40); if(!cid) return {err:'bad hello'};
     const key=String((m&&m.key)||'').slice(0,40), name=mpCleanText(m&&m.name,14)||'Degen', color=mpColor(m&&m.color);
@@ -2674,6 +2872,7 @@ function mpHostCreate(io){ // io: {send(cid,msg), now(), room, sess}
     else if(eu.phase==='play'){ const i=eu.cids.indexOf(cid); if(i>=0&&voluntary) ehFold(cid,'left the room');
       if(eu.sbNext[cid]){ const B=eu.sbNext[cid]; delete eu.sbNext[cid]; led(p,euSbW(),euSbTot(B),0,'Euchre side bets returned (you left)'); } }
     if(kn.tickets[cid]){ if(kn.phase==='draw'&&kn.inRace.includes(cid)) kn.tickets[cid].gone=true; else knCancel(p,'Left: keno ticket refunded'); }
+    pkRemove(cid);
     H.order=H.order.filter(c=>c!==cid); delete H.P[cid]; p.conn=false; H.ghost[cid]=p; sys(`🚪 ${p.name} ${why}.`); }
   // ---------------- messages ----------------
   H.msg=function(cid,m){ const p=H.P[cid]; if(!p||!m||typeof m!=='object'||H.closed) return; try{ switch(m.t){
@@ -2710,6 +2909,10 @@ function mpHostCreate(io){ // io: {send(cid,msg), now(), room, sess}
     case 'eu.act': return ehAct(p,String(m.a||''),m.arg==null?null:mpInt(m.arg,0,5),!!m.alone);
     case 'kn.ticket': return knTicket(p,m.spots,mpInt(m.bet,1,1e6),mpInt(m.races,1,1000));
     case 'kn.cancel': if(kn.phase==='draw'&&kn.inRace.includes(cid)) return rej(p,'Balls are flying. Cancel after this race.'); return knCancel(p);
+    case 'pk.chal': return pkChal(p,String(m.to||'').slice(0,8),mpInt(m.stake,0,1e6));
+    case 'pk.ans': return pkAns(p,mpInt(m.id,1,1e9),!!m.ok);
+    case 'pk.picks': return pkPicks(p,mpInt(m.id,1,1e9),m.picks,m.tb);
+    case 'pk.cancel': return pkCancel(p,mpInt(m.id,1,1e9));
     case 'kn.ready': if(kn.phase!=='draw'&&kn.tickets[cid]){ kn.ready[cid]=1; dirty(); } return;
     default: return; } }catch(e){ console.warn('mp host msg error',e); } };
   function go(p,tb){ if(!MP_TABLES.includes(tb)||p.table===tb) return; const old=p.table; p.table=tb; if(old==='bj') bjLeave(p,false);
@@ -3067,7 +3270,7 @@ function mpHostCreate(io){ // io: {send(cid,msg), now(), room, sess}
     if(kn.phase==='draw'){ let ch=false; while(kn.shown<20&&t>=kn.nextBall){ kn.shown++; kn.nextBall+=MPC.KN_BALL_MS; ch=true; } if(ch) dirty(); if(kn.shown>=20&&t>=kn.nextBall+400) knSettle(t); return; }
     if(kn.phase==='done'&&t>=kn.doneAt){ kn.phase='bet'; kn.ready={}; kn.deadline=Object.keys(kn.tickets).length?t+MPC.KN_NEXT_MS:0; dirty(); } }
   // ---------------- clock ----------------
-  H.tick=function(){ if(H.closed) return; const t=now(); try{ bjTick(t); crTick(t); rlTick(t); sbTick(t); f7Tick(t); knTick(t); ehTick(t);
+  H.tick=function(){ if(H.closed) return; const t=now(); try{ bjTick(t); crTick(t); rlTick(t); sbTick(t); f7Tick(t); knTick(t); ehTick(t); pkTick(t);
     for(const c of H.order.slice()){ const p=H.P[c]; if(p&&!p.conn&&t-p.dcAt>MPC.DC_MS) remove(c,'timed out and got kicked',false); } }catch(e){ console.warn('mp host tick error',e); } };
   // ---------------- close (host leaving): void & refund everything still at risk ----------------
   H.close=function(why){ if(H.closed) return; const all=c=>pl(c);
@@ -3085,6 +3288,7 @@ function mpHostCreate(io){ // io: {send(cid,msg), now(), room, sess}
     else if(eu.phase==='play'){ eu.cids.forEach(c=>{ if(c&&!eu.folded[c]) led(all(c),'eug'+eu.matchNo,eu.ante,0,'Table closed: euchre match voided, ante returned'); });
       for(const c in eu.sbNext) led(all(c),euSbW(),euSbTot(eu.sbNext[c]),0,'Table closed: euchre side bets returned');
       for(const c in eu.sbLive) led(all(c),'eus'+eu.matchNo+'.'+eu.G.handNo,euSbTot(eu.sbLive[c]),0,'Table closed: euchre side bets returned'); eu.sbNext={}; eu.sbLive={}; eu.phase='closed'; }
+    for(const x of pk.M){ if(x.phase==='live') pkSettle(x); else pkVoid(x,'table closed'); }
     H.fin=Object.assign(H.lb(),{room:H.room,mins:Math.max(1,Math.round((now()-H.t0)/60000)),bets:H.rt.n,w:H.rt.w,r:H.rt.r});
     H.closed=true; for(const c of H.order) if(H.P[c].conn) io.send(c,{t:'close',why:why||'The host closed the table.',fin:H.fin}); };
   // ---------------- public snapshot (no shoe, no hole card, no secret ids) ----------------
@@ -3101,7 +3305,7 @@ function mpHostCreate(io){ // io: {send(cid,msg), now(), room, sess}
       sb:{day:sb.day,phase:sb.phase,rem:rem(sb.phase==='final'?sb.finalAt:sb.deadline),t:sb.t,ready:Object.keys(sb.ready).map(idOf),ticker:sb.ticker.slice(-16),stats:byId(sb.stats),
         games:sb.games.map(g=>{ const L=g.lines.DQ; return {id:g.id,sp:g.sp,slot:g.slot,a:{ab:g.a.ab,nm:g.a.nm},h:{ab:g.h.ab,nm:g.h.nm},L:{spread:L.spread,spH:L.spH,spA:L.spA,total:L.total,tO:L.tO,tU:L.tU,mlH:L.mlH,mlA:L.mlA},live:g.live||null,fin:sb.phase==='final'&&g.res?{sa:g.res.sa,sh:g.res.sh,ot:g.res.ot}:null}; }),
         bets:sb.bets.map(b=>({id:b.id,pid:idOf(b.cid),name:nm(b.cid),legs:b.legs,stake:b.stake,odds:b.odds,status:b.status,ret:b.ret,net:b.net,res:b.res}))},
-      f7:f7View(rem,byId), kn:knView(rem,byId), eu:ehView(rem,byId) }; };
+      f7:f7View(rem,byId), kn:knView(rem,byId), eu:ehView(rem,byId), pk:pkView(rem) }; };
   function f7View(rem,byId){ const G=f7.G, W=G&&G.await;
     return {phase:f7.phase,buy:f7.buy,target:f7.target,seats:f7.seats.map(idOf),ready:Object.keys(f7.ready).map(idOf),gameNo:f7.gameNo,pot:f7.pot,sbOpen:f7.sbOpen,res:f7.res,log:f7.log.slice(-14),
       rem:f7.phase==='lobby'?rem(f7.deadline):f7.phase==='over'?rem(f7.doneAt):f7.sbOpen?rem(f7.sbDeadline):W?rem(f7.turnAt):0, sb:byId(f7.sbNext), live:byId(f7.sbLive),
@@ -3146,7 +3350,8 @@ function mpBindSess(sess){ if(!S) return; S.mp=S.mp||{}; if(S.mp.sess!==sess){ i
 function mpApply(list){ if(!S||!S.mp||!Array.isArray(list)) return; const es=list.filter(e=>e&&typeof e.seq==='number').sort((a,b)=>a.seq-b.seq); let any=false;
   for(const e of es){ if(e.seq<=S.mp.lastSeq) continue; S.mp.lastSeq=e.seq; any=true; const d=Number(e.d); if(e.loan!=null&&d>0&&Number(e.loan)===d) mpLoanApply(d); else if(Number.isFinite(d)&&d!==0){ addCash(d); MP.sessNet=r2(MP.sessNet+d); }
     const w=String(e.w||'').slice(0,20), out=Number(e.out)||0;
-    if(Array.isArray(e.lf)&&e.lf.length<=60){ const sb=(w.match(/^(bj|cr|rl|sb|f7|kn|eu)/)||[])[1]||''; for(const pr of e.lf) if(Array.isArray(pr)) lifeRec('online',pr[0],pr[1],String(e.why||'Online bet'),sb); } if(out>0) S.mp.open[w]=r2(out); else delete S.mp.open[w];
+    if(Array.isArray(e.lf)&&e.lf.length<=60){ const sb=(w.match(/^(bj|cr|rl|sb|f7|kn|eu|pk)/)||[])[1]||''; for(const pr of e.lf) if(Array.isArray(pr)) lifeRec('online',pr[0],pr[1],String(e.why||'Online bet'),sb); } if(out>0) S.mp.open[w]=r2(out); else delete S.mp.open[w];
+    if(e.pk==='W'||e.pk==='L'||e.pk==='T') pkOnlineRec(e);
     if(e.net!=null&&Number.isFinite(Number(e.net))) mpResultFx(Number(e.net),String(e.why||''));
     if(e.vice&&typeof e.vice==='object'&&d<0) mpViceApply(e.vice); }
   if(any){ save(); renderTop(); } mpSend({t:'ack',seq:S.mp.lastSeq}); }
@@ -3256,9 +3461,9 @@ function mpFinishLeave(){ mpDrainLocal(); const net=MP.sessNet, played=MP.charge
   U.mpv='lobby'; U.mpVice=false; U.mpVicePend=0; U.mpSlop=null; go(S&&!S.ended?(U.mpFrom==='casino'&&U.cs?'casino':'hub'):'title'); }
 window.addEventListener('pagehide',()=>{ try{ if(MP.role==='host'&&MP.H&&!MP.H.closed){ MP.H.close('The host left. Table closed.'); mpDrainLocal(); } }catch(e){} });
 // ===================== MULTIPLAYER: SCREENS =====================
-const MP_TNAME={lobby:'🛋️ Lobby',bj:'🂡 Blackjack',cr:'🎲 Craps',rl:'🎡 Roulette',sb:'📺 Sportsbook',f7:'7️⃣ Flip 7',kn:'🎱 Keno',eu:'🃏 Euchre Hall'};
-const MP_TSHORT={lobby:'🛋️ Lobby',bj:'🂡 BJ',cr:'🎲 Craps',rl:'🎡 Wheel',sb:'📺 Book',f7:'7️⃣ Flip7',kn:'🎱 Keno',eu:'🃏 Euchre'};
-const MP_TDESC={bj:'5 seats, turn timer, S17, 3:2',cr:'Shared shooter, full bets',rl:'One wheel, everyone\'s chips',sb:'Shared slate + live sweat',f7:'Buy in, winner takes the pot',kn:'One draw, everyone\'s tickets',eu:'2v2 partners, bots fill seats, ante pot'};
+const MP_TNAME={lobby:'🛋️ Lobby',bj:'🂡 Blackjack',cr:'🎲 Craps',rl:'🎡 Roulette',sb:'📺 Sportsbook',f7:'7️⃣ Flip 7',kn:'🎱 Keno',eu:'🃏 Euchre Hall',pk:'🏆 Pick-Off'};
+const MP_TSHORT={lobby:'🛋️ Lobby',bj:'🂡 BJ',cr:'🎲 Craps',rl:'🎡 Wheel',sb:'📺 Book',f7:'7️⃣ Flip7',kn:'🎱 Keno',eu:'🃏 Euchre',pk:'🏆 PickOff'};
+const MP_TDESC={bj:'5 seats, turn timer, S17, 3:2',cr:'Shared shooter, full bets',rl:'One wheel, everyone\'s chips',sb:'Shared slate + live sweat',f7:'Buy in, winner takes the pot',kn:'One draw, everyone\'s tickets',eu:'2v2 partners, bots fill seats, ante pot',pk:'Head-to-head pick\'em vs a human (or an NPC tout)'};
 const MP_SEATX=[.1,.3,.5,.7,.9];
 const MP_WHEEL=[0,28,9,26,30,11,7,20,32,17,5,22,34,15,3,24,36,13,1,37,27,10,25,29,12,8,19,31,18,6,21,33,16,4,23,35,14,2];
 function mpP(id){ return MP.R&&MP.R.players.find(p=>p.id===id); }
@@ -3316,7 +3521,7 @@ function mpLoanHtml(){ if(!S) return '';
   if(busy) h+=`<div class="small a">✋ Finish your hand / let the spin land first. No re-upping mid-hand.</div>`;
   h+=`<div class="grid2">${MPC.LOANS.map(v=>{ const fee=Math.round(v*(.1+.05*S.loans)); return `<button class="btn" ${v<=cap&&!busy&&!pend?'':'disabled'} onclick="mpBorrow(${v})">${pend===v?'⏳ Counting…':'Borrow '+money(v)}<small>+${money(v+fee)} debt</small></button>`; }).join('')}</div></div>`; return h; }
 function mpViewHtml(){ const R=MP.R; try{ return mpSlopHtml()+mpViceHtml()+mpLoanHtml()+mpTableHtml(R); }catch(e){ console.error(e); return `<div class="panel r">Render glitch: ${esc(e.message)}</div>`; } }
-function mpTableHtml(R){ { switch(U.mpv){ case 'bj': return mpBJHtml(R); case 'cr': return mpCrHtml(R); case 'rl': return mpRlHtml(R); case 'sb': return mpSbHtml(R); case 'f7': return mpF7Html(R); case 'kn': return mpKnHtml(R); case 'eu': return mpEuHtml(R); default: return mpLobbyHtml(R); } } }
+function mpTableHtml(R){ { switch(U.mpv){ case 'bj': return mpBJHtml(R); case 'cr': return mpCrHtml(R); case 'rl': return mpRlHtml(R); case 'sb': return mpSbHtml(R); case 'f7': return mpF7Html(R); case 'kn': return mpKnHtml(R); case 'eu': return mpEuHtml(R); case 'pk': return mpPkHtml(R); default: return mpLobbyHtml(R); } } }
 function mpGo(tb){ if(!MP_TABLES.includes(tb)||!MP.R) return; if(U.mpv==='bj'&&tb!=='bj'){ const B=MP.R.bj, X=B.hands[MP.me]; if(X&&B.phase==='play'&&!X.done){ toast('✋ Finish your blackjack hand first.'); return; } }
   if(U.mpv===tb) return; U.mpSlop=null; U.mpv=tb; mpSend({t:'go',table:tb}); sfx.click(); window.scrollTo(0,0); mpRenderRoom(false); }
 function mpChatShell(){ return `<div class="panel mpchat"><div class="log mplog" id="mpclog"></div><div class="mpemo">${MP_EMOJI.map((e,i)=>`<button class="tab" onclick="mpEmote(${100+i})">${e}</button>`).join('')}</div><div class="mpemo">${MP_TALK.map((t,i)=>`<button class="mptalk" onclick="mpEmote(${i})">${esc(t)}</button>`).join('')}</div><form class="row" onsubmit="mpChatSend();return false"><input type="text" id="mpmsg" maxlength="${MPC.CHATLEN}" placeholder="Talk trash (max ${MPC.CHATLEN} chars)" autocomplete="off" style="flex:1;min-width:0"><button class="btn c" style="width:auto;margin:0;min-width:66px">Send</button></form></div>`; }
@@ -3353,7 +3558,7 @@ function mpStateFx(R,P){ const me=MP.me, tb=U.mpv; mpLbMoves(R,P);
   if(tb==='kn'&&R.kn&&P.kn){ if(R.kn.phase==='draw'&&R.kn.shown.length>(P.kn.phase==='draw'?P.kn.shown.length:0)){ sfx.tick(); pose('kr','point',400,'idle'); }
     if(R.kn.phase==='done'&&P.kn.phase!=='done') for(const id in R.kn.res){ const n=R.kn.res[id].net; pose('mp_'+id,n>0?'celebrate':'facepalm',2000,'idle'); } }
   if(tb==='sb'&&R.sb.ticker.length&&P.sb.ticker.length){ const a=R.sb.ticker[R.sb.ticker.length-1], b=P.sb.ticker[P.sb.ticker.length-1]; if(a.txt!==b.txt&&a.cls==='big'){ const here=R.players.filter(p=>p.table==='sb'); if(here.length) pose('mp_'+pick(here).id,rnd()<.5?'cheer':'groan',1400,'sit'); } } }
-function mpUiTick(){ if(U.screen!=='mp'||!MP.R) return; const tn=Date.now(); const ne=document.getElementById('mpnic'); if(ne){ const l=mpNicLeft(); if(l>0) ne.textContent=Math.ceil(l/1000); else renderMPSafe(); } for(const el of document.querySelectorAll('.lbmv[data-exp]')) if(+el.getAttribute('data-exp')<tn) el.remove(); for(const el of document.querySelectorAll('[data-cd]')){ const k=el.getAttribute('data-cd'); const o=MP.R[k]; if(o) el.textContent=mpSec(o.rem); } }
+function mpUiTick(){ if(U.screen!=='mp'||!MP.R) return; const tn=Date.now(); const ne=document.getElementById('mpnic'); if(ne){ const l=mpNicLeft(); if(l>0) ne.textContent=Math.ceil(l/1000); else renderMPSafe(); } for(const el of document.querySelectorAll('.lbmv[data-exp]')) if(+el.getAttribute('data-exp')<tn) el.remove(); for(const el of document.querySelectorAll('[data-cd]')){ const k=el.getAttribute('data-cd'); const o=MP.R[k]; if(o) el.textContent=mpSec(o.rem); } for(const el of document.querySelectorAll('[data-pkcd]')){ const x=MP.R.pk&&MP.R.pk.M.find(q=>q.id===+el.getAttribute('data-pkcd')); if(x) el.textContent=mpSec(x.rem); } }
 // ---------- canvas scenes ----------
 function mpActor(p,i,extra){ return Object.assign({id:'mp_'+p.id,x:.5,s:.7,color:mpColor(p.color),label:String(p.name||'?').toUpperCase().slice(0,9),lc:p.id===MP.me?'#5dff8a':'#ffc24a',hat:p.host?'crown':['cap','beanie','visor','bald','cap'][i%5],hatc:mpColor(p.color),pose:'idle',ph:i*.7},extra||{}); }
 function mpSceneFor(tb){ const R=MP.R; if(!R) return null; const ps=R.players; const actors=[]; let bg; const opts={caption:''};
@@ -3405,7 +3610,7 @@ function mpOverRL(c,W,H,t){ const R=MP.R; if(!R) return; const T=R.rl, N=38, seg
 function mpLobbyHtml(R){ const url=mpLink();
   let h=`<h2>🌐 THE BACK ROOM <span class="small dim">${R.players.length}/${MPC.MAXP} degenerates</span></h2><div class="panel" style="text-align:center"><div class="small dim">Room code — send it to your friends</div><div class="mpcode">DEGEN-${esc(MP.code)}</div><div class="grid2"><button class="btn c" onclick="mpCopy()">📋 Copy invite link</button><button class="btn c" onclick="mpShare()">📤 Share</button></div><div class="small dim" style="word-break:break-all">${esc(url)}</div></div>`;
   h+=`<h3>🪑 Who's here</h3><table><tr><th>Degen</th><th>At</th><th>Bankroll</th><th>Session</th></tr>${R.players.map(p=>`<tr><td>${mpDot(p.color)}<b>${esc(p.name)}</b>${p.host?' 👑':''}${p.id===MP.me?' <span class="g small">(you)</span>':''}${p.conn?'':' <span class="r small">📵</span>'}</td><td>${MP_TSHORT[p.table]||''}</td><td>${money(p.bal)}${p.loaned?` <span class="small a" title="borrowed from Sal this session">🥪${money(p.loaned)}</span>`:''}</td><td class="${p.net>=0?'g':'r'}">${p.net>=0?'+':''}${money(p.net)}</td></tr>`).join('')}</table>`;
-  h+=`<h3>🎰 Tables</h3><div class="grid2">${['bj','cr','rl','sb','f7','kn','eu'].map(t=>`<button class="btn" onclick="mpGo('${t}')">${MP_TNAME[t]}<small>${MP_TDESC[t]} · ${R.players.filter(p=>p.table===t).length} here</small></button>`).join('')}</div>`;
+  h+=`<h3>🎰 Tables</h3><div class="grid2">${['bj','cr','rl','sb','f7','kn','eu','pk'].map(t=>`<button class="btn" onclick="mpGo('${t}')">${MP_TNAME[t]}<small>${MP_TDESC[t]} · ${R.players.filter(p=>p.table===t).length} here</small></button>`).join('')}</div>`;
   h+=mpLbFullHtml(R)+mpRoomTotHtml(R)+`<div class="small dim">Your online bankroll is your single-player save (${money(S?S.cash:0)}). Wins & losses write back to your run. The day doesn't advance while you're here.</div>`;
   h+=`<button class="btn c ${MP.role==='host'?'bad':''}" onclick="mpLeave()">${MP.role==='host'?'🔒 Close the table (kicks everyone)':'🚪 Leave the room'}</button>`; return h; }
 function mpChipsAdd(vals,fn,max){ return `<div class="row">${vals.map(v=>`<button class="chip" ${v>max?'disabled':''} onclick="${fn}(${v})">+$${v>=1000?(v/1000)+'k':v}</button>`).join('')}</div>`; }
@@ -3600,7 +3805,7 @@ function mpLbMoves(R,P){ const L=mpLbData(R), PL=P?mpLbData(P):null; if(!PL||L.v
   const a=L.ord.all||[], b=PL.ord.all||[]; a.forEach((id,i)=>{ const j=b.indexOf(id); if(j>=0&&j!==i) MP.lbMv[id]={d:j-i,t:Date.now()}; });
   if(a.length>1&&a[0]===MP.me&&b[0]!==MP.me){ toast('👑 You took the chip lead. Act humble. (You won\'t.)'); sfx.coin(); }
   else if(a.length>1&&a[a.length-1]===MP.me&&b[b.length-1]!==MP.me&&b.includes(MP.me)) toast("🤡 Dead last. You're Sal's favorite customer now."); }
-const MP_LB_TABS=['all','bj','cr','rl','sb','f7','kn','eu'];
+const MP_LB_TABS=['all','bj','cr','rl','sb','f7','kn','eu','pk'];
 function mpLbName(r){ return `${mpDot(r.color)}<b>${esc(r.name)}</b>${r.host?' 🏠':''}${r.id===MP.me?' <span class="g small">(you)</span>':''}${r.left?' <span class="dim small">(left)</span>':r.conn===false?' <span class="r small">📵</span>':''}`; }
 function mpLbFullHtml(R){ const L=mpLbData(R), tb=MP_LB_TABS.includes(U.lbTb)?U.lbTb:'all', list=mpLbList(L,tb);
   let h=`<h3>🏆 LIVE LEADERBOARD <span class="small dim">ranked by session net · updates after every settled bet</span></h3><div class="row lbtabs">${MP_LB_TABS.map(t=>`<button class="chip ${t===tb?'on':''}" onclick="mpLbSet('${t}')">${t==='all'?'🌐 All tables':MP_TSHORT[t]}</button>`).join('')}</div>`;
@@ -3660,13 +3865,54 @@ function mpDrunk(label,go){ if(Math.random()<mpSlopChance()){ U.mpSlop={label,go
 function mpSlopHtml(){ const X=U.mpSlop; if(!X) return ''; return `<div class="panel r mpslop">🥴 <b>SLOPPY.</b> Buzz ${S?S.buzz:0}: you fumbled for <b>${esc(X.label)}</b> and almost knocked a drink into the dealer's lap. Did you actually mean that?<div class="grid2"><button class="btn go" onclick="mpSlopYes()">✅ Yeah, ${esc(X.label)}</button><button class="btn c" onclick="mpSlopNo()">✖ Nah, my bad</button></div></div>`; }
 function mpSlopYes(){ const X=U.mpSlop; U.mpSlop=null; if(X) X.go(); renderMPSafe(); }
 function mpSlopNo(){ U.mpSlop=null; toast('🥴 You put the chips down and pretend that never happened.'); renderMPSafe(); }
+
+// ---- 🏆 Pick-Off (online head-to-head pick'em) ----
+function mpPkHtml(R){ const T=R.pk||{M:[],stand:[],stakes:[0]}, me=MP.me, myP=mpP(me)||{bal:0}; U.mpPkStake=T.stakes.includes(U.mpPkStake)?U.mpPkStake:(T.stakes[1]||0);
+  const mine=T.M.find(x=>(x.a===me||x.b===me)&&['invite','pick','live'].includes(x.phase));
+  let h=`<h2>🏆 PICK-OFF <span class="small dim">head-to-head pick'em · ${'10'} games ATS · higher record wins · tiebreaker = total points · ${Math.round(PK_RAKE*100)}% rake</span></h2>`;
+  const inv=T.M.filter(x=>x.phase==='invite'&&x.b===me);
+  for(const x of inv) h+=`<div class="panel gold">⚔️ <b>${esc(x.an)}</b> challenges you to a Pick-Off ${x.stake?'for <b>'+money(x.stake)+'</b>':'(bragging rights)'}! <span class="small" data-pkcd="${x.id}">${mpSec(x.rem)}</span><div class="grid2"><button class="btn go c" ${x.stake<=myP.bal?'':'disabled'} onclick="mpSend({t:'pk.ans',id:${x.id},ok:1})">✅ Accept</button><button class="btn c" onclick="mpSend({t:'pk.ans',id:${x.id},ok:0})">🐔 Decline</button></div></div>`;
+  if(mine&&mine.phase==='invite'&&mine.a===me) h+=`<div class="panel">⏳ Waiting for <b>${esc(mine.bn)}</b> to answer… <span data-pkcd="${mine.id}">${mpSec(mine.rem)}</span> <button class="btn sm" onclick="mpSend({t:'pk.cancel',id:${mine.id}})">✖ Cancel</button></div>`;
+  if(mine&&mine.sheet&&mine.phase!=='invite') h+=mpPkSheet(mine,me);
+  const last=!mine&&T.M.slice().reverse().find(x=>(x.a===me||x.b===me)&&x.phase==='final'&&x.sheet); if(last) h+=mpPkSheet(last,me);
+  if(!mine){ const others=R.players.filter(p=>p.id!==me&&p.conn); const busy=id=>T.M.some(x=>(x.a===id||x.b===id)&&['invite','pick','live'].includes(x.phase));
+    h+=`<div class="panel"><h3>⚔️ Start a Pick-Off</h3><div class="small">Stake</div>${chips(T.stakes,U.mpPkStake,'mpPkStakeSet')}<div class="grid2">${others.map(p=>`<button class="btn c" ${busy(p.id)||U.mpPkStake>myP.bal?'disabled':''} onclick="mpSend({t:'pk.chal',to:'${p.id}',stake:U.mpPkStake})">${mpDot(p.color)}Challenge ${esc(p.name)}${busy(p.id)?' <small>(busy)</small>':''}</button>`).join('')}
+      <button class="btn c" ${U.mpPkStake>myP.bal?'disabled':''} onclick="mpSend({t:'pk.chal',to:'npc',stake:U.mpPkStake})">🤖 Play a random NPC handicapper<small>${others.length?'nobody brave enough?':'nobody else is here'}</small></button></div>
+      <div class="small dim">Both players get the SAME sheet. Picks stay hidden until both are locked. Miss the clock and you get auto-picked all favorites.</div></div>`; }
+  if(T.stand.length) h+=`<h3>📊 Room Pick-Off ladder</h3><table><tr><th>Degen</th><th>W-L-T</th><th>Net</th></tr>${T.stand.slice().sort((a,b)=>(b.w-b.l)-(a.w-a.l)||b.net-a.net).map(r=>`<tr><td>${esc(r.name)}${r.id===me?' <span class="g small">(you)</span>':''}</td><td>${r.w}-${r.l}-${r.t}</td><td class="${r.net>0?'g':r.net<0?'r':''}">${money(r.net)}</td></tr>`).join('')}</table>`;
+  const done=T.M.filter(x=>x.phase==='final'||x.phase==='void').slice(-6).reverse();
+  if(done.length) h+=`<h3>🧾 Recent Pick-Offs</h3>${done.map(x=>`<div class="kv small"><span>${esc(x.an)} ${x.ga||''} vs ${esc(x.bn)} ${x.gb||''}${x.stake?' · '+money(x.stake):''}</span><b>${x.phase==='void'?'void':x.out>0?esc(x.an)+' won':x.out<0?esc(x.bn)+' won':'push'}</b></div>`).join('')}`;
+  return h; }
+function mpPkStakeSet(v){ U.mpPkStake=v; mpRenderRoom(false); }
+function mpPkSheet(x,me){ const side=x.a===me?'a':'b', opp=side==='a'?x.bn:x.an; const locked=side==='a'?x.lockA:x.lockB; const P=U.mpPk&&U.mpPk.id===x.id?U.mpPk:(U.mpPk={id:x.id,picks:{},tb:''});
+  const reveal=x.phase==='live'||x.phase==='final'; const myP=reveal?(side==='a'?x.pa:x.pb):P.picks, thP=reveal?(side==='a'?x.pb:x.pa):null;
+  let h=`<div class="panel"><h3>📝 You vs ${esc(opp)} ${x.stake?'· '+money(x.stake)+' each':''}</h3><div class="small">${x.phase==='pick'?`⏳ <span data-pkcd="${x.id}">${mpSec(x.rem)}</span> to lock · ${locked?'✅ you\'re locked':'pick every game'} · ${(side==='a'?x.lockB:x.lockA)?'🔒 they\'re locked':'they\'re still picking'}`:x.phase==='live'?'🔴 Games going final…':''}</div>
+    <table class="box pk"><tr><th></th><th>Away</th><th>Home</th><th>Them</th><th>Final</th></tr>`;
+  for(const r of x.sheet.games){ const res=x.res&&x.res[r.gid]; const o=res?pkCover(r,myP[r.gid],res):null, ot=res&&thP?pkCover(r,thP[r.gid],res):null;
+    const b=s=>`<button class="btn sm ${myP&&myP[r.gid]===s?'on':''}" ${locked||reveal?'disabled':''} onclick="mpPkPick('${r.gid}','${s}')">${esc(s==='h'?r.h:r.a)} ${pkLineTxt(r,s)}</button>`;
+    h+=`<tr class="${o==='w'?'win':''}"><td class="small">${(SPORTS[r.sp]||{}).icon||''}${r.gid===x.sheet.tb?'🎯':''}</td><td>${b('a')}</td><td>${b('h')}</td><td class="small">${thP?esc(thP[r.gid]==='h'?r.h:r.a)+(ot==='w'?' ✅':ot==='l'?' ❌':ot==='p'?' ↩️':''):'🙈'}</td><td class="small">${res?`${res.sa}-${res.sh} ${o==='w'?'✅':o==='l'?'❌':'↩️'}`:''}</td></tr>`; }
+  h+=`</table><div class="small">🎯 Tiebreaker: total points in <b>${esc(x.sheet.tbLbl)}</b> ${locked||reveal?`· yours ${reveal?(side==='a'?x.ta:x.tb):'(locked)'}${reveal?' · theirs '+(side==='a'?x.tb:x.ta):''}`:`<input id="mppktb" type="number" min="0" max="500" style="width:70px" value="${P.tb}" oninput="U.mpPk.tb=this.value">`}</div>`;
+  if(x.phase==='pick'&&!locked){ const n=Object.keys(P.picks).length; h+=`<div class="row"><button class="btn sm" onclick="mpPkFill('chalk')">🦴 Favorites</button><button class="btn sm" onclick="mpPkFill('dogs')">🐕 Dogs</button><button class="btn sm" onclick="mpPkFill('rand')">🪙 Random</button><button class="btn go" ${n===x.sheet.games.length?'':'disabled'} onclick="mpPkLock(${x.id})">🔒 Lock sheet (${n}/${x.sheet.games.length})</button>${x.b==='npc'?`<button class="btn sm" onclick="mpSend({t:'pk.cancel',id:${x.id}})">✖ Bail</button>`:''}</div>`; }
+  if(x.phase==='final'||(x.ga&&x.gb)) h+=`<div class="hl">${x.out===0?'🤝 PUSH':((x.out>0)===(side==='a'))?'🏆 YOU WIN':'💀 YOU LOSE'} · ${side==='a'?x.ga:x.gb} vs ${side==='a'?x.gb:x.ga}${x.out!==0&&x.ga===x.gb?' · decided on the 🎯 tiebreaker':''}</div>`;
+  return h+`</div>`; }
+function mpPkPick(gid,s){ const P=U.mpPk; if(!P) return; P.picks[gid]=P.picks[gid]===s?undefined:s; if(!P.picks[gid]) delete P.picks[gid]; sfx.click(); mpRenderRoom(false); }
+function mpPkFill(mode){ const P=U.mpPk, x=MP.R&&MP.R.pk&&MP.R.pk.M.find(q=>q.id===(P&&P.id)); if(!x||!x.sheet) return; for(const r of x.sheet.games) if(!P.picks[r.gid]) P.picks[r.gid]=mode==='dogs'?(r.line<0?'a':'h'):mode==='rand'?(rnd()<.5?'h':'a'):(r.line<0?'h':'a'); if(P.tb==='') P.tb=45; sfx.click(); mpRenderRoom(false); }
+function mpPkLock(id){ const P=U.mpPk; if(!P||P.id!==id) return; const el=document.getElementById('mppktb'); if(el) P.tb=el.value; const t=Math.round(+P.tb); if(P.tb===''||!Number.isFinite(t)||t<0||t>500) return toast('Enter a tiebreaker (total points, 0–500).'); mpSend({t:'pk.picks',id,picks:P.picks,tb:t}); }
 // ===================== WHAT'S NEW (full update log, newest first) =====================
 // Every update since the game was created, rebuilt from the crow99999/arcade git history, the build/test notes and the
 // bugs fixed during testing. Returning players get a pop-up card on the title screen with only the entries newer than
 // the version they last saw (META.wnSeen); brand-new players aren't spammed. The full log lives on a scrollable screen.
-const GAME_VER='1.13.0';
+const GAME_VER='1.14.0';
 const WN_BEFORE_LOG='1.4.1'; // what returning players had before this log existed (last deploy before v1.5.0)
 const CHANGELOG=[
+ {v:'1.14.0',d:'Oct 18, 2026 · late night',t:'🏆 The Pick-Off Challenge',items:[
+  'New 🏆 Pick-Off tab in the Sportsbook: a daily pick\'em sheet of the 10 best games on the slate (against the spread, lines frozen when the sheet posts, no fighting). Pick every side, guess the total points in the 🎯 tiebreaker game, lock it, sweat it.',
+  'Bracket Challenge: pay in ($10 Corner Bar Bracket, $25 Strip Mall Open, $50 High Roller Invitational) against 7 NPC handicappers like Lock City Larry, Grandma Parlay, Sweaty Steve the Tout and The Guy From The Gas Station. One round per day: best record advances, ties go to the tiebreaker. Champ gets 4.5× the entry, runner-up 1.5×, semifinal losers 0.5×. The house keeps the rest, because of course it does.',
+  'Forget to lock a sheet? The commish auto-picks every favorite for you and tells the whole bar.',
+  '🤺 Daily Duel: same sheet vs one random NPC tout for $10–$100. Winner takes both stakes minus a 5% rake, ties push.',
+  '🌐 Online head-to-head: a new 🏆 Pick-Off table in online rooms. Challenge anybody in the room (stake $0–$250, both stakes in escrow), you both get the SAME sheet, picks stay hidden until both are locked, then the games go final one by one. Higher record wins, tiebreaker on total points, true ties push. Nobody else online? Play an NPC handicapper instead.',
+  'Online results feed the room\'s Pick-Off ladder, a new 🏆 Pick-Off board on the live leaderboard, your career Pick-Off record and rank (Bracket Bum → Pick-Off Legend), and 📜 Player History (filter by 🏆 Pick-Off).',
+  'Leaving mid-pick or closing the room voids the match and refunds both stakes. New achievement: 🏆 Certified Tout (win a bracket).']},
  {v:'1.13.0',d:'Oct 18, 2026 · night',t:'📱 The Sportsbook gets REAL',items:[
   'Real gambling calendar: every in-game day is now an actual date (new runs start at a random point in the season: September kickoff, late October, December, January playoffs, March Sadness or April). Monday = Monday Night Fumble + NBBA/NHHL. Thursday = Thursday Night Snoozer. Saturday = a giant 28-game college football slate in every window (11am hangover kickoffs, noon, 3:30/4:00, the 7:00–8:00 primetime block with Saturday Night Lights, and 10:30 Left Coast After Dark). Sunday = the 1:00 Sweat, the 4:25 window and Sunday Night Heartbreak. MLBB runs spring to October, hoops and hockey run winter into spring playoffs, and college hoops ends in March Sadness.',
   'New leagues (all parody, all fake): NCFF college football and NCBB college hoops (64 schools, with a Top 25 degen poll), the Premier Pub League (soccer, with 3-way moneylines and draws), and UFFC fight cards on Saturday nights (pay-per-view every other week). Plus 20 NFFL teams and 16 each in NBBA, NHHL and MLBB. Teams keep standings. Postseasons run as real brackets: NFFL playoffs, CFP, March Sadness, best-of-7 series and October baseball.',
