@@ -56,7 +56,7 @@ h3{font-size:15px;color:var(--blue)}
 .log .roast{color:var(--pink)}
 .log .big{color:var(--amber);font-weight:bold}
 .game{border:1px solid var(--line);border-radius:6px;margin:8px 0;background:#12160f;overflow:hidden}
-.game .gh{display:flex;justify-content:space-between;padding:5px 8px;background:#1b2216;font-size:12.5px;color:var(--dim)}
+.game .gh{display:flex;justify-content:space-between;gap:6px;padding:5px 8px;background:#1b2216;font-size:12.5px;color:var(--dim)}
 .game .tm{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:4px;padding:4px 6px;align-items:center}
 .game .tm .nm{font-size:13px;line-height:1.1}
 .game .tm .nm small{color:var(--dim);font-size:11px;display:block}
@@ -67,6 +67,26 @@ h3{font-size:15px;color:var(--blue)}
 .ob[disabled]{opacity:.35}
 .hdr{font-size:10.5px;color:var(--dim);text-align:center}
 .slip{position:sticky;bottom:0;background:#0b0e09f5;border:1px solid var(--amber);border-radius:8px 8px 0 0;padding:7px 8px;margin-top:8px;z-index:15}
+.datebar{display:flex;justify-content:space-between;align-items:center;gap:6px;flex-wrap:wrap;padding:4px 2px;font-size:13.5px}
+.hype{border:2px solid var(--amber);border-radius:8px;padding:7px 9px;margin:5px 0;background:repeating-linear-gradient(135deg,#2a1f08,#2a1f08 12px,#33260a 12px,#33260a 24px);text-align:center}
+.hype.prime{border-color:#ff5d5d;box-shadow:0 0 12px #ff5d5d55;animation:hypeP 1.6s ease-in-out infinite alternate}
+@keyframes hypeP{from{box-shadow:0 0 6px #ff5d5d44}to{box-shadow:0 0 16px #ffb02088}}
+.hype .hy1{font-weight:bold;color:var(--amber);font-size:15px;letter-spacing:.5px}.hype .hy2{font-size:14px;margin-top:2px}.hype .hy3{font-size:11.5px;color:var(--dim);margin-top:2px}
+.lgchip{display:inline-block;padding:4px 9px;min-height:30px;margin:2px 1px;border-radius:14px;border:1px solid var(--line);background:#181d15;cursor:pointer;font-size:12px;color:inherit}
+.lgchip.on{background:#3c5a1c;border-color:var(--green);color:#eaffd8}
+.lgrow{margin:4px 0}
+.win{font-size:12px;color:var(--amber);margin:10px 2px 0;font-weight:bold;letter-spacing:.5px}
+.game.headg{border-color:var(--amber)}.game.primeg .gh{background:#2a1d10}
+.game .gf{display:flex;gap:8px;flex-wrap:wrap;align-items:center;padding:2px 8px 6px}
+.lnk{background:none;border:none;color:var(--amber);cursor:pointer;font-size:12.5px;padding:4px 0;text-decoration:underline}
+.rk{color:var(--amber);font-size:11px;font-weight:bold}
+.mv{display:block;font-size:9.5px;line-height:1}.mv.up{color:#7fdc8a}.mv.dn{color:#ff8a8a}
+.pcat{font-size:12px;font-weight:bold;color:var(--amber);margin:8px 0 2px;border-bottom:1px solid var(--line)}
+.prow{justify-content:space-between;margin:2px 0}
+.gsel{width:100%;min-height:38px;background:#181d15;color:inherit;border:1px solid var(--line);border-radius:5px;margin:4px 0;font-size:13px}
+table.box{width:100%;border-collapse:collapse;font-size:12px;margin:3px 0}table.box th,table.box td{text-align:center;padding:2px 3px;border-bottom:1px solid #222}table.box th{color:var(--dim);font-weight:normal}table.box td:first-child{text-align:left;padding-left:8px}
+.sched.today{border-color:var(--amber)}
+.scoreline.my{background:#1b2a14}
 .tabs{display:flex;gap:4px;flex-wrap:wrap;margin:5px 0}
 .tab{flex:1;min-height:38px;border:1px solid var(--line);background:#181d15;border-radius:5px;cursor:pointer;font-size:13px;padding:4px}
 .tab.on{background:var(--amber);color:#111;font-weight:bold}
@@ -304,22 +324,66 @@ const sfx = {
 };
 // ===================== DATA =====================
 const SPORTS = {
-  FB:{ name:'NFFL Football', icon:'🏈', league:'NFFL', unit:'Q', teams:[
+  FB:{ name:'NFFL Football', short:'NFFL', icon:'🏈', league:'NFFL', unit:'Q', kind:'fb', teams:[
     ['CIN','Cincinnati Chili Dogs'],['CLE','Cleveland Mistakes'],['PIT','Pittsburgh Yinzers'],['BAL','Baltimore Crabcakes'],
     ['KC','Kansas City Burnt Ends'],['DAL','Dallas Cowpokes'],['GB','Green Bay Cheese Curds'],['NYR','New York Rent Payers'],
-    ['BUF','Buffalo Wings'],['DET','Detroit Rust Belts'],['MIA','Miami Vices'],['LV','Las Vegas Comps']]},
-  BB:{ name:'NBBA Hoops', icon:'🏀', league:'NBBA', unit:'Q', teams:[
+    ['BUF','Buffalo Wings'],['DET','Detroit Rust Belts'],['MIA','Miami Vices'],['LV','Las Vegas Comps'],
+    ['NOL','New Orleans Daiquiris'],['SEA','Seattle Soggy Socks'],['DEN','Denver Edibles'],['CHI','Chicago Hot Dog Purists'],
+    ['PHI','Philly Battery Throwers'],['JAX','Jacksonville Swamp Asses'],['ATL','Atlanta Traffic Jams'],['ARI','Arizona Heat Strokes']]},
+  CF:{ name:'College Football (NCAAF-ish)', short:'CFB', icon:'🏟️', league:'NCAFF', unit:'Q', kind:'fb', college:1, teams:null },
+  BB:{ name:'NBBA Hoops', short:'NBBA', icon:'🏀', league:'NBBA', unit:'Q', kind:'bb', teams:[
     ['CIN','Cincinnati Riverboat Gamblers'],['BOS','Boston Chowderheads'],['LAB','LA Botox'],['CHI','Chicago Deep Dishes'],
     ['IND','Indiana Cornfeds'],['PHX','Phoenix Sunburns'],['GSO','Golden State Overpaid'],['PHI','Philly Jawns'],
-    ['MIL','Milwaukee Brewskis'],['DEN','Denver Altitudes']]},
-  HK:{ name:'NHHL Hockey', icon:'🏒', league:'NHHL', unit:'P', teams:[
+    ['MIL','Milwaukee Brewskis'],['DEN','Denver Altitudes'],['NYK','New York Bricklayers'],['MIA','Miami Nightclubbers'],
+    ['DAL','Dallas Big Hats'],['ATL','Atlanta Lemon Peppers'],['UTA','Utah Salt Flats'],['POR','Portland Hipsters']]},
+  CB:{ name:'College Hoops (NCAAB-ish)', short:'CBB', icon:'🎓', league:'NCABB', unit:'H', kind:'bb', college:1, teams:null },
+  HK:{ name:'NHHL Hockey', short:'NHHL', icon:'🏒', league:'NHHL', unit:'P', kind:'hk', teams:[
     ['CIN','Cincinnati Goetta Gang'],['TOR','Toronto Overrateds'],['DET','Detroit Octopi'],['FLA','Florida Retirees'],
     ['MIN','Minnesota Nice Guys'],['SEA','Seattle Drizzles'],['PIT','Pittsburgh Pierogies'],['BOS','Boston Bruisers'],
-    ['COL','Columbus Cannonballs'],['WPG','Winnipeg Frostbites']]},
-  BS:{ name:'MLBB Baseball', icon:'⚾', league:'MLBB', unit:'Inn', teams:[
+    ['COL','Columbus Cannonballs'],['WPG','Winnipeg Frostbites'],['NYI','Long Island Iced Teas'],['VEG','Vegas Buffets'],
+    ['EDM','Edmonton Oil Spills'],['MTL','Montreal Poutines'],['CHI','Chicago Wind Chills'],['TB','Tampa Florida Men']]},
+  BS:{ name:'MLBB Baseball', short:'MLBB', icon:'⚾', league:'MLBB', unit:'Inn', kind:'bs', teams:[
     ['CIN','Cincinnati Porkopolis Pigs'],['STL','St. Louis Gooey Butters'],['CHC','Chicago Ivy Leaguers'],['NYP','New York Payrolls'],
     ['LAT','LA Traffic Jams'],['HOU','Houston Trash Cans'],['BOS','Boston Green Monsters'],['MIL','Milwaukee Bratwursts'],
-    ['CLE','Cleveland Guardrails'],['PIT','Pittsburgh Pirogi Pirates']]}
+    ['CLE','Cleveland Guardrails'],['PIT','Pittsburgh Pirogi Pirates'],['ATL','Atlanta Sweet Teas'],['SFG','San Fran Fog Banks'],
+    ['SDP','San Diego Fish Tacos'],['TEX','Texas Brisket Kings'],['SEA','Seattle Grunge'],['DET','Detroit Coney Dogs']]},
+  SOC:{ name:'Premier Pub League Soccer', short:'PPL', icon:'⚽', league:'PPL', unit:"'", kind:'soc', teams:[
+    ['MNR','Manchester Rainy Days'],['LIV','Liverpool Accents'],['ARS','North London Arse-nal'],['CHE','Chelsea Oligarchs'],
+    ['TOT','Tottenham Bottlejobs'],['NEW','Newcastle Shirtless Lads'],['AVL','Aston Villains'],['WHU','West Ham Hooligans'],
+    ['EVE','Everton Mortgage Payers'],['BRI','Brighton Chip Thieves'],['LEE','Leeds Unhappy'],['WOL','Wolverhampton Pint Throwers']]},
+  MMA:{ name:'UFFC Cage Fighting', short:'UFFC', icon:'🥊', league:'UFFC', unit:'R', kind:'mma', teams:null }
+};
+// 64 parody colleges, shared by college football + college hoops (separate rosters/ratings). [ab, name, football prestige, hoops prestige]
+const COLLEGES = [
+ ['OTU','Ohio Turnpike Toll Booths',1.4,.6],['CNY','U of Cincy Three-Ways',.3,.5],['XAV','Xavierish Musket Bros',-2,.7],['MOH','Miami (Not Florida) of Ohio',-.4,-.6],
+ ['MCH','Michigan Khaki Pants',1.3,.1],['BAM','Bama Houndstooth Hats',1.6,.4],['GEO','Georgia Mutts',1.6,-.2],['TEX','Texas Oil Money',1.3,.4],
+ ['LSB','Louisiana Swamp Boys',1.1,-.1],['OKS','Oklahoma Sooner-or-Laters',.9,-.2],['NDM','Notre Dumb Leprechaun Lawyers',1.1,-.3],['SCF','SoCal Film Students',.8,.1],
+ ['ORE','Oregon Uniform Budget',1.2,.1],['HVU','Happy Valley Unhappies',1.1,-.3],['CLM','Clemsonish Traffic Cones',.9,0],['FSS','Florida Sunburned State',.6,.1],
+ ['FMU','Florida Man University',.5,.4],['TNC','Tennessee Checkerboards',.9,.8],['AUB','Auburn Toilet Paper Rollers',.7,.8],['IOW','Iowa Punting Specialists',.4,.2],
+ ['WIS','Wisconsin Beer Cheese',.4,.4],['MNO','Minnesota Ope Gophers',.1,-.4],['KBB','Kentucky Bourbon Barrels',-.2,1.3],['IHD','Indiana Hoosier Daddies',.2,.6],
+ ['PUR','Purdue Train Conductors',-.3,1.2],['DUK','Duke Blue Lacrosse Bros',-.6,1.5],['UNC','North Carolina Tar Feet',-.1,1.3],['KAN','Kansas Jayhawk Talkers',-.9,1.4],
+ ['GON','Gonzaga Zig-Zags',-2,1.3],['PMP','Philly Main Line Preppies',-2,1.1],['CIA','Connecticut Insurance Adjusters',-1.2,1.5],['WAC','Waco Rule Breakers',.3,1],
+ ['ARZ','Arizona Cactus Huggers',0,1.1],['HOU','Houston Humidity',-.1,1.2],['MSC','Michigan State Couch Burners',.1,1],['OSL','Oregon State Lumberjacks',-.2,-.4],
+ ['SYR','Syracuse Snow Shovelers',-.4,.5],['MEM','Memphis BBQ Pitmasters',-.3,.7],['AKR','Akron Rubber Burners',-1.4,-.3],['TOL','Toledo Glass Blowers',-.6,-.2],
+ ['BGG','Bowling Green Gutterballs',-1,-.7],['KLE','Kent State Lake Effect',-1.3,-.2],['BSB','Ball State Ball Busters',-1,-.6],['EMW','Eastern Michigan Who?',-1.2,-.9],
+ ['WKT','Western Kentucky Towel Wavers',-.5,-.1],['APM','Appalachian State Moonshiners',-.3,-.5],['BOI','Boise State Blue Turf Stains',.2,.2],['EPD','El Paso Dust Devils',-1.3,-.6],
+ ['NMC','New Mexico State Chile Peppers',-1.5,.1],['CTR','Coastal Carolina Teal Roosters',-.6,-.7],['SDB','San Diego State Surf Bums',-.6,.8],['NIC','Northern Illinois Cornfields',-.7,-.8],
+ ['CML','Central Michigan Lake Houses',-.8,-.6],['ODB','Old Dominion Boomers',-.9,-.3],['FAR','Florida Atlantic Retirement Homes',-.6,.6],['BBD','Birmingham Bone Doctors',-.5,.3],
+ ['THP','Tulane Hurricane Parties',.1,-.2],['RNE','Rice Nerds',-.9,-.8],['SMT','Southern Methodist Trust Funds',.4,.1],['WLC','Wake Forest Library Cards',-.7,.2],
+ ['NWO','Northwestern Overthinkers',-.5,.2],['VGS','Vanderbilt Goalpost Stealers',-.2,.1],['SVC','Stanford Venture Capitalists',-.6,0],['MBC','Marquette Brew City Ballers',-2,1.1]];
+SPORTS.CF.teams=COLLEGES.map(c=>[c[0],c[1]]); SPORTS.CB.teams=COLLEGES.map(c=>[c[0],c[1]]);
+const FIGHT_NICK=['The Microwave','Gas Station Sushi','The Accountant','Two Dips','Crypto','Unpaid Intern','No Cardio','The Divorce','Spicy Elbow','Leg Day','Hot Pocket','The Landlord','Waffle House','Tax Evasion','Dad Bod','The Tow Truck','Lunch Money','Bad Credit','The Vape','Food Poisoning','Mullet Rage','The Stepdad','Jorts','Big Mistake'];
+SPORTS.MMA.teams=FIGHT_NICK.map((n,i)=>['F'+i,'"'+n+'"']);
+const MMA_CLASS=['Heavyweight','Light Heavyweight','Middleweight','Welterweight','Lightweight','Featherweight','Catchweight (he missed weight by 9 lbs)'];
+const BOWL_NAMES=['Toilet Bowl presented by Cheap Plunger Co.','Gas Station Hot Dog Bowl','Mattress Liquidators Bowl','Payday Loan Bowl','Crypto Rug Pull Bowl','Cheese Dust Bowl','Online Degree Bowl','Vape Juice Bowl','Timeshare Presentation Bowl','Pawn Shop Bowl','Discount Dentist Bowl','Waffle Hut Bowl','Extended Car Warranty Bowl','Gold Teeth Bowl','Pickup Truck Nuts Bowl'];
+// crude novelty props, priced like any other prop (MC sim of a weighted coin). [key, label, p(yes), only for these slate tags (optional)]
+const NOVELTY={
+ fb:[['streak','A streaker makes it onto the field',.06],['hset','A coach spikes or throws his headset on camera',.24],['shirtless','Broadcast shows a shirtless fan in the stands',.5],['xpmiss','A kicker misses an extra point',.22],['gritty','Announcer says "gritty" or "scrappy" 3+ times',.62],['proposal','Jumbotron marriage proposal gets rejected',.04]],
+ bb:[['techrim','A player hangs on the rim and gets a tech',.12],['kisscam','Kiss Cam couple visibly breaks up',.07],['celebsleep','Courtside celebrity caught asleep',.14],['halfcourt','A fan hits the halfcourt shot for a free car',.05],['refshove','Coach gets ejected for screaming at a ref',.1]],
+ hk:[['fight','A fight breaks out (gloves off)',.3],['seafood','Seafood thrown on the ice',.1],['goalieg','The goalie scores',.012],['hatrick','Somebody scores a hat trick',.06],['glassbang','A fan bangs the glass so hard security shows up',.18]],
+ bs:[['beercatch','Fan catches a foul ball in his beer',.12],['ejected','Manager ejected',.08],['ketchup','Ketchup wins the hot dog race',.34],['posp','A position player pitches (blowout)',.06],['streaker','Streaker on the field (security tackles him)',.03]],
+ soc:[['shirtoff','Goal celebration shirt-off yellow card',.11],['var','VAR review takes 4+ minutes',.28],['invader','Pitch invader',.07],['flare','Flare thrown onto the pitch',.13],['dive','Player rolls around for 10+ seconds after no contact',.71]],
+ mma:[['callout','Winner calls somebody out in the post-fight interview',.62],['groin','Point deduction for a groin strike',.08],['fakeglove','Fighter refuses to touch gloves',.25],['boo','Crowd boos the fight for being boring',.3]]
 };
 const FIRST = ['Chad','Brock','Tanner','Ty','Jaxon','Bo','Rex','Dirk','Lance','Colt','Trey','Marcus','Andre','Kyle','Hunter','Blaze','Jalen','Dante','Gus','Moose','Skip','Deacon','Tre','Ricky','Bubba','Cash','Zeke','Duke','Theo','Rocco'];
 const LAST = ['Thunderfoot','McTouchdown','Fumbleton','Backdoor','Covington','Overton','Underwood','Parlayson','Sweatman','Hookbaum','Juiceman','Bricksworth','Chalkley','Vigsby','Pushkin','Dingerman','Clankworth','Sharpe','Fadeaway','Gutterball','Buckets','Slapshotz','Moneyline','Teaserson','Hedgeworth','Bonusbet','Lockwood','Badbeat','Tiltman','Shankowski'];
@@ -437,7 +501,7 @@ const JEFE_QUIPS = [
   'Computer models are for nerds. I use VIBES. The vibes are immaculate.',
   'Lock it. Lick it. Love it. Do not tail if you are a coward.',
   'I went 0-11 last week which means I\'m DUE. That\'s math.',
-  'Stoolies, mortgage the house. Not mine, yours.',
+  'Degens, mortgage the house. Not mine, yours.',
   'Down 40 units on the month but this one\'s the comeback. Viva la comeback.'
 ];
 
@@ -480,6 +544,7 @@ function lifeRec(g,stake,ret,what,sub){ if(U.noSave||!LIFE_GAMES[g]) return; sta
   const lab=String(what||'').slice(0,60);
   if(net>0&&(!LIFE.big||net>LIFE.big.amt)) LIFE.big={amt:net,g,what:lab,at:when,who};
   if(net<0&&(!LIFE.bigL||-net>LIFE.bigL.amt)) LIFE.bigL={amt:-net,g,what:lab,at:when,who};
+  LIFE.log=LIFE.log||[]; LIFE.log.unshift({g,s:stake,r:ret,w:lab,at:when,d:S&&S.day||0,who:who.slice(0,14)}); if(LIFE.log.length>300) LIFE.log.length=300;
   lifeSave(); }
 function lifeReset(){ LIFE=lifeBlank(); lifeSave(); }
 function lifeNet(){ return r2(LIFE.won-LIFE.wag); }
@@ -507,8 +572,24 @@ function renderStats(){ const L=LIFE, n=lifeNet();
     <div class="kv"><span>Biggest single loss</span><b class="r">${L.bigL?`-${money(L.bigL.amt)}`:'—'}</b></div>${L.bigL?`<div class="small dim" style="text-align:right">${esc(LIFE_GAMES[L.bigL.g]||'')} · ${esc(L.bigL.what)} · ${esc(L.bigL.at)}</div>`:''}
     <p class="small" style="margin:6px 0 0"><b>${esc(lifeFlavor())}</b></p></div>`;
   h+=`<h3>Per game</h3><div class="lifetbl"><table><tr><th>Game</th><th>Wagered</th><th>Won</th><th>Net</th><th>Paid back</th></tr>${rows}</table></div>`;
+  h+=lifeHistHtml();
   h+=`<div class="small dim">How it's counted: <b>wagered</b> = money at risk on bets that got decided; <b>won</b> = gross payouts on those bets (stake + profit). Pushes, voids, refunds, take-downs and unplayed keno races count as neither. Bonus-bet stakes are house money (not wagered). Online bets are recorded from the host's settlements. Stored only in this browser; survives new runs. Reset it in ⚙️ Settings.</div>`;
   h+=`<div class="grid2"><button class="btn c" onclick="U.setFrom='stats';go('settings')">⚙️ Settings</button><button class="btn c" onclick="go(S&&!S.ended&&U.statsFrom==='hub'?'hub':'title')">⬅ Back</button></div>`; setMain(h); }
+// ---------- 📜 Player History: every decided bet across every game, filterable by game / result / amount ----------
+function lifeHistHtml(){ const log=LIFE.log||[]; const F=U.lh||(U.lh={g:'all',res:'all',amt:'any',min:'',max:'',sort:'new'});
+  const amtOk=x=>{ const n=r2(x.r-x.s); if(F.amt==='s10'&&!(x.s<10)) return false; if(F.amt==='s10_49'&&!(x.s>=10&&x.s<50)) return false; if(F.amt==='s50_199'&&!(x.s>=50&&x.s<200)) return false; if(F.amt==='s200'&&!(x.s>=200)) return false; if(F.amt==='w100'&&!(n>=100)) return false; if(F.amt==='l100'&&!(n<=-100)) return false; if(F.min!==''&&x.s<+F.min) return false; if(F.max!==''&&+F.max>0&&x.s>+F.max) return false; return true; };
+  let L=log.filter(x=>(F.g==='all'||x.g===F.g)&&(F.res==='all'||(F.res==='w'&&x.r>x.s)||(F.res==='l'&&x.r<x.s))&&amtOk(x));
+  if(F.sort==='bigw') L=L.slice().sort((a,b)=>(b.r-b.s)-(a.r-a.s)); else if(F.sort==='bigl') L=L.slice().sort((a,b)=>(a.r-a.s)-(b.r-b.s)); else if(F.sort==='stake') L=L.slice().sort((a,b)=>b.s-a.s);
+  const games=[...new Set(log.map(x=>x.g))].filter(g=>LIFE_GAMES[g]); const wag=L.reduce((a,x)=>a+x.s,0), net=L.reduce((a,x)=>a+x.r-x.s,0);
+  const chip=(k,v,n)=>`<button class="lgchip ${F[k]===v?'on':''}" onclick="U.lh.${k}='${v}';renderStats()">${n}</button>`;
+  let h=`<h3 id="lifehist">📜 Player History <span class="small dim">last ${log.length} decided bets, all games, all runs</span></h3>`;
+  if(!log.length) return h+`<div class="panel dim small">Nothing yet. Go lose some money and come back.</div>`;
+  h+=`<div class="row lgrow">${chip('g','all','All games')}${games.map(g=>chip('g',g,LIFE_GAMES[g])).join('')}</div>`;
+  h+=`<div class="row lgrow">${chip('res','all','Any result')}${chip('res','w','✅ Wins')}${chip('res','l','❌ Losses')}</div>`;
+  h+=`<div class="row lgrow"><span class="small dim">💵 Amount:</span>${chip('amt','any','Any')}${chip('amt','s10','Under $10')}${chip('amt','s10_49','$10–49')}${chip('amt','s50_199','$50–199')}${chip('amt','s200','$200+')}${chip('amt','w100','Won $100+')}${chip('amt','l100','Lost $100+')}</div>`;
+  h+=`<div class="row lgrow"><span class="small dim">Stake $</span><input id="lhmin" type="number" min="0" inputmode="decimal" placeholder="min" value="${esc(String(F.min))}" onchange="U.lh.min=this.value;renderStats()" aria-label="min stake" style="width:72px"><span class="small dim">to</span><input id="lhmax" type="number" min="0" inputmode="decimal" placeholder="max" value="${esc(String(F.max))}" onchange="U.lh.max=this.value;renderStats()" aria-label="max stake" style="width:72px"><select onchange="U.lh.sort=this.value;renderStats()" aria-label="sort" class="gsel" style="width:auto;flex:1">${[['new','Newest'],['bigw','Biggest wins'],['bigl','Biggest losses'],['stake','Biggest stakes']].map(([k,n])=>`<option value="${k}" ${F.sort===k?'selected':''}>${n}</option>`).join('')}</select></div>`;
+  h+=`<div class="small">Showing <b id="lhn">${L.length}</b> · wagered ${money(r2(wag))} · net <b class="${net>0?'g':net<0?'r':''}">${lifeSigned(r2(net))}</b></div><div class="lifetbl"><table id="lhtbl"><tr><th>Game</th><th>Bet</th><th>Stake</th><th>Net</th></tr>${L.slice(0,60).map(x=>{ const n=r2(x.r-x.s); return `<tr><td>${LIFE_GAMES[x.g]||x.g}<div class="small dim">${esc(x.at)}${x.d?' · day '+x.d:''}</div></td><td class="small">${esc(x.w)}</td><td>${money(x.s)}</td><td class="${n>0?'g':n<0?'r':''}">${lifeSigned(n)}</td></tr>`; }).join('')}</table></div>${L.length>60?`<div class="small dim">…${L.length-60} more. Filter harder.</div>`:''}`;
+  return h; }
 function renderSettings(){ scene('title',[{id:'a',x:.5,pose:'point',hat:'visor',label:'SETTINGS GUY',color:'#ddd'}],{caption:'⚙️ SETTINGS'});
   const arm=U.lifeArm&&Date.now()-U.lifeArm<5000;
   setMain(`<h2>⚙️ SETTINGS</h2><button class="btn c" onclick="SND.on=!SND.on;renderSettings()">🔊 Sound: ${SND.on?'ON':'OFF'}</button>
@@ -795,6 +876,7 @@ function newState(name, archId){
     tilt:0, hp:100, buzz:0, energy:3, dayPhase:'day', loans:0,
     books:{DQ:{profit:0,max:1000,limited:0},FD:{profit:0,max:1000,limited:0}}, tokens:[{book:'DQ',type:'bonus',amt:25,label:'New User: $25 Bonus Bet'},{book:'FD',type:'nosweat',amt:50,label:'No-Sweat First Bet (up to $50)'}],
     bets:[], hist:[], jefe:{w:3,l:19}, slate:null, craps:null, shoe:null, queue:[], flags:{}, ach:{}, news:[], momBail:3, lowWater:50, peak:50,
+    cal0:pickStart(), seed:ri(1,1e9), slip:[], slipKeep:true, stand:{}, post:{},
     whaleMode:false, ended:null, finalDay:28, stats2:{handsBJ:0,spins:0,rolls:0,fights:0,jobs:0,events:0}, lastLog:[] };
   return s;
 }
@@ -821,7 +903,7 @@ function addHp(n){ S.hp=clamp(Math.round(S.hp+n),0,maxHp()); if(S.hp<=0&&!S.queu
 function addBuzz(n){ S.buzz=clamp(Math.round(S.buzz+n),0,100); renderTop(); }
 function minBet(){ if(S.tilt>=85) return Math.max(5,Math.floor(S.cash*.2)); if(S.tilt>=60) return Math.max(5,Math.floor(S.cash*.1)); return 1; }
 function tiltNote(){ if(S.tilt>=85) return `<div class="r small">🌋 TILT ${S.tilt}: you physically cannot bet less than ${money(minBet())}. Books smell blood (worse odds).</div>`; if(S.tilt>=60) return `<div class="a small">😤 TILT ${S.tilt}: minimum bet forced to ${money(minBet())} (10% of roll). Go touch grass.</div>`; return ''; }
-function useEnergy(n){ if(S.energy<n) return false; S.energy-=n; renderTop(); return true; }
+function useEnergy(n){ if(S.energy<n) return false; S.energy-=n; try{ if(n>0) marketTick(n*2); }catch(e){} renderTop(); return true; }
 function addItem(id,n){ S.inv[id]=(S.inv[id]||0)+(n||1); if(S.inv[id]<=0) delete S.inv[id]; }
 function unlock(id){ if(!S||S.ach[id]||!ACHS[id]) return; S.ach[id]=1; META.ach[id]=1; saveMeta(); toast(`🏆 ACHIEVEMENT: ${ACHS[id].ic} ${ACHS[id].n}`); gainXp(15); }
 function news(s){ S.news.unshift({d:S.day,s}); if(S.news.length>30) S.news.length=30; }
@@ -887,308 +969,745 @@ function borrow(amt){ const fee=Math.round(amt*(.1+.05*S.loans)); S.debt+=amt+fe
 function loanCap(){ return S.whaleMode?0:Math.max(0, 2500+S.lvl*500 - Math.max(0,S.debt-10000)); }
 
 function fdy(){ return (S&&S.finalDay)||FINAL_DAY_BASE; }
-// ===================== SPORTSBOOK ENGINE =====================
-const PROP_DEF = { // per sport: player roles
-  FB:['QB','RB','WR'], BB:['G','F'], HK:['C','W'], BS:['DH'] };
-function genLeague(){ const L={}; for(const sp in SPORTS){ L[sp]=SPORTS[sp].teams.map(([ab,nm],i)=>({ab,nm,i,r:r2(gauss()*.9+(ab==='CIN'?-.1:0)),pl:PROP_DEF[sp].map(pos=>({nm:pick(FIRST)+' '+pick(LAST),pos}))})); } return L; }
+// ===================== GAMBLING CALENDAR (in-game day -> real weekday/date -> realistic slate) =====================
+// Day 1 of a run is always a Monday (Sal's money is due Sundays). Each run starts on a real Monday picked from the
+// gambling year; the calendar then rolls forward day by day, so seasons, playoffs, March Sadness etc. come and go.
+const MON=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const CAL_DEFAULT='2026-09-07';
+const CAL_STARTS=[['2026-09-07','🏈 Football kickoff (early Sep)',30],['2026-10-19','🍂 Peak fall: NFFL, college, hoops & hockey openers, World Series-ish (late Oct)',25],
+ ['2026-11-30','🦃 Rivalry week hangover, conference title games, bowl season (Dec)',12],['2027-01-04','🏆 Football playoffs + the big title game (Jan)',13],
+ ['2027-03-08','🏀 March Sadness (Mar)',12],['2027-04-12','🌸 Hoops + hockey playoffs, baseball is back (Apr)',8]];
+function edOf(iso){ return Math.round(Date.parse(iso+'T00:00:00Z')/864e5); }
+function edYMD(y,m,d){ return Math.round(Date.UTC(y,m-1,d)/864e5); }
+function edDate(ed){ const t=new Date(ed*864e5); return {y:t.getUTCFullYear(),m:t.getUTCMonth()+1,d:t.getUTCDate(),w:(t.getUTCDay()+6)%7}; } // w: 0=Mon .. 6=Sun
+function nthDow(y,m,w,n){ if(n>0){ const f=edYMD(y,m,1), fw=edDate(f).w; return f+((w-fw+7)%7)+(n-1)*7; } const l=edYMD(y,m+1,1)-1, lw=edDate(l).w; return l-((lw-w+7)%7); }
+function dowOnAfter(ed,w){ return ed+((w-edDate(ed).w+7)%7); }
+function calEd(day){ return ((S&&S.cal0!=null)?S.cal0:edOf(CAL_DEFAULT))+((day==null?(S?S.day:1):day)-1); }
+function fmtDate(ed,long){ const D=edDate(ed); return `${(long?['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday']:DOW)[D.w]} ${MON[D.m-1]} ${D.d}`; }
+function dayLabel(day){ return fmtDate(calEd(day)); }
+function pickStart(){ return edOf(weighted(CAL_STARTS.map(c=>[c[0],c[2]]))); }
+// deterministic RNG for schedules (same matchups every time you look at a given day)
+function srng(){ let h=2166136261>>>0; for(const a of arguments){ const s=String(a); for(let i=0;i<s.length;i++){ h^=s.charCodeAt(i); h=Math.imul(h,16777619)>>>0; } h^=0x9e37; h=Math.imul(h,16777619)>>>0; }
+  let t=h; return ()=>{ t=(t+0x6D2B79F5)|0; let x=Math.imul(t^(t>>>15),1|t); x=(x+Math.imul(x^(x>>>7),61|x))^x; return ((x^(x>>>14))>>>0)/4294967296; }; }
+function sshuffle(a,r){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(r()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+function spairs(n,r){ const ix=sshuffle([...Array(n).keys()],r); const out=[]; for(let i=0;i+1<ix.length;i+=2) out.push(r()<.5?[ix[i],ix[i+1]]:[ix[i+1],ix[i]]); return out; } // [away, home]
+function fmtTime(min){ const h=Math.floor(min/60), m=min%60; return `${((h+11)%12)+1}:${String(m).padStart(2,'0')}${h<12?'am':'pm'}`; }
+// ---------- season anchors (season year Y = the fall the season starts in) ----------
+function seasonY(ed){ const D=edDate(ed); return D.m>=7?D.y:D.y-1; }
+function anchors(Y){ const A=calCache.get(Y); if(A) return A; const LD=nthDow(Y,9,0,1), TG=nthDow(Y,11,3,4), MLK=nthDow(Y+1,1,0,3);
+  const ccg=TG+9, cbbEnd=nthDow(Y+1,3,6,1), sel=cbbEnd+7;
+  const o={Y,LD,TG,MLK, nfl1:LD+3, ccg, cfb0:LD-9,
+    nba0:dowOnAfter(edYMD(Y,10,20),1), nbaEnd:nthDow(Y+1,4,6,2), nhl0:dowOnAfter(edYMD(Y,10,6),1), nhlEnd:dowOnAfter(edYMD(Y+1,4,14),3),
+    cbb0:nthDow(Y,11,0,1), cbbEnd, sel, mm:sel+4, soc0:dowOnAfter(edYMD(Y,8,15),5), socEnd:dowOnAfter(edYMD(Y+1,5,18),6),
+    xmas:edYMD(Y,12,25), boxing:edYMD(Y,12,26), nye:edYMD(Y,12,31), nyd:edYMD(Y+1,1,1)};
+  o.nbaPO=o.nbaEnd+6; o.nhlPO=o.nhlEnd+2; calCache.set(Y,o); return o; }
+const calCache=new Map();
+function mlbAnchors(y){ const k='m'+y, A=calCache.get(k); if(A) return A; const o={op:dowOnAfter(edYMD(y,3,26),3), end:nthDow(y,9,6,-1)}; o.po=o.end+2; calCache.set(k,o); return o; }
+function nflWeek(ed){ const A=anchors(seasonY(ed)); const w=Math.floor((ed-A.nfl1)/7)+1; return {A,w,off:ed-(A.nfl1+(w-1)*7)}; } // off: 0=Thu 1=Fri 2=Sat 3=Sun 4=Mon 5=Tue 6=Wed
+// ---------- standings / rankings ----------
+function standOf(sp,i){ const T=S.stand&&S.stand[sp]; return (T&&T[i])||[0,0,0]; }
+function recStr(sp,i){ if(SPORTS[sp].kind==='mma'){ const t=S.league&&S.league[sp][i]; return t?`${t.rec[0]}-${t.rec[1]}`:''; } const r=standOf(sp,i); return r[0]+r[1]+r[2]?`${r[0]}-${r[1]}${r[2]?'-'+r[2]:''}`:''; }
+function powerOf(sp,i){ const t=S.league[sp][i], r=standOf(sp,i); return t.r+.22*(r[0]-r[1]); }
+function rankings(sp){ if(!S.league||!S.league[sp]) return {}; const c=(S._rk=S._rk||{}), key=sp+':'+JSON.stringify((S.stand||{})[sp]||0).length+':'+S.day; if(c[sp]&&c[sp].key===key) return c[sp].m;
+  const ord=S.league[sp].map((t,i)=>i).sort((a,b)=>powerOf(sp,b)-powerOf(sp,a)); const m={}; ord.slice(0,25).forEach((i,k)=>m[i]=k+1); c[sp]={key,m}; return m; }
+function rkTag(sp,i){ if(!SPORTS[sp].college) return ''; const k=rankings(sp)[i]; return k?`#${k} `:''; }
+function seedOrder(sp){ return S.league[sp].map((t,i)=>i).sort((a,b)=>powerOf(sp,b)-powerOf(sp,a)); }
+// ---------- postseason brackets (stored in S.post; results flow in from finalizeGame) ----------
+const POST_DEF={
+ FB:{n:'NFFL Playoffs',rounds:['Wild Card','Divisional','Conference Final','THE BIG GAME (legally we can\'t say the name)'],best:[1,1,1,1],seeds:12},
+ CF:{n:'College Football Playoff',rounds:['CFP Quarterfinal','CFP Semifinal','CFP National Title'],best:[1,1,1],seeds:8},
+ CB:{n:'March Sadness',rounds:['Round of 64','Round of 32','Sweet 16','Elite 8','Final Four','National Title'],best:[1,1,1,1,1,1],seeds:64},
+ BB:{n:'NBBA Playoffs',rounds:['First Round','Conference Finals','NBBA Finals'],best:[7,7,7],seeds:8},
+ HK:{n:'NHHL Playoffs',rounds:['First Round','Semifinals','The Cup Final'],best:[7,7,7],seeds:8},
+ BS:{n:'MLBB Postseason',rounds:['Division Series','League Championship Series','World Series-ish'],best:[5,7,7],seeds:8}};
+function postKey(sp,Y){ return sp+'-'+Y; }
+function postGet(sp,Y,create){ S.post=S.post||{}; const k=postKey(sp,Y); if(S.post[k]||!create) return S.post[k]||null; const D=POST_DEF[sp], ord=seedOrder(sp).slice(0,D.seeds);
+  let m=[]; if(sp==='FB') m=[[4,11],[5,10],[6,9],[7,8]].map(([a,b])=>({h:ord[a],a:ord[b],sa:a+1,sb:b+1})); // 1-4 seeds get a bye
+  else { const n=D.seeds; for(let k2=0;k2<n/2;k2++) m.push({h:ord[k2],a:ord[n-1-k2],sa:k2+1,sb:n-k2}); if(sp==='CB'){ const r=srng(S.seed,sp,Y); sshuffle(m,r); } }
+  for(const x of m){ x.wa=0; x.wh=0; x.done=false; x.win=null; }
+  const P={sp,Y,n:D.n,r:0,rounds:[m],byes:sp==='FB'?ord.slice(0,4):[],champ:null}; S.post[k]=P; if(Object.keys(S.post).length>8) delete S.post[Object.keys(S.post)[0]]; return P; }
+function postAdvance(P){ const D=POST_DEF[P.sp], cur=P.rounds[P.r]; if(!cur.every(x=>x.done)) return; if(P.r>=D.rounds.length-1){ P.champ=cur[0].win; return; }
+  let w=cur.map(x=>x.win), nx=[]; if(P.sp==='FB'&&P.r===0){ const bye=P.byes; nx=[[bye[0],w[3]],[bye[1],w[2]],[bye[2],w[1]],[bye[3],w[0]]].map(([h,a])=>({h,a})); }
+  else for(let k=0;k<w.length;k+=2){ const a=w[k], b=w[k+1]; const hi=powerOf(P.sp,a)>=powerOf(P.sp,b); nx.push({h:hi?a:b,a:hi?b:a}); }
+  for(const x of nx){ x.wa=0; x.wh=0; x.done=false; x.win=null; } P.rounds.push(nx); P.r++; }
+function postResult(g){ if(!g.post) return; const P=S.post&&S.post[g.post.k]; if(!P) return; const x=P.rounds[g.post.r]&&P.rounds[g.post.r][g.post.m]; if(!x||x.done) return;
+  const winTeam=g.res.sh>g.res.sa?g.h.i:g.a.i; if(winTeam===x.h) x.wh++; else x.wa++; const need=Math.ceil(POST_DEF[P.sp].best[g.post.r]/2);
+  if(x.wh>=need||x.wa>=need){ x.done=true; x.win=x.wh>=need?x.h:x.a; } postAdvance(P);
+  if(P.champ!=null&&!P.news){ P.news=1; const t=S.league[P.sp][P.champ]; if(typeof news==='function') news(`🏆 ${t.nm} win the ${P.n}! Somebody's uncle just flipped a car.`); } }
+// schedule games for one round of a bracket on this day. dayN = which of the round's game-days this is (split single-game rounds)
+function postGames(sp,Y,dayN,nDays,slots,opts){ const P=postGet(sp,Y,!(opts&&opts.peek)); const out=[]; if(!P) return out; postAdvance(P); if(P.champ!=null) return out;
+  const D=POST_DEF[P.sp], cur=P.rounds[P.r], rn=D.rounds[P.r], best=D.best[P.r];
+  const live=cur.map((x,m)=>({x,m})).filter(o=>!o.x.done); let todays=live;
+  if(best===1){ const per=Math.ceil(cur.length/nDays); todays=cur.map((x,m)=>({x,m})).slice(dayN*per,dayN*per+per).filter(o=>!o.x.done); }
+  todays.forEach((o,k)=>{ const x=o.x, gn=x.wa+x.wh+1; const pat=[1,1,0,0,1,0,1]; const homeIsHigh=best===1||pat[gn-1]; const h=homeIsHigh?x.h:x.a, a=homeIsHigh?x.a:x.h; const sl=slots[Math.min(k,slots.length-1)];
+    const note=best===1?(sp==='CB'||sp==='CF'?`(${x.sb||'?'}) vs (${x.sa||'?'}) seed`:''):`Game ${gn} · series ${x.wh>x.wa?(homeIsHigh?S.league[sp][x.h].ab:S.league[sp][x.h].ab)+' leads '+Math.max(x.wh,x.wa)+'-'+Math.min(x.wh,x.wa):x.wa>x.wh?S.league[sp][x.a].ab+' leads '+Math.max(x.wh,x.wa)+'-'+Math.min(x.wh,x.wa):'tied '+x.wa+'-'+x.wh}`;
+    const g7=best===7&&x.wa===3&&x.wh===3;
+    out.push({sp,a,h,slot:sl[0],t:sl[1]+k*5,prime:sl[2]||g7||P.r===D.rounds.length-1,tag:g7?'GAME 7':(P.r===D.rounds.length-1?'TITLE':'PLAYOFFS'),round:rn,note:(g7?'🔥 GAME 7. ':'')+note,neutral:(sp==='FB'||sp==='CB'||sp==='CF')&&P.r===D.rounds.length-1||sp==='CB'||(sp==='CF'&&P.r>0),post:{k:postKey(sp,Y),r:P.r,m:o.m}}); });
+  return out; }
+// ---------- the daily slate plan ----------
+const NF_SLOTS={tnf:['Thursday Night Snoozer',1215,1,'TNF'],sat1:['Saturday Bonus Football',990],sat2:['Saturday Night Bonus Football',1215,1,'SAT'],early:['Sunday 1:00 Sweat',780],late:['Sunday 4:25 Window',985],snf:['Sunday Night Heartbreak',1220,1,'SNF'],mnf:['Monday Night Fumble',1215,1,'MNF'],
+  tg1:['Thanksgiving Lunch Game',750],tg2:['Thanksgiving Afternoon (Dallas, obviously)',990],tg3:['Thanksgiving Night: Tryptophan Bowl',1220,1,'TG']};
+function nflPlan(w,A){ const tgw=Math.floor((A.TG-A.nfl1)/7)+1; const p=[];
+  if(w===tgw) p.push('tg1','tg2','tg3','early','early','early','early','late','snf','mnf');
+  else if(w===18) p.push('sat1','sat2','early','early','early','early','late','late','late','snf');
+  else if(w>=15) p.push('tnf','sat1','sat2','early','early','early','early','late','snf','mnf');
+  else p.push('tnf','early','early','early','early','early','late','late','snf','mnf');
+  return p; }
+const NF_DAYOFF={tnf:0,tg1:0,tg2:0,tg3:0,sat1:2,sat2:2,early:3,late:3,snf:3,mnf:4};
+function schedFor(day,opts){ opts=opts||{}; const ed=calEd(day), D=edDate(ed), w=D.w, Y=seasonY(ed), A=anchors(Y), seed=(S&&S.seed)||1337, out=[], banners=[];
+  const L=S.league; const nTeams=sp=>L&&L[sp]?L[sp].length:SPORTS[sp].teams.length; const add=x=>out.push(x);
+  const inR=(a,b)=>ed>=a&&ed<=b;
+  // ---- NFFL ----
+  { const {w:wk,off}=nflWeek(ed);
+    if(wk>=1&&wk<=18){ const plan=nflPlan(wk,A); const pr=spairs(nTeams('FB'),srng(seed,'nfl',Y,wk)); plan.forEach((s,k)=>{ if(NF_DAYOFF[s]!==off) return; let [a,h]=pr[k]; const sl=NF_SLOTS[s];
+        if(s==='tg1'||s==='tg2'){ const want=s==='tg1'?'DET':'DAL'; const ti=L&&L.FB.findIndex(t=>t.ab===want); if(ti>=0){ const j=pr.findIndex(p=>p[0]===ti||p[1]===ti); if(j>=0){ const q=pr[j]; pr[j]=pr[k]; pr[k]=q; [a,h]=q; if(a===ti){ const t=a; a=h; h=t; } } } }
+        add({sp:'FB',a,h,slot:sl[0],t:sl[1]+(k%5)*3,prime:!!sl[2],tag:sl[3]||'',round:`Week ${wk}`}); });
+      if(off===3) banners.push(`🏈 NFFL WEEK ${wk} SUNDAY: early window, late window, and Sunday Night Heartbreak`); }
+    else if(wk>=19&&wk<=23){ const R={19:[[2,2],[3,1],[4,1]],20:[[2,2],[3,2]],21:[[3,2]],23:[[3,1]]}[wk]; if(R){ const days=R.map(x=>x[0]); const di=days.indexOf(off); if(di>=0){ const slots=[['Playoff Early Game',990],['Playoff Night Game',1215,1]];
+        const P=postGet('FB',Y,!opts.peek); if(P){ const D2=POST_DEF.FB, cur=P.rounds[P.r]; const before=R.slice(0,di).reduce((s,x)=>s+x[1],0); const games=cur.map((x,m)=>({x,m})).slice(before,before+R[di][1]);
+          games.forEach((o,k)=>{ if(o.x.done) return; add({sp:'FB',a:o.x.a,h:o.x.h,slot:wk===23?'THE BIG GAME':(off===4?'Monday Night Wild Card':slots[Math.min(k,1)][0]),t:(wk===23?1110:slots[Math.min(k,1)][1])+k*3,prime:wk===23||k===R[di][1]-1,tag:wk===23?'BIG GAME':'PLAYOFFS',round:D2.rounds[P.r],neutral:wk===23,post:{k:postKey('FB',Y),r:P.r,m:o.m}}); }); } } }
+      if(wk===23&&off===3) banners.push('🏆 THE BIG GAME. Squares pool, prop bets on the coin toss, a halftime show your dad hates.'); if(wk===22&&off===3) banners.push('😴 NFFL Pro Bowl weekend. Nobody tackles. Nobody cares. Bet the over and go outside.'); } }
+  // ---- College football ----
+  { const cw=Math.floor((ed-(A.cfb0-0))/7); const sat=A.cfb0+cw*7; // Saturday of this CFB week
+    const regular=ed>=A.cfb0-2&&ed<=A.ccg; const isCCG=ed===A.ccg||ed===A.ccg-1;
+    if(regular&&L){ const pr=spairs(nTeams('CF'),srng(seed,'cfb',Y,cw)); const P=L.CF; pr.sort((x,y)=>(P[y[0]].r+P[y[1]].r)-(P[x[0]].r+P[x[1]].r));
+      const rival=sat===A.TG+2; const lbl=isCCG?'Conference Championship':rival?'Rivalry Week':cw===0?'Week 0':`Week ${cw}`;
+      if(w===5&&!isCCG){ // 28 games across every window; best matchups get the best windows
+        const W=[['Saturday Night Lights',1170,1,'SNL'],['3:30 Marquee',930,0,'BIG GAME?'],['Noon Big Ten-ish Kickoff',720],['7:00 Window',1140],['3:30 Window',930],['Noon Kickoff',720],['Left Coast After Dark',1350,0,'AFTER DARK'],['7:30 Window',1170],['3:30 Window',930],['Noon Kickoff',720],['4:00 Window',960],['8:00 Window',1200],['Noon Kickoff',720],['3:30 Window',930],['11:00am Hangover Kickoff',660],['10:30 Pac-ish Window',1290],['3:30 Window',930],['Noon Kickoff',720],['7:00 Window',1140],['4:00 Window',960],['Noon Kickoff',720],['11:00am Hangover Kickoff',660],['3:30 Window',930],['7:00 Window',1140],['Noon Kickoff',720],['10:30 Pac-ish Window',1290],['4:00 Window',960],['3:30 Window',930]];
+        W.forEach((sl,k)=>{ const [a,h]=pr[k]; const tag=sl[3]==='BIG GAME?'?(rkTag('CF',a)&&rkTag('CF',h)?'TOP 25 CLASH':''):sl[3]; add({sp:'CF',a,h,slot:sl[0],t:sl[1]+(k%7),prime:!!sl[2],tag:tag||(rival?'RIVALRY':''),round:lbl}); });
+        banners.push(rival?'🏟️ RIVALRY SATURDAY: 28 games, families split, couches burned.':'🏟️ COLLEGE FOOTBALL SATURDAY: 28 games from 11am to way past bedtime.'); }
+      if(isCCG&&w===5) pr.slice(0,6).forEach(([a,h],k)=>add({sp:'CF',a,h,slot:'Conference Championship',t:720+Math.floor(k/2)*240,prime:k===5,tag:'CCG',round:lbl,neutral:true}));
+      if(isCCG&&w===4) pr.slice(6,8).forEach(([a,h],k)=>add({sp:'CF',a,h,slot:'Friday Conference Championship',t:1140+k*60,prime:k===1,tag:'CCG',round:lbl,neutral:true}));
+      if(!isCCG&&w===3&&ed>A.cfb0) add({sp:'CF',a:pr[30][0],h:pr[30][1],slot:'Thursday Night College Chaos',t:1170,round:lbl});
+      if(!isCCG&&w===4&&ed>A.cfb0) add({sp:'CF',a:pr[31][0],h:pr[31][1],slot:'Friday Night (College Edition)',t:1170,round:lbl});
+      if(ed===A.LD) add({sp:'CF',a:pr[29][0],h:pr[29][1],slot:'Labor Day Night',t:1200,prime:true,tag:'LABOR DAY',round:'Week 1'});
+      if((w===1||w===2)&&D.m===11){ const mac=['AKR','TOL','BGG','KLE','BSB','EMW','NIC','CML','MOH'].map(ab=>L.CF.findIndex(t=>t.ab===ab)).filter(i=>i>=0); const mp=spairs(mac.length,srng(seed,'mac',ed)); mp.slice(0,2).forEach(([a,h],k)=>add({sp:'CF',a:mac[a],h:mac[h],slot:'#MACtion Tuesday-Wednesday Night',t:1170+k*30,tag:'MACTION',round:lbl})); if(w===1) banners.push('🦅 MACtion: weeknight college football in the freezing rain. Pure degeneracy.'); } }
+    // bowls + CFP
+    if(L&&ed>A.ccg+6&&ed<=A.MLK){ const cfpDays={[A.nye]:[0,2],[A.nyd]:[1,2],[A.nyd+7]:[0,2],[A.nyd+8]:[1,2],[A.MLK]:[0,1]};
+      if(cfpDays[ed]){ const [dn,nd]=cfpDays[ed]; const P=postGet('CF',Y,!opts.peek); const want=ed===A.MLK?2:ed>=A.nyd+7?1:0; if(P&&P.r===want){ out.push(...postGames('CF',Y,dn,nd,[[ed===A.MLK?'CFP National Title':'New Year\'s Six-ish',ed===A.MLK?1200:1020,1]],opts)); }
+        if(ed===A.MLK) banners.push('🏆 COLLEGE FOOTBALL NATIONAL TITLE: on a Monday night, because of money.'); }
+      if(ed<=A.nyd+2&&ed!==A.xmas){ const r=srng(seed,'bowl',ed); const n=ed>=A.nye-3?3:Math.floor(r()*3)+(w>=4?1:0); const pool=seedOrder('CF').slice(8,56); const pr=spairs(pool.length,r);
+        for(let k=0;k<n;k++){ const [a,h]=pr[k]; add({sp:'CF',a:pool[a],h:pool[h],slot:BOWL_NAMES[Math.floor(r()*BOWL_NAMES.length)],t:720+k*210,tag:'BOWL',round:'Bowl Season',neutral:true}); } if(n) banners.push('🥣 BOWL SEASON: '+n+' bowl game'+(n>1?'s':'')+' named after things you can buy at a gas station.'); } } }
+  // ---- NBBA ----
+  if(L){ if(inR(A.nba0,A.nbaEnd)){ let n=[3,4,6,2,5,4,4][w]; if(ed===A.xmas) n=5; if(ed===A.nba0) n=2; const pr=spairs(nTeams('BB'),srng(seed,'nba',ed)); const sl=[['7:00 Tip',1140],['7:30 Tip',1170],['8:00 Tip',1200],['9:00 Tip',1260],['10:00 West Coast Degen Hour',1320],['10:30 Late Tip',1350]];
+      for(let k=0;k<n;k++){ const [a,h]=pr[k]; const x=ed===A.xmas?[['Christmas Noon',720],['Christmas 2:30',870],['Christmas 5:00',1020],['Christmas 8:00',1200],['Christmas 10:30',1350]][k]:sl[(k*2+(w%2))%sl.length]; add({sp:'BB',a,h,slot:x[0],t:x[1]+k,prime:ed===A.xmas||ed===A.nba0||(k===n-1&&(w===1||w===3)),tag:ed===A.xmas?'XMAS':ed===A.nba0?'OPENING NIGHT':'',round:'Regular season'}); }
+      if(ed===A.xmas) banners.push('🎄 CHRISTMAS HOOPS: five games, one ugly sweater, zero family time.'); if(ed===A.nba0) banners.push('🏀 NBBA OPENING NIGHT. Load management starts tomorrow.'); }
+    else if(ed>=A.nbaPO&&ed<=A.nbaPO+70&&(ed-A.nbaPO)%2===0) out.push(...postGames('BB',Y,0,1,[['Playoffs 7:00',1140],['Playoffs 8:30',1230],['Playoffs 9:30',1290,1],['Playoffs 10:00',1320]],opts)); }
+  // ---- NHHL ----
+  if(L){ if(inR(A.nhl0,A.nhlEnd)){ let n=[1,4,2,4,2,5,2][w]; const pr=spairs(nTeams('HK'),srng(seed,'nhl',ed)); const sl=[['7:00 Puck Drop',1140],['7:30 Puck Drop',1170],['8:00 Puck Drop',1200],['10:00 West Coast Puck',1320]];
+      for(let k=0;k<n;k++){ const [a,h]=pr[k]; const x=sl[k%sl.length]; add({sp:'HK',a,h,slot:x[0],t:x[1]+k,prime:w===5&&k===n-1,tag:w===5&&k===n-1?'HOCKEY NIGHT':'',round:'Regular season'}); } }
+    else if(ed>=A.nhlPO&&ed<=A.nhlPO+70&&(ed-A.nhlPO)%2===1) out.push(...postGames('HK',Y,0,1,[['Playoffs 7:00',1140],['Playoffs 7:30',1170],['Playoffs 9:30',1290,1],['Playoffs 10:00',1320]],opts)); }
+  // ---- MLBB ----
+  if(L){ const M=mlbAnchors(D.y); const busy=out.length>=6; if(inR(M.op,M.end)){ let n=[4,7,7,4,7,7,7][w]; if(busy) n=Math.min(n,3); if(ed===M.op) n=6; const pr=spairs(nTeams('BS'),srng(seed,'mlb',ed));
+      const sl=w===2||w===3?[['1:10 Getaway Day',790],['4:05 First Pitch',965],['6:40 First Pitch',1120],['7:05 First Pitch',1145],['7:10 First Pitch',1150],['8:10 First Pitch',1210],['9:40 Late Game',1300]]:[['6:40 First Pitch',1120],['7:05 First Pitch',1145],['7:10 First Pitch',1150],['7:15 First Pitch',1155],['8:10 First Pitch',1210],['9:40 Late Game',1300],['10:10 West Coast Night Owls',1330]];
+      if(w===6) sl[n-1]=['Sunday Night Baseball',1170,1,'SNB'];
+      for(let k=0;k<n;k++){ const [a,h]=pr[k]; const x=sl[Math.min(k,sl.length-1)]; add({sp:'BS',a,h,slot:x[0],t:x[1]+k,prime:!!x[2]||ed===M.op,tag:x[3]||(ed===M.op?'OPENING DAY':''),round:'Regular season'}); }
+      if(ed===M.op) banners.push('⚾ OPENING DAY: hot dogs, cold beer, a 41-degree first pitch.'); }
+    else if(ed>=M.po&&ed<=M.po+40) out.push(...postGames('BS',D.y,0,1,[['Postseason 4:08',968],['Postseason 7:38',1178,1],['Postseason 8:08',1208,1],['Postseason 1:08',788]],opts)); }
+  // ---- College hoops ----
+  if(L){ if(inR(A.cbb0,A.cbbEnd)){ let n=[3,4,4,3,2,8,3][w]; if(out.length>=10) n=Math.min(n,3); const pr=spairs(nTeams('CB'),srng(seed,'cbb',ed)); const P=L.CB; const top=pr.slice(0,20).sort((x,y)=>(P[y[0]].r+P[y[1]].r)-(P[x[0]].r+P[x[1]].r));
+      const sl=w===5?[['Noon Tip',720],['2:00 Tip',840],['4:00 Tip',960],['6:00 Tip',1080],['7:00 Tip',1140],['8:00 Tip',1200],['9:00 Tip',1260],['Late Night College Hoops',1350]]:[['7:00 Tip',1140],['8:00 Tip',1200],['9:00 Tip',1260],['10:00 Tip',1320]];
+      for(let k=0;k<n;k++){ const [a,h]=top[k]; const x=sl[k%sl.length]; add({sp:'CB',a,h,slot:x[0],t:x[1]+k,prime:w===5&&k===3,tag:'',round:'Regular season'}); } }
+    else if(ed>A.cbbEnd&&ed<A.sel){ const pr=spairs(nTeams('CB'),srng(seed,'cbbct',ed)); for(let k=0;k<6;k++){ const [a,h]=pr[k]; add({sp:'CB',a,h,slot:'Conference Tournament',t:720+k*120,tag:'CONF TOURNEY',round:'Championship Week',neutral:true}); } banners.push('🏀 CHAMPIONSHIP WEEK: bubble teams sweating harder than you.'); }
+    else if(ed===A.sel) banners.push('📺 SELECTION SUNDAY: the bracket drops tonight. Your office pool is already ruined.');
+    else { const MM={[A.mm]:[0,2,0],[A.mm+1]:[1,2,0],[A.mm+2]:[0,2,1],[A.mm+3]:[1,2,1],[A.mm+7]:[0,2,2],[A.mm+8]:[1,2,2],[A.mm+9]:[0,2,3],[A.mm+10]:[1,2,3],[A.mm+16]:[0,1,4],[A.mm+18]:[0,1,5]}[ed];
+      if(MM){ const P=postGet('CB',Y,!opts.peek); if(P&&P.r===MM[2]){ const slots=MM[2]>=4?[['Final Four',1110,1],['Final Four Nightcap',1350,1]]:[['12:15 Tip',735],['12:40 Tip',760],['1:45 Tip',825],['2:10 Tip',850],['3:10 Tip',910],['4:10 Tip',970],['6:50 Tip',1130],['7:10 Tip',1150,1],['7:25 Tip',1165],['9:20 Tip',1280],['9:40 Tip',1300],['9:55 Tip',1315,1]];
+          out.push(...postGames('CB',Y,MM[0],MM[1],slots,opts).map((g,k)=>Object.assign(g,{slot:slots[k%slots.length][0],t:slots[k%slots.length][1]+k}))); }
+        banners.push(['🏀 MARCH SADNESS DAY 1: 16 games, zero productivity. Your bracket is busted by 2pm.','🏀 MARCH SADNESS DAY 2: another 16. Call in sick. Again.','🏀 ROUND OF 32: Cinderella either turns into a pumpkin or ruins your life.','🏀 ROUND OF 32, DAY 2.','🏀 SWEET 16.','🏀 SWEET 16, NIGHT 2.','🏀 ELITE 8: one win from the Final Four.','🏀 ELITE 8, DAY 2.','🏀 FINAL FOUR SATURDAY.','🏆 NATIONAL TITLE MONDAY.'][[0,1,2,3,7,8,9,10,16,18].indexOf(ed-A.mm)]); } } }
+  // ---- Premier Pub League ----
+  if(L&&inR(A.soc0,A.socEnd)){ const pr=spairs(nTeams('SOC'),srng(seed,'soc',Math.floor((ed-A.soc0)/7))); const cup=w===1||w===2?spairs(nTeams('SOC'),srng(seed,'cup',ed)):null; let sl=[];
+    if(ed===A.boxing) sl=[['Boxing Day 7:30am',450],['Boxing Day 10:00am',600],['Boxing Day 10:00am',601],['Boxing Day 12:30pm',750],['Boxing Day 3:00pm',900]];
+    else if(w===5) sl=[['7:30am Hangover Kickoff',450],['10:00am Kickoff',600],['10:00am Kickoff',601],['12:30pm Kickoff',750]]; else if(w===6) sl=[['9:00am Kickoff',540],['11:30am Super Sunday',690,1,'SUPER SUNDAY']]; else if(w===0) sl=[['Monday Night Footy',900]];
+    const base=w===6?4:w===0?6:0; sl.forEach((x,k)=>{ const [a,h]=pr[(base+k)%pr.length]; add({sp:'SOC',a,h,slot:x[0],t:x[1],prime:!!x[2],tag:x[3]||(ed===A.boxing?'BOXING DAY':''),round:'League match'}); });
+    if(cup&&D.m>=9||cup&&D.m<=3) { if(cup&&Math.floor((ed-A.soc0)/7)%2===0) cup.slice(0,2).forEach(([a,h],k)=>add({sp:'SOC',a,h,slot:'Champions Pub Cup',t:900+k*180,prime:k===1,tag:'CUP NIGHT',round:'Champions Pub Cup'})); } }
+  // ---- UFFC (Saturday nights, numbered pay-per-view every other week) ----
+  if(L&&w===5&&!(D.m===12&&D.d>=20)){ const wkn=Math.floor((ed-edOf('2026-01-03'))/7); const ppv=wkn%2===0; const r=srng(seed,'mma',ed); const pr=spairs(nTeams('MMA'),r); const n=ppv?5:3; const no=300+Math.floor(wkn/2);
+    for(let k=0;k<n;k++){ const [a,h]=pr[k]; const main=k===n-1; add({sp:'MMA',a,h,slot:main?(ppv?`UFFC ${no} Main Event`:'Fight Night Main Event'):(k===n-2?'Co-Main Event':'Main Card'),t:1320+k*20,prime:main&&ppv,tag:main?(ppv?'PPV':'FIGHT NIGHT'):'',round:MMA_CLASS[Math.floor(r()*MMA_CLASS.length)],rounds:main?5:3}); }
+    if(ppv) banners.push(`🥊 UFFC ${no} TONIGHT: ${n} fights, one guy who definitely missed weight.`); }
+  out.sort((x,y)=>x.t-y.t);
+  // headline: biggest primetime game
+  const pri=g=>(g.tag==='BIG GAME'||g.tag==='TITLE'?100:0)+(g.tag==='GAME 7'?60:0)+(g.prime?30:0)+({FB:12,CF:9,CB:6,BB:6,HK:4,BS:3,SOC:2,MMA:5}[g.sp]||0)+(g.post?8:0);
+  let head=null; for(const g of out) if(!head||pri(g)>pri(head)) head=g;
+  const tagged=out.find(g=>g.tag==='MNF')?'🏈 MONDAY NIGHT FUMBLE':out.find(g=>g.tag==='TNF')?'🏈 THURSDAY NIGHT SNOOZER':out.find(g=>g.tag==='SNF')?'🏈 SUNDAY NIGHT HEARTBREAK':out.find(g=>g.tag==='TG')?'🦃 THANKSGIVING FOOTBALL':out.find(g=>g.tag==='SNL')?'🏟️ SATURDAY NIGHT LIGHTS':out.find(g=>g.tag==='GAME 7')?'🔥 GAME 7':null;
+  const TG={'🏈 MONDAY NIGHT FUMBLE':'MNF','🏈 THURSDAY NIGHT SNOOZER':'TNF','🏈 SUNDAY NIGHT HEARTBREAK':'SNF','🦃 THANKSGIVING FOOTBALL':'TG','🏟️ SATURDAY NIGHT LIGHTS':'SNL','🔥 GAME 7':'GAME 7'};
+  let hype=tagged; if(tagged){ const tg=out.filter(g=>g.tag===TG[tagged]).pop(); if(tg&&!(head&&(head.tag==='TITLE'||head.tag==='BIG GAME'))) head=tg; }
+  if(head&&(head.tag==='TITLE'||head.tag==='BIG GAME')) hype=`🏆 ${String(head.round||head.slot).toUpperCase()}`;
+  else if(!hype&&head&&head.post) hype=`${SPORTS[head.sp].icon} PLAYOFF ${SPORTS[head.sp].kind==='bs'?'BASEBALL':'ACTION'}: ${String(head.round||'').toUpperCase()}`;
+  else if(!hype&&head&&head.tag==='PPV') hype='🥊 PAY-PER-VIEW MAIN EVENT';
+  return {day,ed,date:fmtDate(ed),games:out,head,hype,banners}; }
+// short text for a schedule entry (works for future days too)
+function schedTeamAb(sp,i){ return S.league&&S.league[sp]&&S.league[sp][i]?S.league[sp][i].ab:'?'; }
+function schedLine(x){ return `${SPORTS[x.sp].icon} ${rkTag(x.sp,x.a)}${schedTeamAb(x.sp,x.a)} ${x.neutral?'vs':'@'} ${rkTag(x.sp,x.h)}${schedTeamAb(x.sp,x.h)}`; }
+function leagueCounts(games){ const c={}; for(const g of games) c[g.sp]=(c[g.sp]||0)+1; return Object.keys(SPORTS).filter(k=>c[k]).map(k=>`${c[k]} ${SPORTS[k].icon}`).join(' · '); }
+// ===================== SPORTSBOOK ENGINE (v1.13: rosters, player stats, props, calendar slates, line moves, SGP pricing) =====================
+// Every game is a Monte Carlo sim. Lines/props are priced off ~700 sims of the same engine that later plays the game out,
+// then shaded by the book (vig + small line errors + moves). The sim tracks per-player stats in a flat Float64Array.
+const ROSTER={ fb:['QB','RB1','RB2','WR1','WR2','WR3','TE','K'], bb:['PG','SG','SF','PF','C','6th Man','Bench','Garbage Time Legend'],
+  hk:['C1','W1','W2','D1','C2','W3','D2','G'], bs:['Leadoff','2-Hole','3-Hole','Cleanup','5-Hole','6th','7th','8th','9th','SP'],
+  soc:['ST','LW','RW','AM','CM','FB','CB','GK'], mma:['Fighter'] };
+const STATK={ fb:['py','ptd','int','cmp','ry','rec','recy','td','kp'], bb:['pts','reb','ast','3pm','pra'], hk:['g','a','pts','sog','sv'], bs:['h','hr','tb','rbi','k','ha'], soc:['g','a','sh','sog','sv'], mma:[] };
+const GSTAT={ fb:['xpmiss'], bb:[], hk:['hat'], bs:[], soc:['cor','cards','red','btts'], mma:['rds','dist','ako','asub','adec','hko','hsub','hdec','apt','hpt'] };
+const STATN={py:'pass yds',ptd:'pass TDs',int:'INTs thrown',cmp:'completions',ry:'rush yds',rec:'receptions',recy:'rec yds',td:'anytime TD',kp:'kicking pts',pts:'points',reb:'rebounds',ast:'assists','3pm':'threes made',pra:'pts+reb+ast',g:'goals',a:'assists',sog:'shots on goal',sv:'saves',h:'hits',hr:'home runs',tb:'total bases',rbi:'RBIs',k:'strikeouts',ha:'hits allowed',sh:'shots'};
+const TICKS={FB:60,CF:60,BB:48,CB:40,HK:60,BS:9,SOC:45,MMA:15};
+const PERIODS={FB:[4,'Q'],CF:[4,'Q'],BB:[4,'Q'],CB:[2,'H'],HK:[3,'P'],BS:[9,''],SOC:[2,'H'],MMA:[5,'R']};
+function kindOf(sp){ return SPORTS[sp].kind; }
+function ticksOf(g){ return g.sp==='MMA'?(g.rounds||3)*5:TICKS[g.sp]; }
+function lay(g){ const k=kindOf(g.sp); const NP=ROSTER[k].length, NS=STATK[k].length; return {k,NP,NS,side:NP*NS,G:2*NP*NS,NV:(g.nov||[]).length,size:2*NP*NS+GSTAT[k].length+(g.nov||[]).length}; }
+function sidx(Ly,side,pi,stat){ return (side==='h'?Ly.side:0)+pi*Ly.NS+STATK[Ly.k].indexOf(stat); }
+// stat key -> index ('a0.py', 'h3.reb', 'x.rds', 'nv.streak', 'a.pts' handled separately)
+function keyIdx(g,key){ const Ly=lay(g); if(key.startsWith('x.')) return Ly.G+GSTAT[Ly.k].indexOf(key.slice(2)); if(key.startsWith('nv.')) return Ly.G+GSTAT[Ly.k].length+(g.nov||[]).indexOf(key.slice(3));
+  const side=key[0], pi=parseInt(key.slice(1)), stat=key.slice(key.indexOf('.')+1); return sidx(Ly,side,pi,stat); }
+function psObj(g,x,sa,sh){ const Ly=lay(g), o={'a.pts':sa,'h.pts':sh}; const SK=STATK[Ly.k];
+  for(const side of ['a','h']) for(let p=0;p<Ly.NP;p++) for(let s=0;s<Ly.NS;s++){ const v=x[(side==='h'?Ly.side:0)+p*Ly.NS+s]; if(v) o[side+p+'.'+SK[s]]=Math.round(v*10)/10; }
+  GSTAT[Ly.k].forEach((s,j)=>{ const v=x[Ly.G+j]; if(v) o['x.'+s]=Math.round(v*100)/100; }); (g.nov||[]).forEach((n,j)=>{ const v=x[Ly.G+GSTAT[Ly.k].length+j]; if(v) o['nv.'+n]=v; }); return o; }
+// ---------- league ----------
+function mkPlayer(k,pos){ const nm=pick(FIRST)+' '+pick(LAST); return {nm,pos,q:r2(clamp(1+gauss()*.14,.7,1.35))}; }
+function genLeague(){ const L={v:2}; for(const sp in SPORTS){ const k=kindOf(sp);
+    L[sp]=SPORTS[sp].teams.map(([ab,nm],i)=>{ let r;
+      if(sp==='CF') r=COLLEGES[i][2]*.85+gauss()*.55; else if(sp==='CB') r=COLLEGES[i][3]*.85+gauss()*.55; else if(k==='mma') r=gauss()*.7; else r=gauss()*({FB:.62,BB:.75,HK:.55,BS:.5,SOC:.8}[sp]||.7)+(ab==='CIN'&&sp==='FB'?-.1:0);
+      const t={ab,nm,i,r:r2(clamp(r,-2.6,2.6))};
+      if(k==='mma'){ const f=pick(FIRST), l=pick(LAST); t.nm=`${f} ${nm} ${l}`; t.ab=l; t.fi=f[0]; t.sty=r2(rnd()); t.rec=[ri(4,22),ri(0,9)]; t.pl=[{nm:`${f} ${l}`,pos:'Fighter',q:1}]; }
+      else t.pl=ROSTER[k].map(pos=>mkPlayer(k,pos));
+      return t; }); }
+  // unique MMA abbreviations
+  const seen={}; for(const t of L.MMA){ if(seen[t.ab]) t.ab=t.fi+'.'+t.ab; let n=2; while(seen[t.ab]) t.ab=t.fi+'.'+t.pl[0].nm.split(' ').pop()+(n++); seen[t.ab]=1; }
+  return L; }
 function teamOf(sp,i){ return S.league[sp][i]; }
-const SLATE_PLAN = [ {FB:1,BB:2,HK:1}, {BB:2,HK:1,BS:2}, {BB:2,HK:2,BS:1}, {FB:1,BB:1,HK:1,BS:1}, {BB:2,HK:2,BS:2}, {BB:2,HK:1,BS:2}, {FB:3,BB:1,HK:1} ];
-const SLOT_NAMES = { FB:['Monday Night Fumble','Thursday Night Snoozer','Sunday 1PM Sweat','Sunday 4PM Window','Sunday Night Heartbreak'], BB:['7:00 Tip','7:30 Tip','10:00 West Coast Degen Hour'], HK:['7:00 Puck Drop','8:00 Puck Drop'], BS:['6:40 First Pitch','7:10 First Pitch','9:40 Late Game'] };
+const SLATE_PLAN = [ {FB:1,BB:2,HK:1}, {BB:2,HK:1,BS:2}, {BB:2,HK:2,BS:1}, {FB:1,BB:1,HK:1,BS:1}, {BB:2,HK:2,BS:2}, {BB:2,HK:1,BS:2}, {FB:3,BB:1,HK:1} ]; // legacy (pre-1.13), unused
 let _gid=1;
-function genSlate(){
-  if(!S.league) S.league=genLeague();
-  const dow=(S.day-1)%7, plan=SLATE_PLAN[dow]; const games=[];
-  for(const sp in plan){ const n=plan[sp]; const idx=shuffle([...Array(S.league[sp].length).keys()]);
-    if(rnd()<.55){ const c=idx.indexOf(0); idx.splice(c,1); idx.splice(ri(0,2*n-1),0,0); }
-    for(let j=0;j<n;j++){ const ai=idx[j*2], hi=idx[j*2+1]; games.push(makeGame(sp,ai,hi,j)); } }
+// opts: {max, noProps, kinds:[allowed kinds], sims}
+function genSlate(opts){ opts=opts||{}; if(typeof U!=='undefined'&&U.fastBook) opts=Object.assign({noProps:true,max:10,sims:400},opts);
+  if(!S.league||S.league.v!==2) S.league=genLeague(); if(S.seed==null) S.seed=ri(1,1e9); if(S.cal0==null) S.cal0=edOf(CAL_DEFAULT);
+  if(S.slate&&S.slate.v===2&&S.slate.day!==S.day&&S.slate.games.some(g=>g.res)&&!(typeof U!=='undefined'&&U.fastBook)) archiveResults();
+  const sc=schedFor(S.day); let plan=sc.games; if(opts.kinds) plan=plan.filter(x=>opts.kinds.includes(kindOf(x.sp)));
+  if(opts.max&&plan.length>opts.max){ const keep=plan.slice().sort((x,y)=>(y.prime?1:0)-(x.prime?1:0)||(y.post?1:0)-(x.post?1:0)).slice(0,opts.max); plan=plan.filter(x=>keep.includes(x)); }
+  const big=plan.length>24&&!opts.sims; const games=plan.map((x,j)=>makeGame(x.sp,x.a,x.h,j,x,big&&!x.prime&&x.sp!=='FB'?Object.assign({},opts,{sims:480}):opts));
   // tiny daily drift in team ratings (injuries, vibes)
-  for(const sp in S.league) for(const t of S.league[sp]) t.r=r2(clamp(t.r+gauss()*.05,-2.2,2.2));
-  S.slate={ day:S.day, games, done:false, jefe:null };
+  for(const sp in S.league) if(Array.isArray(S.league[sp])) for(const t of S.league[sp]) t.r=r2(clamp(t.r+gauss()*.05,-2.6,2.6));
+  const head=sc.head?games.find(g=>g.sp===sc.head.sp&&g.a.i===sc.head.a&&g.h.i===sc.head.h):null;
+  S.slate={ v:2, day:S.day, ed:sc.ed, date:sc.date, games, done:false, jefe:null, head:head?head.id:null, hype:sc.hype, banners:sc.banners.slice(0,3) };
   S.slate.jefe=genJefe();
-}
-function makeGame(sp,ai,hi,j){
-  const A=teamOf(sp,ai), H=teamOf(sp,hi);
-  const g={ id:'g'+(S.day*100+(_gid++%100)), sp, a:{ab:A.ab,nm:A.nm,i:ai}, h:{ab:H.ab,nm:H.nm,i:hi}, slot:SLOT_NAMES[sp][j%SLOT_NAMES[sp].length], res:null };
+  if(S.slip) S.slip=S.slip.filter(l=>games.some(g=>g.id===l.gid)); }
+function gameHas(g,mkt){ if(mkt==='sp'||mkt==='tot') return g.sp!=='MMA'; return true; }
+function makeGame(sp,ai,hi,j,x,opts){ x=x||{}; opts=opts||{};
+  const A=teamOf(sp,ai), H=teamOf(sp,hi), k=kindOf(sp);
+  const g={ id:'g'+(S.day*100+(_gid++%100)), sp, a:{ab:A.ab,nm:A.nm,i:ai}, h:{ab:H.ab,nm:H.nm,i:hi}, slot:x.slot||'Tonight', t:x.t||1200, tag:x.tag||'', prime:!!x.prime, round:x.round||'', note:x.note||'', neutral:!!x.neutral, res:null };
+  if(x.post) g.post=x.post; if(sp==='MMA') g.rounds=x.rounds||3;
+  if(!opts.noProps){ const pool=NOVELTY[k].slice(); g.nov=shuffle(pool).slice(0,k==='mma'?2:3).map(n=>n[0]); }
+  const Ly=lay(g); const defs=opts.noProps?[]:propDefs(g,A,H);
   // Monte Carlo the fair distribution
-  const N=900, mar=[], tot=[], ps={}; let hw=0;
-  for(let n=0;n<N;n++){ const r=simRun(g,null,null); const m=r.sh-r.sa; mar.push(m); tot.push(r.sh+r.sa); if(m>0) hw++; for(const k in r.ps){ (ps[k]=ps[k]||[]).push(r.ps[k]); } }
-  mar.sort((x,y)=>x-y); tot.sort((x,y)=>x-y);
-  const pH=hw/N;
-  // compress distributions into histograms (keeps the save small, keeps full precision)
+  const N=opts.sims||(opts.noProps?500:700), mar=new Int16Array(N), tot=new Int16Array(N), smp=defs.map(()=>new Float32Array(N)); let hw=0, dr=0; const di=defs.map(d=>d.key.startsWith('a.pts')?-1:d.key.startsWith('h.pts')?-2:keyIdx(g,d.key));
+  for(let n=0;n<N;n++){ const r=simCore(g,null,null); const m=r.sh-r.sa; mar[n]=m; tot[n]=r.sa+r.sh; if(m>0) hw++; else if(m===0) dr++; for(let q=0;q<defs.length;q++){ const i=di[q]; smp[q][n]=i===-1?r.sa:i===-2?r.sh:r.x[i]; } }
+  const ms=Array.from(mar).sort((a,b)=>a-b), ts=Array.from(tot).sort((a,b)=>a-b);
+  const pH=hw/N, pD=dr/N;
   const hist=a=>{ const h={}; for(const v of a) h[v]=(h[v]||0)+1; return Object.entries(h).map(([v,c])=>[+v,c]); };
-  g.fair={ pH, mh:hist(mar), th:hist(tot), n:N };
+  g.fair={ pH, pD, mh:hist(ms), th:hist(ts), n:N };
   const half=v=>Math.round(v*2)/2;
-  const runLine = (sp==='HK'||sp==='BS');
-  const medM = mar[N>>1], medT = tot[N>>1];
-  const allowInt=(sp==='FB'||sp==='BB');
+  const runLine = (k==='hk'||k==='bs'||k==='soc');
+  const medM = ms[N>>1], medT = ts[N>>1];
+  const allowInt=(k==='fb'||k==='bb');
   const pick50=(med,fn)=>{ let best=null,bd=9; for(let L=Math.floor(med)-2.5;L<=Math.floor(med)+3;L+=.5){ if(!allowInt&&Number.isInteger(L)) continue; const d=Math.abs(fn(L)-.5); if(d<bd-1e-9){ bd=d; best=L; } } return best; };
-  const pOverRaw=L=>{ let w=0,p=0; for(const t of tot){ if(t>L) w++; else if(t===L) p++; } return w/Math.max(1,N-p); };
-  const pCovRaw=L=>{ let w=0,p=0; for(const m of mar){ const v=m+L; if(v>0) w++; else if(v===0) p++; } return w/Math.max(1,N-p); };
-  g.fairSpread = runLine ? (pH>=.5?-1.5:1.5) : (pick50(-medM,pCovRaw)||-0.5); if(g.fairSpread===0) g.fairSpread=pH>=.5?-0.5:0.5; // home spread (negative = home fav)
-  g.fairTotal = pick50(medT,pOverRaw);
-  g.lines={};
-  for(const b in BOOKS){ const bk=BOOKS[b]; const sd=sp==='FB'?.6:sp==='BB'?.75:0; const err=runLine?0:half(gauss()*sd); const terr=half(gauss()*(sp==='FB'?.7:sp==='BB'?1.0:0.2));
-    let spread=g.fairSpread+err; if(!runLine&&spread===0) spread=-0.5; let total=g.fairTotal+terr; if((sp==='HK'||sp==='BS')&&Number.isInteger(total)) total+=.5;
-    const pn=gauss()*.008; const L={ spread, total, mlH:probToAm(clamp(pH+pn,.03,.97),bk.vig), mlA:probToAm(clamp(1-pH-pn,.03,.97),bk.vig) };
-    // spread pricing
-    if(runLine){ const pc=probCover(g,'h',spread); L.spH=probToAm(pc,1.045); L.spA=probToAm(1-pc,1.045); } else { L.spH=-110; L.spA=-110; }
-    L.tO=-110; L.tU=-110; g.lines[b]=L; }
-  // props (shared lines, priced per book with extra vig)
-  g.props=[]; const tm={a:A,h:H};
-  for(const side of ['a','h']){ const T=tm[side];
-    if(sp==='FB'){ const k=side+'0y'; const arr=(ps[k]||[0]).slice().sort((x,y)=>x-y); const line=Math.floor(arr[arr.length>>1])+.5; g.props.push({key:k,kind:'ou',stat:'pass yds',pl:T.pl[0].nm,line,side});
-      for(const pi of [1,2]){ const k2=side+pi+'td'; const pr=(ps[k2]||[]).filter(v=>v>=1).length/N; g.props.push({key:k2,kind:'any',stat:'anytime TD',pl:T.pl[pi].nm,p:pr,side}); } }
-    if(sp==='BB'){ for(const pi of [0,1]){ const k=side+pi+'pts'; const arr=(ps[k]||[0]).slice().sort((x,y)=>x-y); const line=Math.floor(arr[arr.length>>1])+.5; g.props.push({key:k,kind:'ou',stat:'points',pl:T.pl[pi].nm,line,side}); } }
-    if(sp==='HK'){ const k=side+'0g'; const pr=(ps[k]||[]).filter(v=>v>=1).length/N; g.props.push({key:k,kind:'any',stat:'anytime goal',pl:T.pl[0].nm,p:pr,side}); }
-    if(sp==='BS'){ const k=side+'0hr'; const pr=(ps[k]||[]).filter(v=>v>=1).length/N; g.props.push({key:k,kind:'any',stat:'to hit a HR',pl:T.pl[0].nm,p:pr,side}); }
+  const pOverRaw=L=>{ let w=0,p=0; for(const t of ts){ if(t>L) w++; else if(t===L) p++; } return w/Math.max(1,N-p); };
+  const pCovRaw=L=>{ let w=0,p=0; for(const m of ms){ const v=m+L; if(v>0) w++; else if(v===0) p++; } return w/Math.max(1,N-p); };
+  const pA=1-pH-pD;
+  if(k==='mma'){ g.fairSpread=0; g.fairTotal=0; }
+  else if(k==='soc'){ g.fairSpread = pH>=pA ? (pH>.56?-1.5:-0.5) : (pA>.56?1.5:0.5); g.fairTotal=pOverRaw(2.5)>.62?3.5:pOverRaw(2.5)<.38?1.5:2.5; }
+  else { g.fairSpread = runLine ? (pH>=.5?-1.5:1.5) : (pick50(-medM,pCovRaw)||-0.5); if(g.fairSpread===0) g.fairSpread=pH>=.5?-0.5:0.5; g.fairTotal = pick50(medT,pOverRaw); }
+  g.lines={}; g.open={};
+  for(const b in BOOKS){ const bk=BOOKS[b]; const sd=k==='fb'?(sp==='CF'?.55:.35):k==='bb'?(sp==='CB'?.65:.45):0; const err=runLine||k==='mma'?0:half(gauss()*sd); const terr=k==='mma'||k==='soc'?0:half(gauss()*(k==='fb'?(sp==='CF'?.6:.45):k==='bb'?(sp==='CB'?.8:.65):0.2));
+    let spread=g.fairSpread+err; if(!runLine&&k!=='mma'&&spread===0) spread=-0.5; let total=g.fairTotal+terr; if((k==='hk'||k==='bs')&&Number.isInteger(total)) total+=.5;
+    const pn=gauss()*.006; const L={ spread, total, pn, spJ:0, tJ:0 };
+    linePrice(g,L,bk);
+    g.lines[b]=L; g.open[b]={spread:L.spread,total:L.total,spH:L.spH,tO:L.tO,mlH:L.mlH,mlA:L.mlA}; }
+  // props: lines from the sim distribution, priced with prop juice
+  g.props=[];
+  defs.forEach((d,q)=>{ const a=smp[q]; const p=Object.assign({},d); delete p.min;
+    if(d.kind==='ou'){ const s=Array.from(a).sort((x,y)=>x-y); let best=null, bd=9; const med=s[N>>1]; const lo=Math.max(d.min!=null?d.min:.5,Math.floor(med)-3.5);
+      for(let L=lo;L<=Math.floor(med)+3.5;L+=1){ let w=0; for(const v of s) if(v>L) w++; const pO=w/N; const dd=Math.abs(pO-.5); if(dd<bd-1e-9){ bd=dd; best={L,pO}; } }
+      if(!best||best.pO<.08||best.pO>.92) return; p.line=best.L; p.pO=best.pO; p.oO=probToAm(p.pO,1.045); p.oU=probToAm(1-p.pO,1.045); }
+    else { let w=0; for(const v of a) if(v>=1) w++; const pr=w/N; if(pr<.012||pr>.93) return; p.p=pr; p.oY=probToAm(clamp(pr,.012,.93),pr<.15?1.17:1.12); }
+    g.props.push(p); });
+  g.dom=null; return g; }
+// prices a book line object from the fair distribution + its juice offsets (spJ/tJ = line-move pressure) + ML noise (pn)
+const JUICE=[[-110,-110],[-115,-105],[-120,100],[-125,105]];
+function jPair(j){ const a=Math.min(3,Math.abs(j)); const pr=JUICE[a]; return j>=0?pr:[pr[1],pr[0]]; }
+function linePrice(g,L,bk){ const k=kindOf(g.sp); const runLine=(k==='hk'||k==='bs'||k==='soc'); bk=bk||BOOKS.DQ;
+  const pH=g.fair.pH, pD=g.fair.pD||0, pA=1-pH-pD;
+  if(k==='soc'){ L.mlH=probToAm(clamp(pH+L.pn,.03,.95),bk.vig); L.mlA=probToAm(clamp(pA-L.pn,.03,.95),bk.vig); L.mlD=probToAm(clamp(pD,.05,.6),bk.vig); }
+  else { L.mlH=probToAm(clamp(pH+L.pn,.03,.97),bk.vig); L.mlA=probToAm(clamp(1-pH-L.pn,.03,.97),bk.vig); }
+  if(k==='mma'){ L.spH=L.spA=L.tO=L.tU=null; return L; }
+  if(runLine){ const pc=probCover(g,'h',L.spread); L.spH=probToAm(pc,1.045); L.spA=probToAm(1-pc,1.045); } else { const [h,a]=jPair(L.spJ); L.spH=h; L.spA=a; }
+  if(runLine){ const po=clamp(probOver(g,L.total)+.012*L.tJ,.03,.97); L.tO=probToAm(po,1.045); L.tU=probToAm(1-po,1.045); } else { const [o,u]=jPair(L.tJ); L.tO=o; L.tU=u; }
+  return L; }
+// ---------- line movement: sharp money drags lines toward fair, public money drags them toward favorites/overs ----------
+function marketTick(n){ if(!S||!S.slate||S.slate.done||S.slate.v!==2) return []; const moves=[];
+  for(let it=0;it<(n||1);it++) for(const g of S.slate.games){ if(g.res||g.sp==='MMA') continue; const k=kindOf(g.sp), runLine=(k==='hk'||k==='bs'||k==='soc');
+    for(const b in g.lines){ const L=g.lines[b]; if(rnd()>.28) continue; const sharp=rnd()<.58;
+      if(runLine||rnd()<.35){ const tgt=sharp?0:(g.fair.pH>=.5?.012:-.012); L.pn=Math.round((L.pn+(tgt-L.pn)*.5+gauss()*.004)*1000)/1000; if(runLine&&rnd()<.4) L.tJ=clamp(L.tJ+(sharp?-Math.sign(L.tJ):1),-2,2); linePrice(g,L,BOOKS[b]); continue; }
+      if(rnd()<.5){ // spread: + spJ means money on the home side
+        const dir=sharp?Math.sign(g.fairSpread-L.spread)*-1:(g.fairSpread<0?1:-1); if(!dir) continue; L.spJ+=dir; if(Math.abs(L.spJ)>=3){ L.spread+=L.spJ>0?-.5:.5; if(L.spread===0) L.spread+=L.spJ>0?-.5:.5; L.spJ=0; moves.push({g,b,what:'spread'}); } }
+      else { const dir=sharp?Math.sign(g.fairTotal-L.total):1; if(!dir) continue; L.tJ+=dir; if(Math.abs(L.tJ)>=3){ L.total+=L.tJ>0?.5:-.5; L.tJ=0; moves.push({g,b,what:'total'}); } }
+      linePrice(g,L,BOOKS[b]); } }
+  return moves; }
+// your own action moves the number (books respect nobody, but they do respect money)
+function bookReact(bet){ if(!S.slate||bet.stake<100) return; for(const l of bet.legs){ const g=gameById(l.gid); if(!g||g.res) continue; const L=g.lines[bet.book]; if(!L) continue; const k=kindOf(g.sp); if(k==='hk'||k==='bs'||k==='soc'||k==='mma') continue;
+    if(l.mkt==='sp'){ L.spJ+=l.side==='h'?1:-1; if(Math.abs(L.spJ)>=3){ L.spread+=L.spJ>0?-.5:.5; if(L.spread===0) L.spread+=L.spJ>0?-.5:.5; L.spJ=0; } linePrice(g,L,BOOKS[bet.book]); }
+    if(l.mkt==='tot'){ L.tJ+=l.side==='o'?1:-1; if(Math.abs(L.tJ)>=3){ L.total+=L.tJ>0?.5:-.5; L.tJ=0; } linePrice(g,L,BOOKS[bet.book]); } } }
+// ---------- prop menu (what gets priced each day) ----------
+function propDefs(g,A,H){ const k=kindOf(g.sp), out=[]; const T={a:A,h:H};
+  const P=(side,pi,stat,kind,cat,min)=>{ const pl=T[side].pl[pi]; if(!pl) return; out.push({key:side+pi+'.'+stat,kind,stat:STATN[stat]||stat,pl:pl.nm,pos:pl.pos,side,cat,min}); };
+  for(const side of ['a','h']){
+    if(k==='fb'){ P(side,0,'py','ou','Passing'); P(side,0,'ptd','ou','Passing',.5); P(side,0,'cmp','ou','Passing'); P(side,0,'int','ou','Passing',.5); P(side,0,'ry','ou','Rushing');
+      P(side,1,'ry','ou','Rushing'); P(side,2,'ry','ou','Rushing'); for(const pi of [3,4,5,6,1]) P(side,pi,'recy','ou','Receiving'); for(const pi of [3,6,1]) P(side,pi,'rec','ou','Receiving',.5);
+      for(const pi of [1,3,6,2,4,5,0]) P(side,pi,'td','any','TD Scorers'); P(side,7,'kp','ou','Kicking'); }
+    if(k==='bb'){ for(let pi=0;pi<5;pi++) P(side,pi,'pts','ou','Points'); for(const pi of [4,3,2,0]) P(side,pi,'reb','ou','Rebounds'); for(const pi of [0,1,2]) P(side,pi,'ast','ou','Assists'); for(const pi of [0,1,2,5]) P(side,pi,'3pm','ou','Threes',.5); for(const pi of [0,4]) P(side,pi,'pra','ou','Pts+Reb+Ast'); }
+    if(k==='hk'){ for(const pi of [0,1,2,3,4]) P(side,pi,'g','any','Goalscorers'); for(const pi of [0,1,2]) P(side,pi,'pts','ou','Points',.5); for(const pi of [0,1,2,3]) P(side,pi,'sog','ou','Shots on Goal',.5); P(side,7,'sv','ou','Goalie Saves'); }
+    if(k==='bs'){ for(const pi of [0,1,2,3,4,5]) P(side,pi,'h','ou','Hits',.5); for(const pi of [2,3,4,1]) P(side,pi,'hr','any','Home Runs'); for(const pi of [0,2,3,4]) P(side,pi,'tb','ou','Total Bases',.5); for(const pi of [2,3]) P(side,pi,'rbi','ou','RBIs',.5); P(side,9,'k','ou','Pitcher Strikeouts'); P(side,9,'ha','ou','Pitcher Hits Allowed'); }
+    if(k==='soc'){ for(const pi of [0,1,2,3,4]) P(side,pi,'g','any','Goalscorers'); for(const pi of [0,3,1]) P(side,pi,'a','any','Assists'); for(const pi of [0,1,2]) P(side,pi,'sog','ou','Shots on Target',.5); for(const pi of [0,3]) P(side,pi,'sh','ou','Shots',.5); P(side,7,'sv','ou','Goalie Saves',.5); }
+    if(k!=='mma') out.push({key:side+'.pts',kind:'ou',stat:k==='bs'?'team runs':k==='hk'||k==='soc'?'team goals':'team points',pl:T[side].ab,side,cat:'Team Totals',min:.5});
   }
-  for(const p of g.props){ if(p.kind==='ou'){ const arr=ps[p.key]; p.pO=arr.filter(v=>v>p.line).length/N; p.oO=probToAm(p.pO,1.06); p.oU=probToAm(1-p.pO,1.06); } else { p.oY=probToAm(clamp(p.p,.02,.95),1.12); } }
-
-  g.dom=null; return g;
+  if(k==='mma'){ for(const side of ['a','h']){ const nm=T[side].pl[0].nm; out.push({key:'x.'+side+'ko',kind:'any',stat:'wins by KO/TKO',pl:nm,side,cat:'Method of Victory'},{key:'x.'+side+'sub',kind:'any',stat:'wins by submission',pl:nm,side,cat:'Method of Victory'},{key:'x.'+side+'dec',kind:'any',stat:'wins by decision',pl:nm,side,cat:'Method of Victory'}); }
+    out.push({key:'x.dist',kind:'any',stat:'Fight goes the distance',pl:'',cat:'Fight Props'},{key:'x.rds',kind:'ou',stat:'total rounds',pl:'Fight',cat:'Fight Props',raw:1,min:.5}); }
+  if(k==='soc') out.push({key:'x.btts',kind:'any',stat:'Both teams to score',pl:'',cat:'Game Props'},{key:'x.cor',kind:'ou',stat:'total corners',pl:'Match',cat:'Game Props',min:.5},{key:'x.cards',kind:'ou',stat:'total cards',pl:'Match',cat:'Game Props',min:.5},{key:'x.red',kind:'any',stat:'A red card is shown',pl:'',cat:'Game Props'});
+  for(const n of (g.nov||[])){ const d=NOVELTY[k].find(z=>z[0]===n); if(!d) continue; out.push({key:n==='xpmiss'?'x.xpmiss':n==='hatrick'?'x.hat':'nv.'+n,kind:'any',stat:d[1],pl:'',cat:'🤡 Novelty',nov:1}); }
+  return out; }
+// ---------- the simulator ----------
+function dFor(g,side){ const A=teamOf(g.sp,g.a.i), H=teamOf(g.sp,g.h.i); const k=kindOf(g.sp);
+  const home=g.neutral?0:k==='fb'?(g.sp==='CF'?.3:.22):k==='bb'?(g.sp==='CB'?.35:.25):k==='hk'?.12:k==='soc'?.25:k==='bs'?.1:0; return side==='h'? (H.r-A.r)+home : (A.r-H.r)-home; }
+const SIMW=new Map();
+function cum(pairs){ let s=0; for(const p of pairs) s+=p[1]; let acc=0; return pairs.map(p=>{ acc+=p[1]/s; return [p[0],acc]; }); }
+function pickW(c){ const r=rnd(); for(let i=0;i<c.length;i++) if(r<c[i][1]) return c[i][0]; return c[c.length-1][0]; }
+function simW(g){ const key=g.id+g.a.i+'-'+g.h.i+g.sp; let W=SIMW.get(key); if(W) return W; if(SIMW.size>400) SIMW.clear(); const k=kindOf(g.sp); W={};
+  for(const side of ['a','h']){ const pl=teamOf(g.sp,g[side].i).pl; const q=i=>(pl[i]?pl[i].q:1); const mk=arr=>cum(arr.map(([i,w])=>[i,w*(i>=0?q(i):1)]));
+    if(k==='fb') W[side]={tgt:mk([[1,.1],[2,.05],[3,.27],[4,.19],[5,.12],[6,.17],[-1,.1]]),rush:mk([[0,.13],[1,.55],[2,.22],[-1,.1]]),rtd:mk([[0,.18],[1,.56],[2,.22],[-1,.04]])};
+    if(k==='bb') W[side]={use:mk([[0,.22],[1,.2],[2,.17],[3,.14],[4,.12],[5,.09],[6,.04],[7,.02]]),three:mk([[0,.27],[1,.3],[2,.2],[3,.08],[4,.01],[5,.1],[6,.03],[7,.01]]),reb:mk([[0,.07],[1,.09],[2,.14],[3,.21],[4,.27],[5,.1],[6,.08],[7,.04]]),ast:mk([[0,.38],[1,.17],[2,.13],[3,.08],[4,.07],[5,.1],[6,.05],[7,.02]])};
+    if(k==='hk') W[side]={shot:mk([[0,.19],[1,.19],[2,.16],[3,.13],[4,.13],[5,.11],[6,.09],[-1,.85]]),ast:mk([[0,.2],[1,.18],[2,.16],[3,.17],[4,.11],[5,.08],[6,.1],[-1,.6]])};
+    if(k==='bs') W[side]={bat:mk([[0,1.16],[1,1.13],[2,1.1],[3,1.08],[4,1.03],[5,.97],[6,.93],[7,.9],[8,.85]]),pow:mk([[0,.6],[1,.9],[2,1.5],[3,1.7],[4,1.3],[5,1],[6,.8],[7,.6],[8,.45]])};
+    if(k==='soc') W[side]={shot:mk([[0,.3],[1,.17],[2,.17],[3,.15],[4,.1],[5,.05],[6,.06]]),ast:mk([[0,.1],[1,.22],[2,.22],[3,.28],[4,.12],[5,.06]])}; }
+  SIMW.set(key,W); return W; }
+const SIDES=['a','h'];
+function simCore(g, init, rec){
+  const sp=g.sp, k=kindOf(sp), T=ticksOf(g), Ly=lay(g);
+  const x=init?Float64Array.from(init.x):new Float64Array(Ly.size); let sa=init?init.sa:0, sh=init?init.sh:0; const k0=init?init.k:0;
+  const dA=dFor(g,'a'), dH=dFor(g,'h'); const W=simW(g); const NS=Ly.NS, SO=Ly.side, G0=Ly.G, NV0=Ly.G+GSTAT[k].length;
+  const add=(side,pi,si,v)=>{ x[(side==='h'?SO:0)+pi*NS+si]+=v; }; const val=(side,pi,si)=>x[(side==='h'?SO:0)+pi*NS+si];
+  const gi=s=>G0+GSTAT[k].indexOf(s);
+  const nm=(side,pi)=>{ const p=teamOf(sp,g[side].i).pl[pi]; return p?p.nm:'some backup nobody has heard of'; }; const ab=side=>g[side].ab; const opp=s=>s==='a'?'h':'a';
+  const ev=(t,txt,cls,side)=>{ if(rec) rec.events.push({t,txt,cls,g:g.id,side}); };
+  const snap=kk=>{ if(rec) rec.snaps.push({k:kk,t:kk/T,sa,sh,x:Float32Array.from(x)}); };
+  if(!init) snap(0);
+  let ot='';
+  if(k==='fb'){ const cf=sp==='CF', lamB=cf?.08:.068, yb=cf?6.3:5.6;
+    for(let kk=k0;kk<T;kk++){ const t=(kk+1)/T;
+      for(const side of SIDES){ const d=side==='a'?dA:dH; const my=side==='a'?sa:sh, op=side==='a'?sh:sa; const lead=my-op; const w=W[side];
+        let lam=lamB*Math.exp(.2*d); if(kk>=48){ if(lead>=14) lam*=.55; else if(lead<=-14) lam*=1.4; else if(lead<0&&lead>=-8&&kk>=56) lam*=1.5; }
+        let ty=Math.max(0,yb+.5*d+gauss()*6), pf=.6; if(kk>=48){ if(lead<=-14){ ty+=3; pf=.78; } else if(lead>=14) pf=.42; }
+        const py=ty*pf, ry=ty-py; add(side,0,0,py); const r=pickW(w.tgt); const c=rnd()<Math.min(.95,py/9)?1:0; add(side,0,3,c); if(r>=0){ add(side,r,6,py); add(side,r,5,c); }
+        const rr=pickW(w.rush); if(rr>=0) add(side,rr,4,ry);
+        if(rnd()<.0115){ add(side,0,2,1); if(rec&&rnd()<.6) ev(t,`INTERCEPTION thrown by ${nm(side,0)}! Right to the other team, like a Christmas gift.`,'',side); }
+        if(rnd()<lam){ const v=weighted([[7,.52],[3,.36],[6,.04],[8,.05],[2,.03]]); if(side==='a') sa+=v; else sh+=v; let who='', how='';
+          if(v>=6){ if(rnd()<.58){ const rc=pickW(w.tgt); const b=8+rnd()*28; add(side,0,1,1); add(side,0,0,b); add(side,0,3,1); if(rc>=0){ add(side,rc,7,1); add(side,rc,6,b); add(side,rc,5,1); } who=rc>=0?nm(side,rc):'a backup tight end nobody has heard of'; how=`catches a ${Math.round(b)}-yard TD from ${nm(side,0)}`; }
+            else { const rt=pickW(w.rtd); if(rt>=0){ add(side,rt,7,1); add(side,rt,4,2+rnd()*9); } who=rt>=0?nm(side,rt):'the fullback (they still have one?)'; how='punches it in'; }
+            if(v===7) add(side,7,8,1); if(v===6) x[gi('xpmiss')]=1; }
+          if(v===3) add(side,7,8,3);
+          if(rec){ const garbage=kk>=50&&Math.abs(lead)>=14; let txt;
+            if(v===7) txt=`TOUCHDOWN ${ab(side)}! ${who} ${how}${garbage?' in GARBAGE TIME':''}.`;
+            else if(v===6) txt=`TD ${ab(side)}: ${who} ${how}... AND THE KICKER DOINKS THE EXTRA POINT OFF THE UPRIGHT. Six only.`;
+            else if(v===8) txt=`TD ${ab(side)}: ${who} ${how}, + the 2-point conversion! Sicko mode.`;
+            else if(v===3) txt=pick([`${ab(side)} field goal. ${nm(side,7)} from 44. Drive stalled like your career.`,`${ab(side)} kicks a FG. Settled for three like you settled for your ex.`,`${nm(side,7)} drills a 52-yarder for ${ab(side)}. Kicker is the MVP again.`]);
+            else txt=`SAFETY! ${ab(opp(side))} QB ${nm(opp(side),0)} sacked in the end zone. 2 points ${ab(side)}.`;
+            ev(t,txt,v===3?'':'big',side); } }
+        else if(rec && rnd()<.04){ ev(t,pick([`${ab(side)} three-and-out. Punter is the MVP again.`,`${ab(side)} fumble! Recovered by... themselves. Phew.`,`Holding penalty on ${ab(side)}. Ref saw nothing, called everything.`,`${nm(side,0)} airmails one into the third row. A fan catches it with his nachos.`,`${ab(side)} going for it on 4th... STUFFED.`,`${nm(side,1)} breaks a 40-yard run and then trips over his own feet.`]),'',side); } }
+      snap(kk+1); }
+    if(sa===sh){ const pH=1/(1+Math.exp(-(dH-dA)*.6)); const hw=rnd()<pH; const v=rnd()<.55?3:6; const side=hw?'h':'a'; if(hw) sh+=v; else sa+=v; ot='OT';
+      if(v===6){ const rt=pickW(W[side].rtd); if(rt>=0) add(side,rt,7,1); } else add(side,7,8,3); ev(1.02,`OVERTIME: ${ab(side)} ${v===3?'walk-off field goal by '+nm(side,7):'walk-off TOUCHDOWN'}! Game over.`,'big',side); snap(T+1); } }
+  else if(k==='bb'){ const cb=sp==='CB'; const b2=cb?.29:.36, b3=cb?.1:.12, b1=cb?.06:.07, late=T-6, blow=cb?14:16;
+    const poss=(side,d,lead,kk,t)=>{ let p2=b2+.012*d, p3=b3+.006*d, p1=b1; if(kk>=late){ if(lead>=blow){p2*=.86;p3*=.86;} else if(lead<=-blow){p2*=1.1;p3*=1.15;} } const w=W[side];
+      const r=rnd(); const v=r<p3?3:r<p3+p2?2:r<p3+p2+p1?1:0;
+      if(v){ const s=v===3?pickW(w.three):pickW(w.use); add(side,s,0,v); add(side,s,4,v); if(v===3) add(side,s,3,1); if(v>=2&&rnd()<.58){ let pa=pickW(w.ast); if(pa===s) pa=(s+1)%5; add(side,pa,2,1); add(side,pa,4,1); }
+        if(rec&&v===3&&s<=1&&rnd()<.25) ev(t,`${nm(side,s)} from WAY downtown... BANG! ${ab(side)} +3.`,'',side); return v; }
+      if(rnd()<.8){ const off=rnd()<.27; const rs=off?side:opp(side); const rb=pickW(W[rs].reb); add(rs,rb,1,1); add(rs,rb,4,1); } return 0; };
+    for(let kk=k0;kk<T;kk++){ const t=(kk+1)/T;
+      for(const side of SIDES){ const d=side==='a'?dA:dH; let pts=0; for(let q=0;q<2;q++){ const lead=(side==='a'?sa-sh:sh-sa); pts+=poss(side,d,lead,kk,t); }
+        if(side==='a') sa+=pts; else sh+=pts;
+        if(rec&&rnd()<.05) ev(t,pick([`${nm(side,4)} gets stuffed at the rim and stares at the ref like it's his landlord.`,`${ab(side)} turnover. Pass went straight into the cheerleaders.`,`${nm(side,0)} misses two free throws. Free. Throws. Nobody is guarding him.`,`${ab(side)} on a 7-0 run. Your heart rate is also on a 7-0 run.`,`Flagrant foul! Somebody's getting fined and it isn't you for once.`,`${nm(side,2)} with a poster dunk. The defender's family has been notified.`]),'',side); }
+      snap(kk+1); }
+    while(sa===sh){ const n=cb?6:5; for(let q=0;q<n*2;q++){ sa+=poss('a',dA,sa-sh,T,1); sh+=poss('h',dH,sh-sa,T,1); } ot=ot?ot.replace(/^(\d*)OT$/,(m,a)=>((+a||1)+1)+'OT'):'OT'; }
+    if(ot){ ev(1.02,`OVERTIME in the books. ${sh>sa?ab('h'):ab('a')} survives.`,'big'); snap(T+1); } }
+  else if(k==='hk'){ let ens=false;
+    const shotP=(side,lam,en,t)=>{ const d=side==='a'?dA:dH; const sr=.52*Math.exp(.06*d); if(rnd()>=Math.max(sr,lam)) return 0; const w=W[side]; const s=pickW(w.shot); if(s>=0) add(side,s,3,1);
+      if(rnd()<lam/Math.max(sr,lam)){ if(s>=0){ add(side,s,0,1); add(side,s,2,1); } let a1=-1; if(rnd()<.9){ a1=pickW(w.ast); if(a1>=0&&a1===s) a1=(s+1)%7; if(a1>=0){ add(side,a1,1,1); add(side,a1,2,1); } if(rnd()<.62){ let a2=pickW(w.ast); if(a2>=0&&(a2===s||a2===a1)) a2=(Math.max(s,a1)+1)%7; if(a2>=0&&a2!==s&&a2!==a1){ add(side,a2,1,1); add(side,a2,2,1); } } }
+        if(rec) ev(t, en?`EMPTY NET GOAL ${ab(side)}! ${nm(side,s)} into the open cage like a drunk into a Waffle House.`:`GOAL ${ab(side)}! ${nm(side,s)} ${pick(['snipes it top shelf where mama hides the cookies','banks it in off a defenseman\'s butt','tips it in. Ugly. Counts.','one-times it. Goalie had no chance.'])}${a1>=0?' (assist '+nm(side,a1)+')':''}.`,'big',side); return 1; }
+      if(!en) add(opp(side),7,4,1); return 0; };
+    for(let kk=k0;kk<T;kk++){ const t=(kk+1)/T;
+      for(const side of SIDES){ const d=side==='a'?dA:dH; const lead=(side==='a'?sa-sh:sh-sa); let lam=.05*Math.exp(.18*d); let en=false; if(kk>=57){ if(lead<0&&lead>=-2) lam*=2.2; else if(lead>0&&lead<=2){ lam*=2.6; en=true; } }
+        const gl=shotP(side,lam,en,t); if(side==='a') sa+=gl; else sh+=gl;
+        if(!gl&&rec&&rnd()<.03) ev(t,pick([`Fight! ${ab(side)} enforcer drops the gloves. Everyone's having more fun than you.`,`${ab(side)} hits the post. PING. Your soul leaves your body.`,`Big save by ${nm(opp(side),7)} on ${nm(side,0)}! Robbed him like a parking garage.`]),'',side); }
+      snap(kk+1); }
+    if(sa===sh){ const pH=1/(1+Math.exp(-(dH-dA)*.6)); const hw=rnd()<pH; const side=hw?'h':'a'; if(hw) sh++; else sa++; const so=rnd()<.4; ot=so?'SO':'OT';
+      if(!so){ const s=pickW(W[side].shot); if(s>=0){ add(side,s,0,1); add(side,s,2,1); add(side,s,3,1); } } ev(1.02,so?`SHOOTOUT! ${ab(side)} wins the skills competition. The total counts it as a goal. Sorry, under bettors.`:`OT WINNER ${ab(side)}! 3-on-3 chaos pays off.`,'big',side); snap(T+1); }
+    const hi=gi('hat'); if(hi>=G0) for(const side of SIDES) for(let p=0;p<7;p++) if(val(side,p,0)>=3) x[hi]=1; }
+  else if(k==='bs'){ const ip={a:clamp(Math.round(5.7+gauss()*1.1),3,8),h:clamp(Math.round(5.7+gauss()*1.1),3,8)};
+    for(let kk=k0;kk<T;kk++){ const t=(kk+1)/T;
+      for(const side of SIDES){ if(side==='h'&&kk===8&&sh>sa){ ev(t,`${ab('h')} up after 8½. No need for the bottom of the 9th.`,'','h'); continue; }
+        const d=side==='a'?dA:dH, w=W[side], df=opp(side); let runs=poisson(.365*Math.exp(.15*d)); let hr=0, hb=-1; if(rnd()<.1*Math.exp(.1*d)){ hr=1+poisson(.45); runs+=hr; hb=pickW(w.pow); add(side,hb,0,1); add(side,hb,1,1); add(side,hb,2,4); add(side,hb,3,hr); }
+        const r0=runs-hr; const hits=r0>0?r0+poisson(.5):poisson(.62); for(let q=0;q<hits;q++){ const b=pickW(w.bat); const z=rnd(); add(side,b,0,1); add(side,b,2,z<.75?1:z<.96?2:3); } for(let q=0;q<r0;q++) add(side,pickW(w.bat),3,1);
+        if(kk<ip[df]){ const pq=teamOf(sp,g[df].i).pl[9]; const pk=.27*(pq?pq.q:1); let ks=0; for(let q=0;q<3;q++) if(rnd()<pk) ks++; add(df,9,4,ks); add(df,9,5,hits+(hr?1:0)); if(rec&&ks===3&&rnd()<.5) ev(t,`${nm(df,9)} strikes out the side. Filthy.`,'',df); }
+        if(side==='a') sa+=runs; else sh+=runs;
+        if(rec&&runs>0) ev(t, hr?`${nm(side,hb)} DINGER! ${hr}-run shot for ${ab(side)}. That ball's in Kentucky.`:`${ab(side)} pushes across ${runs} run${runs>1?'s':''} in the ${kk+1}${['st','nd','rd'][kk]||'th'}${runs>=3?'. Pitcher is getting booed by his own mom.':'.'}`, runs>=2||hr?'big':'', side);
+        else if(rec&&rnd()<.1) ev(t,pick([`${ab(side)} goes down 1-2-3. Efficient. Boring.`,`${ab(side)} strands the bases loaded. Unforgivable.`,`Mound visit. The catcher is just asking what's for dinner.`]),'',side);
+        if(side==='h'&&kk===8&&sh>sa) ev(t,`WALK-OFF ${ab('h')}!`,'big','h'); }
+      snap(kk+1); }
+    if(sa===sh){ const pH=1/(1+Math.exp(-(dH-dA)*.6)); let inn=10; while(sa===sh&&inn<16){ sa+=poisson(.85*Math.exp(.15*dA)); const rh=poisson(.85*Math.exp(.15*dH)); if(sh+rh>sa) sh=sa+1; else sh+=rh; inn++; } if(sa===sh){ if(rnd()<pH) sh++; else sa++; } ot='F/'+(inn-1); ev(1.02,`EXTRA INNINGS: ${sh>sa?ab('h'):ab('a')} finally ends it in the ${inn-1}th. Ghost runner rule is a crime.`,'big'); snap(T+1); } }
+  else if(k==='soc'){ const iC=gi('cor'), iK=gi('cards'), iR=gi('red'), iB=gi('btts');
+    for(let kk=k0;kk<T;kk++){ const t=(kk+1)/T;
+      for(const side of SIDES){ const d=side==='a'?dA:dH; const lead=(side==='a'?sa-sh:sh-sa); let lam=.028*Math.exp(.22*d); if(kk>=36&&lead===-1) lam*=1.45; if(kk>=36&&lead>=2) lam*=.8; const sr=.27*Math.exp(.08*d); const w=W[side];
+        if(rnd()<sr){ const s=pickW(w.shot); add(side,s,2,1); if(rnd()<lam/sr){ add(side,s,0,1); add(side,s,3,1); if(side==='a') sa++; else sh++; let as=-1; if(rnd()<.7){ as=pickW(w.ast); if(as===s) as=(s+1)%6; add(side,as,1,1); }
+            if(rec) ev(t,`GOOOOAL ${ab(side)}! ${nm(side,s)} ${pick(['curls one into the top corner','scuffs it in off his shin','heads it in from 6 yards','smashes it through the keeper\'s legs'])}${as>=0?' ('+nm(side,as)+' assist)':''}. ${Math.round(t*90)}'.`,'big',side); }
+          else if(rnd()<.29){ add(side,s,3,1); add(opp(side),7,4,1); } }
+        if(rnd()<.115) x[iC]++; if(rnd()<.042){ x[iK]++; if(rec&&rnd()<.3) ev(t,`Yellow card ${ab(side)}. ${nm(side,4)} took a guy out at the knees and then acted shocked.`,'',side); } if(rnd()<.0015){ x[iR]=1; ev(t,`🟥 RED CARD ${ab(side)}! ${nm(side,6)} is off. Down to 10 men.`,'big',side); } }
+      snap(kk+1); }
+    x[iB]=sa>0&&sh>0?1:0; }
+  else if(k==='mma'){ const A=teamOf(sp,g.a.i), H=teamOf(sp,g.h.i); const iA=gi('apt'), iH=gi('hpt'), iD=gi('rds'), iDist=gi('dist');
+    if(!(init&&sa+sh>0)) for(let kk=k0;kk<T;kk++){ const t=(kk+1)/T; let fin=null;
+      for(const side of SIDES){ const d=side==='a'?dA:dH; const F=side==='a'?A:H; if(rnd()<.02*Math.exp(.5*d)){ fin={side,m:rnd()<(1-F.sty)*.8+.1?'ko':'sub'}; break; } if(rnd()<.5+.09*d) x[side==='a'?iA:iH]++; }
+      if(fin){ if(fin.side==='a') sa=1; else sh=1; x[iD]=(kk+rnd())/5; x[gi(fin.side+fin.m)]=1; const r=Math.floor(kk/5)+1;
+        ev(t,fin.m==='ko'?`💥 ${nm(fin.side,0).toUpperCase()} WINS BY KO in round ${r}! ${pick(['Lights out. Somebody find his mouthpiece.','He\'s asleep before he hits the mat.','The ref waves it off. The other guy is waving at nobody.'])}`:`🐍 SUBMISSION! ${nm(fin.side,0)} taps him out in round ${r}. ${pick(['Arm bent the wrong way. The crowd gasps.','Rear naked choke. Naptime.','He tapped faster than you tap out of a group chat.'])}`,'big',fin.side); snap(kk+1); break; }
+      if(rec&&rnd()<.22){ const s=rnd()<.5?'a':'h'; ev(t,pick([`${nm(s,0)} lands a BIG right hand!`,`${nm(s,0)} shoots for a takedown and gets it.`,`Leg kick from ${nm(s,0)}. That's gonna bruise.`,`${nm(s,0)} clinches and does absolutely nothing for a minute. Boos.`]),'',s); }
+      snap(kk+1); }
+    if(sa+sh===0){ x[iD]=T/5; x[iDist]=1; const aw=x[iA]>x[iH]||(x[iA]===x[iH]&&rnd()<.5+.1*(dA-dH)); if(aw) sa=1; else sh=1; x[gi((aw?'a':'h')+'dec')]=1; ev(1.01,`🧑‍⚖️ We go to the judges... ${nm(aw?'a':'h',0)} wins by decision. One judge scored it for the other guy. Investigate him.`,'big',aw?'a':'h'); ot='DEC'; } else if(!ot) ot=x[iDist]?'DEC':(x[gi('ako')]||x[gi('hko')]?'KO':'SUB'); }
+  // novelty coins (some are tied to real sim stats above)
+  (g.nov||[]).forEach((n,j)=>{ if(n==='xpmiss'||n==='hatrick') return; const d=NOVELTY[k].find(z=>z[0]===n); if(d&&!init) x[NV0+j]=rnd()<d[2]?1:0; else if(d&&init&&x[NV0+j]===0&&rnd()<d[2]*(1-k0/T)) x[NV0+j]=1; });
+  return { sa, sh, x, ot };
 }
+function simRun(g, init, rec){ const ini=init?{k:init.k,sa:init.sa,sh:init.sh,x:init.x||new Float64Array(lay(g).size)}:null; const r=simCore(g,ini,rec); return {sa:r.sa,sh:r.sh,ot:r.ot,x:r.x,ps:psObj(g,r.x,r.sa,r.sh)}; }
 function probCover(g,side,line){ let w=0,p=0,n=0; for(const [m,c] of g.fair.mh){ const v=(side==='h'?m:-m)+line; n+=c; if(v>0) w+=c; else if(v===0) p+=c; } return w/Math.max(1,n-p); }
 function probOver(g,line){ let w=0,p=0,n=0; for(const [t,c] of g.fair.th){ n+=c; if(t>line) w+=c; else if(t===line) p+=c; } return w/Math.max(1,n-p); }
-// ---------- the simulator ----------
-function dFor(g,side){ const A=teamOf(g.sp,g.a.i), H=teamOf(g.sp,g.h.i); const home=g.sp==='FB'?.22:g.sp==='BB'?.25:g.sp==='HK'?.12:.1; return side==='h'? (H.r-A.r)+home : (A.r-H.r)-home; }
-const TICKS={FB:60,BB:48,HK:60,BS:9};
-function simRun(g, init, rec){
-  const sp=g.sp, T=TICKS[sp]; const st=init?{k:init.k,sa:init.sa,sh:init.sh,ps:Object.assign({},init.ps)}:{k:0,sa:0,sh:0,ps:{}};
-  const dA=dFor(g,'a'), dH=dFor(g,'h'); const P=st.ps; const inc=(k,v)=>{P[k]=(P[k]||0)+v;};
-  const name=(side,i)=>teamOf(sp,g[side].i).pl[i].nm; const ab=side=>g[side].ab;
-  const ev=(t,txt,cls,side)=>{ if(rec) rec.events.push({t,txt,cls,g:g.id,side}); };
-  const snap=k=>{ if(rec) rec.snaps.push({k,t:k/T,sa:st.sa,sh:st.sh,ps:Object.assign({},P)}); };
-  if(!init) snap(0);
-  for(let k=st.k;k<T;k++){
-    const t=(k+1)/T;
-    for(const side of ['a','h']){ const d=side==='a'?dA:dH; const my=side==='a'?st.sa:st.sh, op=side==='a'?st.sh:st.sa; const lead=my-op;
-      if(sp==='FB'){ let lam=.068*Math.exp(.2*d); if(k>=48){ if(lead>=14) lam*=.55; else if(lead<=-14) lam*=1.4; else if(lead<0&&lead>=-8&&k>=56) lam*=1.5; }
-        let yd=Math.max(0,3.5+.35*d+gauss()*5); if(k>=48&&lead<=-14) yd+=3; inc(side+'0y',yd);
-        if(rnd()<lam){ const v=weighted([[7,.52],[3,.36],[6,.04],[8,.05],[2,.03]]); if(side==='a') st.sa+=v; else st.sh+=v;
-          let who='';
-          if(v>=6){ const r=rnd(); const pi=r<.25?1:r<.47?2:r<.53?0:-1; if(pi>=1) inc(side+pi+'td',1); if(pi===0) inc(side+'0rtd',1); who=pi>=0?name(side,pi):'some backup tight end nobody has heard of'; inc(side+'0y',pi>=1?8:0); }
-          if(rec){ const garbage=k>=50&&Math.abs(lead)>=14; let txt;
-            if(v===7) txt=`TOUCHDOWN ${ab(side)}! ${who} punches it in${garbage?' in GARBAGE TIME':''}.`;
-            else if(v===6) txt=`TD ${ab(side)} by ${who}... AND THE KICKER DOINKS THE EXTRA POINT OFF THE UPRIGHT. Six only.`;
-            else if(v===8) txt=`TD ${ab(side)} by ${who} + the 2-point conversion! Sicko mode.`;
-            else if(v===3) txt=pick([`${ab(side)} field goal. Drive stalls in the red zone like your career.`,`${ab(side)} kicks a FG. Settled for three like you settled for your ex.`,`${ab(side)} 52-yard FG... it's GOOD.`]);
-            else txt=`SAFETY! ${ab(side==='a'?'h':'a')} QB tackled in the end zone. 2 points ${ab(side)}.`;
-            ev(t,txt,v===3?'':'big',side); }
-        } else if(rec && rnd()<.05){ ev(t,pick([`${ab(side)} three-and-out. Punter is the MVP again.`,`INTERCEPTION thrown by ${name(side,0)}! Right to the other team, like a Christmas gift.`,`${ab(side)} fumble! Recovered by... themselves. Phew.`,`Holding penalty on ${ab(side)}. Ref saw nothing, called everything.`,`${name(side,0)} airmails one into the third row. A fan catches it with his nachos.`,`${ab(side)} going for it on 4th... STUFFED.`]),'',side); }
-      }
-      else if(sp==='BB'){ let p2=.36+.012*d, p3=.12+.006*d, p1=.07; if(k>=42){ if(lead>=16){p2*=.86;p3*=.86;} else if(lead<=-16){p2*=1.1;p3*=1.15;} }
-        let pts=0; for(let q=0;q<2;q++){ const r=rnd(); const v=r<p3?3:r<p3+p2?2:r<p3+p2+p1?1:0; if(v){ pts+=v; const a=rnd(); const pi=a<.28?0:a<.48?1:-1; if(pi>=0) inc(side+pi+'pts',v);
-          if(rec&&v===3&&pi===0&&rnd()<.3) ev(t,`${name(side,0)} from WAY downtown... BANG! ${ab(side)} +3.`,'',side); } }
-        if(side==='a') st.sa+=pts; else st.sh+=pts;
-        if(rec&&rnd()<.06) ev(t,pick([`${name(side,1)} gets stuffed at the rim and stares at the ref like it's his landlord.`,`${ab(side)} turnover. Pass went straight into the cheerleaders.`,`${name(side,0)} misses two free throws. Free. Throws. Nobody is guarding him.`,`${ab(side)} on a 7-0 run. Your heart rate is also on a 7-0 run.`,`Flagrant foul! Somebody's getting fined and it isn't you for once.`]),'',side);
-      }
-      else if(sp==='HK'){ let lam=.05*Math.exp(.18*d); let en=false; if(k>=57){ if(lead<0&&lead>=-2) lam*=2.2; else if(lead>0&&lead<=2){ lam*=2.6; en=true; } }
-        if(rnd()<lam){ if(side==='a') st.sa++; else st.sh++; const r=rnd(); const pi=r<.13?0:r<.23?1:-1; if(pi===0) inc(side+'0g',1);
-          if(rec) ev(t, en?`EMPTY NET GOAL ${ab(side)}! Into the open cage like a drunk into a Waffle House.`:`GOAL ${ab(side)}! ${pi>=0?name(side,pi):'A fourth-liner with a mullet'} ${pick(['snipes it top shelf where mama hides the cookies','banks it in off a defenseman\'s butt','tips it in. Ugly. Counts.','one-times it. Goalie had no chance.'])}.`,'big',side); }
-        else if(rec&&rnd()<.03) ev(t,pick([`Fight! ${ab(side)} enforcer drops the gloves. Everyone's having more fun than you.`,`${ab(side)} hits the post. PING. Your soul leaves your body.`,`Big save on ${name(side,0)}! Goalie robbed him like a parking garage.`]),'',side);
-      }
-      else if(sp==='BS'){ // one tick = one inning, handle halves
-        if(side==='h' && k===8 && st.sh>st.sa) { ev(t,`${ab('h')} up after 8½. No need for the bottom of the 9th.`,'','h'); continue; }
-        let runs=poisson(.47*Math.exp(.15*d)); let hr=false; if(rnd()<.028*Math.exp(.1*d)){ hr=true; const add=1+poisson(.5); runs+=add; inc(side+'0hr',1); }
-        if(side==='a') st.sa+=runs; else st.sh+=runs;
-        if(rec&&runs>0) ev(t, hr?`${name(side,0)} DINGER! ${runs}-run shot for ${ab(side)}. That ball's in Kentucky.`:`${ab(side)} pushes across ${runs} run${runs>1?'s':''} in the ${k+1}${['st','nd','rd'][k]||'th'}${runs>=3?'. Pitcher is getting booed by his own mom.':'.'}`, runs>=2?'big':'', side);
-        else if(rec&&rnd()<.12) ev(t,pick([`${ab(side)} goes down 1-2-3. Efficient. Boring.`,`${ab(side)} strands the bases loaded. Unforgivable.`,`Mound visit. The catcher is just asking what's for dinner.`]),'',side);
-        if(side==='h' && k===8 && st.sh>st.sa){ ev(t,`WALK-OFF ${ab('h')}!`,'big','h'); }
-      }
-    }
-    st.k=k+1; snap(k+1);
-  }
-  // overtime / extras
-  let ot='';
-  if(st.sa===st.sh){ const pH=1/(1+Math.exp(-(dH-dA)*.6));
-    if(sp==='FB'){ const hw=rnd()<pH; const v=rnd()<.55?3:6; if(hw) st.sh+=v; else st.sa+=v; ot='OT'; const side=hw?'h':'a'; if(v===6){ const pi=ri(1,2); inc(side+pi+'td',1); } ev(1.02,`OVERTIME: ${ab(side)} ${v===3?'walk-off field goal':'walk-off TOUCHDOWN'}! Game over.`,'big',side); }
-    else if(sp==='BB'){ while(st.sa===st.sh){ const a=Math.round(8+gauss()*3+dA*1.5), h=Math.round(8+gauss()*3+dH*1.5); st.sa+=Math.max(2,a); st.sh+=Math.max(2,h); } ot='OT'; ev(1.02,`OVERTIME in the books. ${st.sh>st.sa?ab('h'):ab('a')} survives.`,'big'); }
-    else if(sp==='HK'){ const hw=rnd()<pH; if(hw) st.sh++; else st.sa++; const so=rnd()<.4; ot=so?'SO':'OT'; ev(1.02,so?`SHOOTOUT! ${ab(hw?'h':'a')} wins the skills competition. The total counts it as a goal. Sorry, under bettors.`:`OT WINNER ${ab(hw?'h':'a')}! 3-on-3 chaos pays off.`,'big',hw?'h':'a'); if(!so&&rnd()<.25) inc((hw?'h':'a')+'0g',1); }
-    else if(sp==='BS'){ let inn=10; while(st.sa===st.sh&&inn<16){ st.sa+=poisson(.85*Math.exp(.15*dA)); const rh=poisson(.85*Math.exp(.15*dH)); if(st.sh+rh>st.sa) st.sh=st.sa+1; else st.sh+=rh; inn++; } if(st.sa===st.sh){ if(rnd()<pH) st.sh++; else st.sa++; } ot='F/'+(inn-1); ev(1.02,`EXTRA INNINGS: ${st.sh>st.sa?ab('h'):ab('a')} finally ends it in the ${inn-1}th. Ghost runner rule is a crime.`,'big'); }
-    snap(T+1);
-  }
-  return { sa:st.sa, sh:st.sh, ps:P, ot };
-}
-// ---------- legs / pricing ----------
+// ---------- odds / legs ----------
 function tiltJuice(am){ return S.tilt>=85 ? (am<0? am-10 : Math.max(101,am-10)) : am; }
 function vkJuice(am){ return has('vigkiller') && am===-110 ? -105 : am; }
 function legOdds(g, mkt, side, b, extra){
   const L=g.lines[b]; let o, line=null;
   if(mkt==='sp'){ o=side==='h'?L.spH:L.spA; line=side==='h'?L.spread:-L.spread; o=vkJuice(o); }
-  else if(mkt==='ml'){ o=side==='h'?L.mlH:L.mlA; }
+  else if(mkt==='ml'){ o=side==='h'?L.mlH:side==='d'?L.mlD:L.mlA; }
   else if(mkt==='tot'){ o=side==='o'?L.tO:L.tU; line=L.total; o=vkJuice(o); }
   else if(mkt==='prop'){ const p=g.props[extra]; if(p.kind==='ou'){ o=side==='o'?p.oO:p.oU; line=p.line; } else o=p.oY; if(b==='FD') o=o>0?o+5:o+5>-100?100:o+5; }
   return { odds:tiltJuice(o), line }; }
 function fairProb(g, mkt, side, line, extra){
   if(mkt==='sp') return probCover(g,side,line);
-  if(mkt==='ml') return side==='h'?g.fair.pH:1-g.fair.pH;
+  if(mkt==='ml') return side==='h'?g.fair.pH:side==='d'?(g.fair.pD||0):1-g.fair.pH-(g.fair.pD||0);
   if(mkt==='tot') return side==='o'?probOver(g,line):1-probOver(g,line);
   if(mkt==='prop'){ const p=g.props[extra]; if(p.kind==='ou') return side==='o'?p.pO:1-p.pO; return p.p; }
   return .5; }
 function legLabel(g, leg){
   const tm=s=>g[s].ab; const fl=v=>v>0?'+'+v:''+v;
   if(leg.mkt==='sp') return `${tm(leg.side)} ${fl(leg.line)}`;
-  if(leg.mkt==='ml') return `${tm(leg.side)} ML`;
+  if(leg.mkt==='ml') return leg.side==='d'?`${g.a.ab}/${g.h.ab} DRAW`:`${tm(leg.side)} ${g.sp==='MMA'?'to win':'ML'}`;
   if(leg.mkt==='tot') return `${g.a.ab}/${g.h.ab} ${leg.side==='o'?'Over':'Under'} ${leg.line}`;
-  const p=g.props[leg.extra]; return p.kind==='ou'?`${p.pl} ${leg.side==='o'?'O':'U'} ${p.line} ${p.stat}`:`${p.pl} ${p.stat}`; }
+  const p=g.props[leg.extra]; if(p.nov) return `🤡 ${p.stat}`; return p.kind==='ou'?`${p.pl} ${leg.side==='o'?'O':'U'} ${p.line} ${p.stat}`:(p.pl?`${p.pl} ${p.stat}`:p.stat); }
 function makeLeg(g,mkt,side,b,extra){ const {odds,line}=legOdds(g,mkt,side,b,extra); const leg={gid:g.id,mkt,side,line,odds,book:b,extra:extra==null?null:extra}; leg.label=legLabel(g,leg); leg.fp=fairProb(g,mkt,side,line,extra); return leg; }
 function gameById(id){ return S.slate&&S.slate.games.find(g=>g.id===id); }
+function slipKey(l){ return l.gid+'|'+l.mkt+'|'+l.side+'|'+(l.extra==null?'':l.extra); }
+function legConflict(a,b){ return a.gid===b.gid&&a.mkt===b.mkt&&(a.mkt!=='prop'||a.extra===b.extra); }
 // ---------- leg evaluation ----------
 function legValue(leg, sa, sh, ps){ // >0 win, 0 push, <0 loss
   const m=sh-sa;
   if(leg.mkt==='sp') return (leg.side==='h'?m:-m)+leg.line;
-  if(leg.mkt==='ml') return (leg.side==='h'?m:-m)>0?1:-1;
+  if(leg.mkt==='ml') return leg.side==='d'?(m===0?1:-1):(leg.side==='h'?m:-m)>0?1:-1;
   if(leg.mkt==='tot'){ const T=sa+sh; return leg.side==='o'?T-leg.line:leg.line-T; }
-  if(leg.mkt==='prop'){ const g=gameById(leg.gid); const p=g?g.props[leg.extra]:leg.prop; const v=Math.floor((ps&&ps[p.key])||0); if(p.kind==='ou') return leg.side==='o'?v-p.line:p.line-v; return v>=1?1:-1; }
+  if(leg.mkt==='prop'){ const g=gameById(leg.gid); const p=leg.prop||(g?g.props[leg.extra]:null); if(!p) return -1; const raw=p.key==='a.pts'?sa:p.key==='h.pts'?sh:((ps&&ps[p.key])||0); const v=p.raw?raw:Math.floor(raw); if(p.kind==='ou') return leg.side==='o'?v-p.line:p.line-v; return v>=1?1:-1; }
   return -1; }
 function parlayDec(legs, sgp){ let d=1; for(const l of legs) d*=amToDec(l.odds); if(sgp) d=1+(d-1)*.8; return d; }
+// Same-game parlays are priced by actually simming the game: correlated legs (fav ML + fav -1.5, QB over + WR over) get paid what they're worth, minus a fat hold.
+const SGP_CACHE=new Map();
+function hashStr(s){ let h=2166136261; for(let i=0;i<s.length;i++){ h^=s.charCodeAt(i); h=Math.imul(h,16777619); } return h>>>0; }
+function sgpPrice(legs){ const g=gameById(legs[0].gid); if(!g) return null; const key=g.id+'#'+legs.map(l=>slipKey(l)+'@'+l.line).sort().join(',');
+  if(SGP_CACHE.has(key)) return SGP_CACHE.get(key); if(SGP_CACHE.size>300) SGP_CACHE.clear();
+  const sv=_seed; seedRng(hashStr(key)+S.day); const N=600; let w=0,lo=0; const idx=legs.map(l=>{ if(l.mkt!=='prop') return null; const p=g.props[l.extra]; return p.key==='a.pts'||p.key==='h.pts'?p.key:keyIdx(g,p.key); });
+  for(let n=0;n<N;n++){ const r=simCore(g,null,null); let res=1; for(let q=0;q<legs.length;q++){ const l=legs[q]; let v; if(l.mkt==='prop'){ const p=g.props[l.extra]; const ii=idx[q]; const raw=ii==='a.pts'?r.sa:ii==='h.pts'?r.sh:r.x[ii]; const vv=p.raw?raw:Math.floor(raw); v=p.kind==='ou'?(l.side==='o'?vv-p.line:p.line-vv):(vv>=1?1:-1); } else v=legValue(l,r.sa,r.sh,null); if(v<0){ res=-1; break; } if(v===0) res=0; } if(res>0) w++; else if(res<0) lo++; }
+  _seed=sv;
+  let out=null; if(w>=3){ const p=w/(w+lo); const indep=parlayDec(legs,false); let dec=1/(p*Math.pow(1.05,legs.length+1)); dec=clamp(Math.min(dec,indep),1.02,500); out={dec,p}; }
+  SGP_CACHE.set(key,out); return out; }
+// price any combo: legs from different games multiply, legs from the same game get SGP-priced together ("SGP+")
+function comboPrice(legs){ if(legs.length===1) return {dec:amToDec(legs[0].odds),sgp:false}; const grp={}; for(const l of legs)(grp[l.gid]=grp[l.gid]||[]).push(l); let dec=1, sgp=false;
+  for(const gid in grp){ const G=grp[gid]; if(G.length===1){ dec*=amToDec(G[0].odds); continue; } for(let i=0;i<G.length;i++) for(let j=i+1;j<G.length;j++) if(legConflict(G[i],G[j])) return {err:'Two picks on the same market. Pick a side, coward.'};
+    const sp=sgpPrice(G); if(!sp) return {err:'Book won\'t offer that combo. (It basically never hits... or always does.)'}; dec*=sp.dec; sgp=true; }
+  return {dec:Math.min(dec,1001),sgp}; }
 function betReturn(bet, results){ // results: array of 'w'|'l'|'p' per leg; returns {status, ret}
   if(results.includes('l')){ let ret=0; return {status:'lost',ret}; }
   const live=bet.legs.filter((l,i)=>results[i]==='w');
   if(live.length===0) return {status:'push',ret:bet.token==='bonus'?0:bet.stake};
   let dec=bet.legs.length===1?amToDec(bet.legs[0].odds):parlayDec(live,bet.sgp&&live.length>1);
   if(bet.oddsLocked && results.every(r=>r==='w')) dec=amToDec(bet.odds);
+  else if(bet.oddsLocked && bet.legs.length>1){ dec=Math.min(dec,amToDec(bet.odds)); }
   let profit=bet.stake*(dec-1); if(bet.boost) profit*=1+bet.boost/100;
   const ret=r2((bet.token==='bonus'?0:bet.stake)+profit); return {status:'won',ret}; }
 function placeBet(legs, stake, opts){
-  opts=opts||{}; const b=legs[0].book; const tok=(opts.token!=null&&opts.token!=='')?+opts.token:null; let tokObj=null;
+  opts=opts||{}; if(!legs||!legs.length) return {err:'Empty slip, genius.'}; const b=legs[0].book; const tok=(opts.token!=null&&opts.token!=='')?+opts.token:null; let tokObj=null;
   if(tok!=null){ tokObj=S.tokens[tok]; }
   const isBonus=tokObj&&tokObj.type==='bonus';
   if(isBonus) stake=tokObj.amt;
   if(!isBonus){ if(stake>S.cash+1e-9) return {err:'Not enough cash, champ.'}; if(stake<minBet()) return {err:`Tilt says min bet is ${money(minBet())}.`}; if(stake>bookMax(b)) return {err:`${BOOKS[b].name} limits you to ${money(bookMax(b))} per bet. Lol.`}; if(stake<1) return {err:'Min bet $1.'}; }
-  const sgp = legs.length>1 && legs.every(l=>l.gid===legs[0].gid);
-  const bet={ id:'b'+Date.now().toString(36)+ri(0,999), legs:legs.map(l=>Object.assign({},l,{prop:l.mkt==='prop'?gameById(l.gid).props[l.extra]:null})), stake:r2(stake), book:b, day:S.day, status:'open', sgp, live:!!opts.live, jefe:opts.jefe||null };
-  bet.odds=legs.length===1?legs[0].odds:decToAm(parlayDec(legs,sgp)); if(opts.oddsOverride){ bet.odds=opts.oddsOverride; bet.oddsLocked=true; }
+  for(const l of legs){ const g=gameById(l.gid); if(!g||g.res) return {err:'One of those games is already over. Nice try, time traveler.'}; }
+  let cp={dec:amToDec(legs[0].odds),sgp:false}; if(legs.length>1&&!opts.oddsOverride){ cp=comboPrice(legs); if(cp.err) return {err:cp.err}; }
+  const sgp=cp.sgp;
+  const bet={ id:'b'+Date.now().toString(36)+ri(0,999), legs:legs.map(l=>Object.assign({},l,{prop:l.mkt==='prop'?gameById(l.gid).props[l.extra]:null,seen:undefined})), stake:r2(stake), book:b, day:S.day, status:'open', sgp, live:!!opts.live, jefe:opts.jefe||null,
+    sps:[...new Set(legs.map(l=>{ const g=gameById(l.gid); return g?g.sp:'?'; }))], games:[...new Set(legs.map(l=>{ const g=gameById(l.gid); return g?`${g.a.ab} @ ${g.h.ab}`:''; }))] };
+  bet.odds=legs.length===1?legs[0].odds:decToAm(cp.dec); if(legs.length>1) bet.oddsLocked=true; if(opts.oddsOverride){ bet.odds=opts.oddsOverride; bet.oddsLocked=true; }
   if(tokObj){ if(tokObj.type==='boost'){ if(legs.length<3) return {err:'Profit boost needs a 3+ leg parlay.'}; bet.boost=tokObj.amt; } bet.token=tokObj.type; S.tokens.splice(tok,1); }
   if(!isBonus) addCash(-bet.stake);
-  S.bets.push(bet); gainXp(Math.min(30,2+bet.stake/25)); save(); return {bet}; }
+  S.bets.push(bet); bookReact(bet); gainXp(Math.min(30,2+bet.stake/25)); save(); return {bet}; }
 function settleBets(gidFilter){
   const out=[];
   for(const bet of S.bets){ if(bet.status!=='open') continue; const games=bet.legs.map(l=>gameById(l.gid)); if(games.some(g=>!g||!g.res)) continue; if(gidFilter&&!bet.legs.some(l=>l.gid===gidFilter)) continue;
     const vals=bet.legs.map((l,i)=>legValue(l,games[i].res.sa,games[i].res.sh,games[i].res.ps));
     let res=vals.map(v=>v>0?'w':v===0?'p':'l');
-    // bad beat protection: luck can turn a hook loss into a push
-    let saved=false; if(bet.legs.length===1&&res[0]==='l'&&Math.abs(vals[0])<=.5&&bet.legs[0].mkt!=='ml'){ unlock('badbeat'); const p=st('luck')*.015*(has('luckybastard')?2:1); if(rnd()<p){ res=['p']; saved=true; } }
+    let saved=false; if(bet.legs.length===1&&res[0]==='l'&&Math.abs(vals[0])<=.5&&bet.legs[0].mkt!=='ml'&&bet.legs[0].mkt!=='prop'){ unlock('badbeat'); const p=st('luck')*.015*(has('luckybastard')?2:1); if(rnd()<p){ res=['p']; saved=true; } }
     const r=betReturn(bet,res); bet.status=r.status; bet.ret=r.ret; bet.res=res; bet.vals=vals; bet.saved=saved;
+    bet.scores=games.map(g=>`${g.a.ab} ${g.res.sa}-${g.res.sh} ${g.h.ab}${g.res.ot?' ('+g.res.ot+')':''}`);
     if(r.ret>0) addCash(r.ret);
-    if(r.status!=='push') lifeRec('sb',bet.token==='bonus'?0:bet.stake,r.ret,bet.legs.length>1?bet.legs.length+'-leg parlay':bet.legs[0].label);
+    if(r.status!=='push') lifeRec('sb',bet.token==='bonus'?0:bet.stake,r.ret,bet.legs.length>1?bet.legs.length+'-leg '+(bet.sgp?'SGP':'parlay'):bet.legs[0].label);
     const net=r2(r.ret-(bet.token==='bonus'?0:bet.stake)); bet.net=net;
     if(bet.status==='lost'&&bet.token==='nosweat'){ S.tokens.push({book:bet.book,type:'bonus',amt:Math.min(50,bet.stake),label:'No-Sweat refund Bonus Bet'}); bet.note='No-Sweat refund issued as a bonus bet.'; }
-    // book limits
     const bk=S.books[bet.book]; bk.profit+=net; if(bk.profit>2500&&bk.limited<1){ bk.limited=1; bk.max=250; unlock('limited'); out.push({limit:bet.book}); } if(bk.profit>7000&&bk.limited<2){ bk.limited=2; bk.max=50; out.push({limit:bet.book}); }
     if(bet.status==='won'){ unlock('first'); addTilt(-6-Math.min(15,net/Math.max(20,S.cash)*30)); gainXp(5+Math.min(40,net/20)); if(bet.legs.length>=4) unlock('parlay4'); if(bet.legs.length>=6) unlock('parlay6'); if(bet.jefe==='fade') unlock('fade'); }
     if(bet.status==='lost'){ addTilt(5+Math.min(18,bet.stake/Math.max(20,S.cash+bet.stake)*40)+(Math.abs(vals[0])<=.5&&bet.legs.length===1?12:0)); if(bet.jefe==='tail') unlock('tailloss'); }
-    if(bet.jefe){ /* Jefe record is per pick, below */ }
     S.hist.unshift(bet); out.push({bet});
   }
-  S.bets=S.bets.filter(b=>b.status==='open'); if(S.hist.length>150) S.hist.length=150;
+  S.bets=S.bets.filter(b=>b.status==='open'); if(S.hist.length>200) S.hist.length=200;
   return out; }
-function finalizeGame(g, r){ g.res={sa:r.sa,sh:r.sh,ps:r.ps,ot:r.ot}; }
-function simAllInstant(){ for(const g of S.slate.games){ if(!g.res){ const rec={events:[],snaps:[]}; const r=simRun(g,null,rec); finalizeGame(g,r); } } S.slate.done=true; jefeSettle(); return settleBets(); }
-function jefeSettle(){ const j=S.slate.jefe; if(!j||j.settled) return; j.settled=true; let allW=true; for(const l of j.legs){ const g=gameById(l.gid); if(!g||!g.res) return; const v=legValue(l,g.res.sa,g.res.sh,g.res.ps); if(v<0) allW=false; } if(allW) S.jefe.w++; else S.jefe.l++; j.won=allW; }
+// ---------- results, box scores, standings ----------
+function boxScore(g,r,rec){ const [np,pl]=PERIODS[g.sp]; const T=ticksOf(g); const box={lab:[],a:[],h:[]};
+  if(rec&&rec.snaps&&rec.snaps.length&&g.sp!=='MMA'){ const at=k=>{ let s=rec.snaps[0]; for(const z of rec.snaps){ if(z.k<=k) s=z; else break; } return s; }; let pa=0,ph=0;
+    for(let p=1;p<=np;p++){ const s=at(Math.round(T*p/np)); box.lab.push(pl+p); box.a.push(s.sa-pa); box.h.push(s.sh-ph); pa=s.sa; ph=s.sh; }
+    if(r.sa!==pa||r.sh!==ph){ box.lab.push(r.ot&&r.ot.startsWith('F/')?'X':r.ot||'OT'); box.a.push(r.sa-pa); box.h.push(r.sh-ph); } }
+  const ps=r.ps||{}, k=kindOf(g.sp), top=[]; const nm=(s,i)=>{ const p=teamOf(g.sp,g[s].i).pl[i]; return p?p.nm:'?'; };
+  const pv=(s,i,st)=>Math.round(ps[s+i+'.'+st]||0);
+  for(const s of SIDES){ const ab=g[s].ab;
+    if(k==='fb'){ top.push(`${ab} QB ${nm(s,0)}: ${pv(s,0,'cmp')} cmp, ${pv(s,0,'py')} yds, ${pv(s,0,'ptd')} TD${pv(s,0,'int')?', '+pv(s,0,'int')+' INT':''}`); let br=1; for(const i of [1,2,0]) if(pv(s,i,'ry')>pv(s,br,'ry')) br=i; top.push(`${ab} ${nm(s,br)}: ${pv(s,br,'ry')} rush yds${pv(s,br,'td')?', '+pv(s,br,'td')+' TD':''}`); let bw=3; for(const i of [1,2,4,5,6]) if(pv(s,i,'recy')>pv(s,bw,'recy')) bw=i; top.push(`${ab} ${nm(s,bw)}: ${pv(s,bw,'rec')} rec, ${pv(s,bw,'recy')} yds${pv(s,bw,'td')?', '+pv(s,bw,'td')+' TD':''}`); }
+    if(k==='bb'){ let b=0; for(let i=1;i<8;i++) if(pv(s,i,'pts')>pv(s,b,'pts')) b=i; top.push(`${ab} ${nm(s,b)}: ${pv(s,b,'pts')} pts, ${pv(s,b,'reb')} reb, ${pv(s,b,'ast')} ast`); let rb=0; for(let i=1;i<8;i++) if(pv(s,i,'reb')>pv(s,rb,'reb')) rb=i; if(rb!==b) top.push(`${ab} ${nm(s,rb)}: ${pv(s,rb,'reb')} boards`); }
+    if(k==='hk'){ const sc=[]; for(let i=0;i<7;i++) if(pv(s,i,'pts')) sc.push(`${nm(s,i)} ${pv(s,i,'g')}G ${pv(s,i,'a')}A`); top.push(`${ab}: ${sc.slice(0,3).join(', ')||'nobody did anything'} · ${nm(s,7)} ${pv(s,7,'sv')} saves`); }
+    if(k==='bs'){ const sc=[]; for(let i=0;i<9;i++){ const h=pv(s,i,'h'); if(h>=2||pv(s,i,'hr')) sc.push(`${nm(s,i)} ${h}-for-4${pv(s,i,'hr')?', '+pv(s,i,'hr')+' HR':''}`); } top.push(`${ab}: ${sc.slice(0,2).join('; ')||'all singles and sadness'} · SP ${nm(s,9)} ${pv(s,9,'k')} K, ${pv(s,9,'ha')} H`); }
+    if(k==='soc'){ const sc=[]; for(let i=0;i<7;i++) for(let q=0;q<pv(s,i,'g');q++) sc.push(nm(s,i)); top.push(`${ab} goals: ${sc.join(', ')||'none (shocker)'}`); }
+  }
+  if(k==='mma'){ const w=r.sh>r.sa?'h':'a'; const how=ps['x.'+w+'ko']?'KO/TKO':ps['x.'+w+'sub']?'submission':'decision'; top.push(`${nm(w,0)} def. ${nm(w==='a'?'h':'a',0)} by ${how}${how!=='decision'?' in round '+(Math.floor(ps['x.rds']||0)+1):''}`); }
+  const hw=r.sh>r.sa, aw=r.sa>r.sh; const W=hw?g.h:g.a, Lz=hw?g.a:g.h; const fav=g.fair.pH>=.5?'h':'a'; const upset=(hw&&g.fair.pH<.38)||(aw&&g.fair.pH>.62); const mg=Math.abs(r.sh-r.sa); const tot=r.sa+r.sh;
+  let bl; if(!hw&&!aw) bl=pick([`${g.a.ab} and ${g.h.ab} play to a draw. Ninety minutes of nothing. Draw bettors are the only happy people in the pub.`,`It ends level. Everyone wasted their afternoon equally.`]);
+  else if(k==='mma') bl=upset?`UPSET! ${W.nm} was a big dog and just ruined a lot of parlays.`:pick([`${W.nm} gets it done. The chalk holds. Cash those boring tickets.`,`${W.nm} wins. ${Lz.nm} says he'll "be back stronger," which is what you say too.`]);
+  else if(upset) bl=pick([`UPSET CITY: ${W.nm} shock ${Lz.nm}. Somebody's 10-leg parlay just died screaming.`,`${W.nm} were dogs and bit hard. ${Lz.nm} fans are calling sports radio as we speak.`,`Nobody had ${W.nm} winning this. Nobody. Not even ${W.nm}.`]);
+  else if(mg>=(k==='fb'?21:k==='bb'?20:k==='bs'?6:4)) bl=pick([`${W.nm} BODY ${Lz.nm}. Mercy rule should exist for this.`,`Blowout. ${Lz.nm} quit at halftime and honestly so did the broadcast crew.`,`${W.nm} by a million. Backdoor covers were attempted and failed.`]);
+  else if(mg<=(k==='fb'?3:k==='bb'?3:1)) bl=pick([`Down to the wire: ${W.nm} edge ${Lz.nm}. Bad beats were distributed evenly.`,`${W.nm} survive ${Lz.nm} in a sweat that took a year off everyone's life.`,`Coin flip game. ${W.nm} called heads.`]);
+  else bl=pick([`${W.nm} handle ${Lz.nm}. Business as usual.`,`${W.nm} take care of ${Lz.nm}. Fine. Sure. Whatever.`,`${W.nm} beat ${Lz.nm}. The spread was the only drama.`]);
+  if(r.ot&&r.ot!=='DEC'&&r.ot!=='KO'&&r.ot!=='SUB') bl+=` (${r.ot}${r.ot==='SO'?' — the over cashed off a skills competition':''})`;
+  if(k==='fb'&&tot>=60||k==='bb'&&tot>=(g.sp==='CB'?165:250)) bl+=' Over bettors are smoking cigars.'; if(k==='fb'&&tot<=24||k==='bb'&&tot<=(g.sp==='CB'?110:195)) bl+=' A defensive slugfest. Unders win, America loses.';
+  box.top=top; box.blurb=bl; return box; }
+function finalizeGame(g, r, rec){ g.res={sa:r.sa,sh:r.sh,ps:r.ps,ot:r.ot}; try{ g.res.box=boxScore(g,r,rec); }catch(e){ g.res.box={lab:[],a:[],h:[],top:[],blurb:''}; }
+  if(!S.stand) S.stand={}; const sp=g.sp; if(!g.post&&sp!=='MMA'){ const st=S.stand[sp]=S.stand[sp]||{}; const A=st[g.a.i]=st[g.a.i]||[0,0,0], H=st[g.h.i]=st[g.h.i]||[0,0,0]; if(r.sa>r.sh){ A[0]++; H[1]++; } else if(r.sh>r.sa){ H[0]++; A[1]++; } else { A[2]++; H[2]++; } }
+  if(sp==='MMA'){ const A=teamOf(sp,g.a.i), H=teamOf(sp,g.h.i); if(A.rec&&H.rec){ if(r.sa>r.sh){ A.rec[0]++; H.rec[1]++; } else { H.rec[0]++; A.rec[1]++; } } }
+  if(g.post) try{ postResult(g); }catch(e){}
+}
+function simAllInstant(){ for(const g of S.slate.games){ if(!g.res){ const rec={events:[],snaps:[]}; const r=simRun(g,null,rec); finalizeGame(g,r,rec); } } S.slate.done=true; jefeSettle(); return settleBets(); }
+function archiveResults(){ if(!S.slate) return; S.lastResults={day:S.slate.day,ed:S.slate.ed,games:S.slate.games.filter(g=>g.res).map(g=>({sp:g.sp,a:g.a,h:g.h,slot:g.slot,tag:g.tag,round:g.round,neutral:g.neutral,sa:g.res.sa,sh:g.res.sh,ot:g.res.ot,box:g.res.box,head:g.id===S.slate.head}))}; }
+function jefeSettle(){ const j=S.slate.jefe; if(!j||j.settled) return; for(const l of j.legs){ const g=gameById(l.gid); if(!g||!g.res) return; } j.settled=true; let allW=true; for(const l of j.legs){ const g=gameById(l.gid); const v=legValue(l,g.res.sa,g.res.sh,g.res.ps); if(v<0) allW=false; } if(allW) S.jefe.w++; else S.jefe.l++; j.won=allW; }
 function genJefe(){ // Jefe loves popular, overvalued sides (fair prob < break-even) ~70% of the time
-  const cands=[]; for(const g of S.slate.games){ for(const [mkt,side] of [['sp','h'],['sp','a'],['tot','o'],['tot','u'],['ml','h'],['ml','a']]){ const leg=makeLeg(g,mkt,side,'DQ'); if(mkt==='ml'&&leg.odds<-250) continue; cands.push({leg,ev:leg.fp*amToDec(leg.odds)-1,g}); } }
+  const cands=[]; for(const g of S.slate.games){ for(const [mkt,side] of [['sp','h'],['sp','a'],['tot','o'],['tot','u'],['ml','h'],['ml','a']]){ if(!gameHas(g,mkt)) continue; const leg=makeLeg(g,mkt,side,'DQ'); if(leg.odds==null) continue; if(mkt==='ml'&&leg.odds<-250) continue; cands.push({leg,ev:leg.fp*amToDec(leg.odds)-1,g}); } }
   cands.sort((x,y)=>x.ev-y.ev); const bad=rnd()<.72; const pool=bad?cands.slice(0,Math.max(3,cands.length>>2)):shuffle(cands.slice());
   const used=new Set(), legs=[]; const n=rnd()<.5?1:ri(2,3);
   for(const c of pool){ if(used.has(c.g.id)) continue; used.add(c.g.id); legs.push(c.leg); if(legs.length>=n) break; }
   return { legs, quip:pick(JEFE_QUIPS), settled:false }; }
+function snapPs(g,s){ if(!s) return {}; if(!s._ps) Object.defineProperty(s,'_ps',{value:psObj(g,s.x,s.sa,s.sh),enumerable:false}); return s._ps; }
 function liveMC(g, snap, n){ // fair live probabilities from a mid-game snapshot
-  const out={pH:0, tot:[], mar:[], ps:[]}; let hw=0; for(let i=0;i<(n||160);i++){ const r=simRun(g,{k:snap.k,sa:snap.sa,sh:snap.sh,ps:snap.ps},null); if(r.sh>r.sa) hw++; out.tot.push(r.sa+r.sh); out.mar.push(r.sh-r.sa); out.ps.push(r.ps); } out.pH=hw/(n||160); return out; }
+  const out={pH:0, tot:[], mar:[], ps:[]}; let hw=0; const N=n||160; for(let i=0;i<N;i++){ const r=simRun(g,{k:snap.k,sa:snap.sa,sh:snap.sh,x:snap.x},null); if(r.sh>r.sa) hw++; out.tot.push(r.sa+r.sh); out.mar.push(r.sh-r.sa); out.ps.push(r.ps); } out.pH=hw/N; return out; }
 function legLiveProb(leg, g, mc){ let w=0,p=0; const n=mc.tot.length; for(let i=0;i<n;i++){ const m=mc.mar[i], T=mc.tot[i]; const sa=(T-m)/2, sh=(T+m)/2; const v=legValue(leg,sa,sh,mc.ps[i]); if(v>0) w++; else if(v===0) p++; } return {w:w/n,p:p/n}; }
-// ===================== SPORTSBOOK UI =====================
-function slipKey(l){ return l.gid+'|'+l.mkt+'|'+l.side+'|'+(l.extra==null?'':l.extra); }
-function inSlip(gid,mkt,side,extra){ return U.slip.some(l=>slipKey(l)===slipKey({gid,mkt,side,extra})); }
-function toggleLeg(gid,mkt,side,extra){ sfx.click(); extra=(extra===''||extra==null)?null:+extra; const k=slipKey({gid,mkt,side,extra}); const i=U.slip.findIndex(l=>slipKey(l)===k);
-  if(i>=0) U.slip.splice(i,1); else { U.slip=U.slip.filter(l=>!(l.gid===gid&&l.mkt===mkt&&(l.extra==null?null:l.extra)===extra)); U.slip.push({gid,mkt,side,extra}); if(U.slip.length>12) U.slip.shift(); }
-  renderBook(); }
-function pricedSlip(){ return U.slip.map(l=>{ const g=gameById(l.gid); return g&&!g.res&&!S.slate.done?makeLeg(g,l.mkt,l.side,U.book,l.extra):null; }).filter(Boolean); }
-function obtn(g,mkt,side,extra,top,sub){ const leg=makeLeg(g,mkt,side,U.book,extra); const ev=leg.fp*amToDec(leg.odds)-1; const sel=inSlip(g.id,mkt,side,extra);
+// ---------- save migration: pre-1.13 saves get a fresh league (open bets refunded) ----------
+function bookMigrate(){ if(!S) return false; let did=false;
+  if(S.cal0==null) S.cal0=edOf(CAL_DEFAULT); if(S.seed==null) S.seed=ri(1,1e9); if(!S.slip) S.slip=[]; if(S.slipKeep==null) S.slipKeep=true; if(!S.stand) S.stand={}; if(!S.post) S.post={};
+  if(!S.league||S.league.v!==2){ did=true; let ref=0;
+    for(const b of (S.bets||[])){ if(b.token==='bonus') S.tokens.push({book:b.book,type:'bonus',amt:b.stake,label:'Bonus Bet (returned: book upgrade)'}); else { addCash(b.stake); ref+=b.stake; } b.status='push'; b.ret=b.token==='bonus'?0:b.stake; b.net=0; b.note='Voided: the book upgraded its whole operation. Stake refunded.'; S.hist.unshift(b); }
+    S.bets=[]; S.league=genLeague(); S.stand={}; S.post={}; S.slip=[]; S.slate=null; genSlate(); S.bookMigrated={day:S.day,ref:r2(ref)}; }
+  else if(!S.slate||S.slate.v!==2){ S.slate=null; genSlate(); did=true; }
+  return did; }
+// ===================== SPORTSBOOK UI (v1.13: calendar header, leagues, prop menus, persistent slip, SGP builder, results, schedule) =====================
+function slipArr(){ if(!S.slip) S.slip=[]; return S.slip; }
+function inSlip(gid,mkt,side,extra){ const k=slipKey({gid,mkt,side,extra}); return slipArr().some(l=>slipKey(l)===k); }
+function toggleLeg(gid,mkt,side,extra){ sfx.click(); extra=(extra===''||extra==null)?null:+extra; const g=gameById(gid); if(!g||g.res||S.slate.done) return; if(mkt!=='prop'&&!gameHas(g,mkt)) return; if(mkt==='prop'&&!g.props[extra]) return;
+  const sl=slipArr(); const k=slipKey({gid,mkt,side,extra}); const i=sl.findIndex(l=>slipKey(l)===k);
+  if(i>=0) sl.splice(i,1); else { const nl={gid,mkt,side,extra}; S.slip=sl.filter(l=>!legConflict(l,nl)); const lg=makeLeg(g,mkt,side,U.book,extra); nl.seen={odds:lg.odds,line:lg.line}; S.slip.push(nl); if(S.slip.length>15) S.slip.shift(); if(S.slip.length===1&&!U.slipTouched) U.slipOpen=false; }
+  U.slipTouched=true; save(); renderBook(); }
+function pricedSlip(){ return slipArr().map(l=>{ const g=gameById(l.gid); if(!g||g.res||S.slate.done) return null; if(l.mkt==='prop'&&!g.props[l.extra]) return null; const lg=makeLeg(g,l.mkt,l.side,U.book,l.extra); if(lg.odds==null) return null; lg.moved=!!(l.seen&&(l.seen.odds!==lg.odds||l.seen.line!==lg.line)); lg.was=l.seen; return lg; }).filter(Boolean); }
+function acceptMoves(){ for(const l of slipArr()){ const g=gameById(l.gid); if(!g) continue; const lg=makeLeg(g,l.mkt,l.side,U.book,l.extra); l.seen={odds:lg.odds,line:lg.line}; } save(); renderBook(); }
+function clearSlip(){ S.slip=[]; U.tokSel=null; U.jefeMode=null; save(); sfx.click(); renderBook(); }
+function reloadLast(){ if(!S.lastSlip) return; S.slip=S.lastSlip.filter(l=>{ const g=gameById(l.gid); return g&&!g.res; }).map(l=>Object.assign({},l)); if(!S.slip.length){ toast('Those games are over. Let it go.'); return; } acceptMoves(); }
+function lgName(sp){ return SPORTS[sp].short||SPORTS[sp].league; }
+function opnTxt(g,mkt,side){ const O=g.open&&g.open[U.book], L=g.lines[U.book]; if(!O) return ''; const k=kindOf(g.sp);
+  if(mkt==='sp'&&k!=='hk'&&k!=='bs'&&k!=='soc'&&O.spread!==L.spread){ const o=side==='h'?O.spread:-O.spread; const n=side==='h'?L.spread:-L.spread; return `<span class="mv ${n>o?'up':'dn'}">${n>o?'▲':'▼'} o${o>0?'+':''}${o}</span>`; }
+  if(mkt==='tot'&&O.total!==L.total) return side==='o'?`<span class="mv ${L.total>O.total?'up':'dn'}">${L.total>O.total?'▲':'▼'} o${O.total}</span>`:'';
+  if(mkt==='ml'){ const o=side==='h'?O.mlH:O.mlA, n=side==='h'?L.mlH:L.mlA; if(o!=null&&n!=null&&Math.abs(amToDec(o)-amToDec(n))>.06) return `<span class="mv ${amToDec(n)<amToDec(o)?'dn':'up'}">${amToDec(n)<amToDec(o)?'▼':'▲'} o${fmtAm(o)}</span>`; }
+  return ''; }
+function obtn(g,mkt,side,extra,top,sub){ const leg=makeLeg(g,mkt,side,U.book,extra); if(leg.odds==null) return `<button class="ob" disabled>—</button>`; const ev=leg.fp*amToDec(leg.odds)-1; const sel=inSlip(g.id,mkt,side,extra);
   const dis=S.slate.done||!!g.res; const val=has('sharp')&&ev>0.005;
   return `<button class="ob ${sel?'sel':''} ${val?'val':''}" ${dis?'disabled':''} onclick="toggleLeg('${g.id}','${mkt}','${side}','${extra==null?'':extra}')">${top}<span class="o">${fmtAm(leg.odds)}</span>${has('sharp')?`<span class="small ${ev>0?'g':'dim'}" style="font-size:10px">${ev>0?'+':''}${(ev*100).toFixed(1)}%</span>`:''}${sub||''}</button>`; }
 function bookHeader(){ return `<div class="tabs">${Object.values(BOOKS).map(b=>`<button class="tab ${U.book===b.id?'on':''}" onclick="U.book='${b.id}';renderBook()">${b.tag} ${b.name}${S.books[b.id].limited?' 🚫':''}<br><span class="small">max ${money(bookMax(b.id))}</span></button>`).join('')}</div>`; }
+function hypeBanner(){ const sl=S.slate; const hg=sl.head?gameById(sl.head):null; let h='';
+  h+=`<div class="datebar"><span>📅 <b>${fmtDate(sl.ed!=null?sl.ed:calEd(S.day),true)}</b></span><span class="dim small">Day ${S.day} · ${sl.games.length} game${sl.games.length===1?'':'s'} · ${leagueCounts(sl.games)}</span></div>`;
+  if(hg){ const sp=SPORTS[hg.sp]; h+=`<div class="hype ${hg.prime?'prime':''}" onclick="U.tab='props';U.pg='${hg.id}';renderBook()" style="cursor:pointer"><div class="hy1">${esc(sl.hype||(sp.icon+' HEADLINER'))}</div><div class="hy2">${sp.icon} ${rkTag(hg.sp,hg.a.i)}${esc(hg.a.nm)} ${hg.neutral?'vs':'@'} ${rkTag(hg.sp,hg.h.i)}${esc(hg.h.nm)}</div><div class="hy3">${esc(hg.slot)}${hg.round?' · '+esc(hg.round):''}${hg.tag?' · '+esc(hg.tag):''} · tap for ${hg.props.length} props</div></div>`; }
+  if(sl.banners&&sl.banners.length) h+=`<div class="row">${sl.banners.map(b=>`<span class="lgchip on">${esc(b)}</span>`).join('')}</div>`;
+  return h; }
+function lgFilter(games){ const c={}; for(const g of games) c[g.sp]=(c[g.sp]||0)+1; const ks=Object.keys(SPORTS).filter(k=>c[k]); if(ks.length<2){ U.lg='ALL'; return ''; } if(U.lg&&U.lg!=='ALL'&&!c[U.lg]) U.lg='ALL';
+  return `<div class="row lgrow"><button class="lgchip ${!U.lg||U.lg==='ALL'?'on':''}" onclick="U.lg='ALL';renderBook()">All ${games.length}</button>${ks.map(k=>`<button class="lgchip ${U.lg===k?'on':''}" onclick="U.lg='${k}';renderBook()">${SPORTS[k].icon} ${lgName(k)} ${c[k]}</button>`).join('')}</div>`; }
+function lgOk(g){ return !U.lg||U.lg==='ALL'||U.lg===g.sp; }
+function teamCell(g,s){ const t=g[s]; const rec=recStr(g.sp,t.i); const nick=g.sp==='MMA'?t.nm:t.nm.replace(/^\S+ /,''); return `<div class="nm">${s==='h'?(g.neutral?'':'@'):''}${rkTag(g.sp,t.i)?`<span class="rk">${rkTag(g.sp,t.i).trim()}</span> `:''}${esc(t.ab)}<small>${esc(nick)}${rec?' · '+rec:''}</small></div>`; }
+function gameCard(g){ const L=g.lines[U.book]; const sp=SPORTS[g.sp]; const k=kindOf(g.sp); const head=S.slate.head===g.id;
+  let h=`<div class="game ${head?'headg':''} ${g.prime?'primeg':''}"><div class="gh"><span>${sp.icon} ${lgName(g.sp)} · ${esc(g.slot)}${g.round?' · <b class="a">'+esc(g.round)+'</b>':''}${g.tag?' · '+esc(g.tag):''}${g.prime?' <span class="badge o">PRIMETIME</span>':''}</span><span>${g.res?`<b class="a">FINAL ${g.res.sa}-${g.res.sh}${g.res.ot?' '+g.res.ot:''}</b>`:''}</span></div>`;
+  if(k==='mma'){ h+=`<div class="tm" style="grid-template-columns:2fr 1fr"><div class="hdr"></div><div class="hdr">To win · ${g.rounds} rds</div></div>`;
+    for(const s of ['a','h']) h+=`<div class="tm" style="grid-template-columns:2fr 1fr">${teamCell(g,s)}${obtn(g,'ml',s,null,'',opnTxt(g,'ml',s))}</div>`; }
+  else if(k==='soc'){ h+=`<div class="tm"><div class="hdr"></div><div class="hdr">Handicap</div><div class="hdr">Win (90')</div><div class="hdr">Total</div></div>`;
+    h+=`<div class="tm">${teamCell(g,'a')}${obtn(g,'sp','a',null,(L.spread>0?'-':'+')+Math.abs(L.spread))}${obtn(g,'ml','a',null,'')}${obtn(g,'tot','o',null,'O '+L.total)}</div>`;
+    h+=`<div class="tm"><div class="nm dim small">Draw</div><div></div>${obtn(g,'ml','d',null,'Draw')}<div></div></div>`;
+    h+=`<div class="tm">${teamCell(g,'h')}${obtn(g,'sp','h',null,(L.spread>0?'+':'')+L.spread)}${obtn(g,'ml','h',null,'')}${obtn(g,'tot','u',null,'U '+L.total)}</div>`; }
+  else { h+=`<div class="tm"><div class="hdr"></div><div class="hdr">${k==='hk'?'Puck Line':k==='bs'?'Run Line':'Spread'}</div><div class="hdr">Moneyline</div><div class="hdr">Total</div></div>`;
+    h+=`<div class="tm">${teamCell(g,'a')}${obtn(g,'sp','a',null,(L.spread>0?'-':'+')+Math.abs(L.spread),opnTxt(g,'sp','a'))}${obtn(g,'ml','a',null,'',opnTxt(g,'ml','a'))}${obtn(g,'tot','o',null,'O '+L.total,opnTxt(g,'tot','o'))}</div>`;
+    h+=`<div class="tm">${teamCell(g,'h')}${obtn(g,'sp','h',null,(L.spread>0?'+':'')+L.spread,opnTxt(g,'sp','h'))}${obtn(g,'ml','h',null,'',opnTxt(g,'ml','h'))}${obtn(g,'tot','u',null,'U '+L.total)}</div>`; }
+  const nIn=slipArr().filter(l=>l.gid===g.id).length;
+  h+=`<div class="gf"><button class="lnk" onclick="U.tab='props';U.pg='${g.id}';renderBook()">📊 ${g.props.length} props ›</button>${nIn?`<span class="small a">${nIn} in slip${nIn>1?' (SGP)':''}</span>`:''}${has('sharp')&&k!=='mma'?`<span class="small dim">📈 Fair: ${g.h.ab} ${g.fairSpread>0?'+':''}${g.fairSpread}, tot ${g.fairTotal}, ${(g.fair.pH*100).toFixed(0)}%</span>`:''}${g.res&&g.res.box?`<span class="small dim">${esc(g.res.box.blurb)}</span>`:''}</div></div>`;
+  return h; }
+function slateHtml(){ const sl=S.slate; let h=''; if(sl.done) h+=`<div class="panel">Tonight's games are final. Check <b>Results</b> for box scores. New slate tomorrow, degenerate.</div>`;
+  if(!sl.games.length) return h+`<div class="panel">Dead day on the calendar. No games. Go touch grass (or check the Schedule tab and cry).</div>`;
+  h+=lgFilter(sl.games); let last='';
+  for(const g of sl.games){ if(!lgOk(g)) continue; const w=g.t<1020?'☀️ Day Games':g.t<1170?'🌆 Evening':'🌙 Primetime & Late'; if(w!==last){ h+=`<div class="win">${w}</div>`; last=w; } h+=gameCard(g); }
+  return h; }
+function propsHtml(){ const sl=S.slate; const gs=sl.games.filter(lgOk); if(!gs.length) return lgFilter(sl.games)+'<div class="panel dim">No games.</div>';
+  let g=gameById(U.pg); if(!g||!lgOk(g)) g=(sl.head&&gs.find(x=>x.id===sl.head))||gs[0]; U.pg=g.id;
+  let h=lgFilter(sl.games)+`<select class="gsel" onchange="U.pg=this.value;renderBook()" aria-label="game">${gs.map(x=>`<option value="${x.id}" ${x.id===g.id?'selected':''}>${SPORTS[x.sp].icon} ${esc(x.a.ab)} ${x.neutral?'vs':'@'} ${esc(x.h.ab)} · ${esc(x.slot)} (${x.props.length})</option>`).join('')}</select>`;
+  h+=`<div class="game"><div class="gh"><span>${SPORTS[g.sp].icon} ${esc(g.a.nm)} ${g.neutral?'vs':'@'} ${esc(g.h.nm)}</span><span>${g.res?'FINAL':esc(g.slot)}</span></div><div style="padding:4px 6px">`;
+  if(!U.pcat) U.pcat={}; const cats=[]; g.props.forEach((p,i)=>{ let c=cats.find(z=>z.n===p.cat); if(!c){ c={n:p.cat,items:[]}; cats.push(c); } c.items.push([p,i]); });
+  h+=`<div class="row">${['All',...cats.map(c=>c.n)].map(n=>`<button class="lgchip ${(U.pcat[g.sp]||'All')===n?'on':''}" onclick="U.pcat['${g.sp}']='${n.replace(/'/g,"\\'")}';renderBook()">${esc(n)}</button>`).join('')}</div>`;
+  const cf=U.pcat[g.sp]||'All';
+  for(const c of cats){ if(cf!=='All'&&c.n!==cf) continue; h+=`<div class="pcat">${esc(c.n)}</div>`;
+    for(const [p,i] of c.items){ const who=p.pl?`${esc(p.pl)}${p.side&&p.pos?` <span class="dim">(${g[p.side].ab} ${esc(p.pos)})</span>`:''} `:''; const lbl=`<span class="small" style="flex:1">${who}${esc(p.stat)}</span>`;
+      if(p.kind==='ou') h+=`<div class="row prow">${lbl}<span style="width:28%">${obtn(g,'prop','o',i,'O '+p.line)}</span><span style="width:28%">${obtn(g,'prop','u',i,'U '+p.line)}</span></div>`;
+      else h+=`<div class="row prow">${lbl}<span style="width:38%">${obtn(g,'prop','y',i,'YES')}</span></div>`; } }
+  h+=`</div></div><div class="small dim">Stack props from one game = Same Game Parlay, priced by simming the actual game (correlation-adjusted). Mix SGPs with other games = SGP+. The book's hold on these is disgusting. Enjoy.</div>`;
+  return h; }
+function schedHtml(){ let h=`<div class="small dim">Upcoming slate (lines post the morning of). Seasons rotate like the real calendar.</div>`;
+  for(let i=0;i<8;i++){ const d=S.day+i; let sc; try{ sc=schedFor(d,{peek:true}); }catch(e){ continue; }
+    const hd=sc.head; h+=`<div class="panel sched ${i===0?'today':''}"><div class="row" style="justify-content:space-between"><b>${i===0?'TODAY · ':i===1?'TOMORROW · ':''}${fmtDate(sc.ed)}</b><span class="small dim">${sc.games.length} games${sc.games.length?' · '+leagueCounts(sc.games):''}</span></div>`;
+    if(sc.hype) h+=`<div class="small a">${esc(sc.hype)}</div>`; if(hd) h+=`<div class="small">⭐ ${schedLine(hd)} · ${esc(hd.slot)}${hd.round?' · '+esc(hd.round):''}</div>`;
+    if(sc.banners&&sc.banners.length) h+=`<div class="small dim">${sc.banners.map(esc).join(' · ')}</div>`;
+    if(i<3&&sc.games.length) h+=`<div class="small dim">${sc.games.filter(x=>x!==hd).slice(0,6).map(x=>schedLine(x)).join(' · ')}${sc.games.length>7?' · …':''}</div>`;
+    h+=`</div>`; }
+  const cfs=['CF','CB'].filter(sp=>S.slate.games.some(g=>g.sp===sp)||S.stand&&S.stand[sp]); for(const sp of cfs){ const rk=rankings(sp); const top=Object.entries(rk).sort((a,b)=>a[1]-b[1]).slice(0,10); if(!top.length) continue;
+    h+=`<div class="panel"><b>${SPORTS[sp].icon} ${lgName(sp)} Top 10 (degen poll)</b><div class="small">${top.map(([i,r])=>`#${r} ${esc(S.league[sp][i].ab)} ${recStr(sp,+i)}`).join(' · ')}</div></div>`; }
+  return h; }
+function boxHtml(r){ const b=r.box||{}; let h=`<div class="game"><div class="gh"><span>${SPORTS[r.sp].icon} ${lgName(r.sp)} · ${esc(r.slot||'')}${r.round?' · '+esc(r.round):''}${r.head?' · ⭐':''}</span><b class="a">FINAL${r.ot?' '+esc(r.ot):''}</b></div>`;
+  if(b.lab&&b.lab.length){ h+=`<table class="box"><tr><th></th>${b.lab.map(x=>`<th>${esc(x)}</th>`).join('')}<th>T</th></tr><tr><td>${esc(r.a.ab)}</td>${b.a.map(v=>`<td>${v}</td>`).join('')}<td><b>${r.sa}</b></td></tr><tr><td>${esc(r.h.ab)}</td>${b.h.map(v=>`<td>${v}</td>`).join('')}<td><b>${r.sh}</b></td></tr></table>`; }
+  else h+=`<div class="scoreline"><span>${esc(r.a.ab)} <b>${r.sa}</b> ${r.neutral?'vs':'@'} ${esc(r.h.ab)} <b>${r.sh}</b></span><span></span></div>`;
+  if(b.top&&b.top.length) h+=`<div class="small" style="padding:2px 8px">${b.top.map(esc).join('<br>')}</div>`; if(b.blurb) h+=`<div class="small a" style="padding:3px 8px 6px">🎙️ ${esc(b.blurb)}</div>`; return h+`</div>`; }
+function resultsHtml(){ const sl=S.slate; let rs, when;
+  if(sl.done||sl.games.some(g=>g.res)){ rs=sl.games.filter(g=>g.res).map(g=>({sp:g.sp,a:g.a,h:g.h,slot:g.slot,round:g.round,sa:g.res.sa,sh:g.res.sh,ot:g.res.ot,box:g.res.box,head:g.id===sl.head,neutral:g.neutral})); when='Tonight'; }
+  else if(S.lastResults&&S.lastResults.games){ rs=S.lastResults.games; when='Last night ('+(S.lastResults.ed!=null?fmtDate(S.lastResults.ed):'Day '+S.lastResults.day)+')'; }
+  if(!rs||!rs.length) return `<div class="panel dim">No results yet. Watch tonight's games or sleep on it.</div>`;
+  const c={}; rs.forEach(r=>c[r.sp]=(c[r.sp]||0)+1); let h=`<div class="small dim">${when}: ${rs.length} finals</div>`; if(Object.keys(c).length>1){ if(U.lg&&U.lg!=='ALL'&&!c[U.lg]) U.lg='ALL'; h+=`<div class="row lgrow"><button class="lgchip ${!U.lg||U.lg==='ALL'?'on':''}" onclick="U.lg='ALL';renderBook()">All</button>${Object.keys(SPORTS).filter(k=>c[k]).map(k=>`<button class="lgchip ${U.lg===k?'on':''}" onclick="U.lg='${k}';renderBook()">${SPORTS[k].icon} ${c[k]}</button>`).join('')}</div>`; }
+  const hd=rs.filter(r=>r.head), rest=rs.filter(r=>!r.head); for(const r of [...hd,...rest]) if(!U.lg||U.lg==='ALL'||U.lg===r.sp) h+=boxHtml(r); return h; }
 function renderBook(){
   if(U.screen!=='book') return; const sl=S.slate; let h='';
-  h+=`<h2>📱 THE SPORTSBOOK <span class="dim small">Day ${S.day} slate</span></h2>`;
+  h+=`<h2>📱 THE SPORTSBOOK</h2>`;
+  h+=hypeBanner();
   h+=bookHeader();
-  h+=`<div class="tabs">${[['slate','Slate'],['props','Props'],['jefe','🔒 Jefe'],['open','Open ('+S.bets.length+')'],['hist','History']].map(([k,n])=>`<button class="tab ${U.tab===k?'on':''}" onclick="U.tab='${k}';renderBook()">${n}</button>`).join('')}</div>`;
+  const tabs=[['slate','Slate'],['props','Props'],['sched','📅 Schedule'],['res','Results'],['jefe','🔒 Jefe'],['open','Open ('+S.bets.length+')'],['hist','History']];
+  if(!tabs.some(t=>t[0]===U.tab)) U.tab='slate';
+  h+=`<div class="tabs">${tabs.map(([k,n])=>`<button class="tab ${U.tab===k?'on':''}" onclick="U.tab='${k}';renderBook()">${n}</button>`).join('')}</div>`;
   h+=tiltNote();
-  if(S.tokens.length) h+=`<div class="small a">🎟️ Promos: ${S.tokens.map(t=>`${BOOKS[t.book].tag}${esc(t.label)}${t.type!=='boost'?'':''}`).join(' · ')}</div>`;
-  if(U.tab==='slate'){
-    if(sl.done) h+=`<div class="panel">Tonight's games are final. Check <b>History</b>. New slate tomorrow, degenerate.</div>`;
-    for(const g of sl.games){ const L=g.lines[U.book]; const sp=SPORTS[g.sp];
-      h+=`<div class="game"><div class="gh"><span>${sp.icon} ${sp.league} · ${g.slot}</span><span>${g.res?`<b class="a">FINAL ${g.res.sa}-${g.res.sh}${g.res.ot?' '+g.res.ot:''}</b>`:''}</span></div>
-      <div class="tm"><div class="hdr"></div><div class="hdr">${g.sp==='HK'?'Puck Line':g.sp==='BS'?'Run Line':'Spread'}</div><div class="hdr">Moneyline</div><div class="hdr">Total</div></div>
-      <div class="tm"><div class="nm">${g.a.ab}<small>${esc(g.a.nm.replace(/^\S+ /,''))}</small></div>${obtn(g,'sp','a',null,(L.spread>0?'-':'+')+Math.abs(L.spread))}${obtn(g,'ml','a',null,'')}${obtn(g,'tot','o',null,'O '+L.total)}</div>
-      <div class="tm"><div class="nm">@${g.h.ab}<small>${esc(g.h.nm.replace(/^\S+ /,''))}</small></div>${obtn(g,'sp','h',null,(L.spread>0?'+':'')+L.spread)}${obtn(g,'ml','h',null,'')}${obtn(g,'tot','u',null,'U '+L.total)}</div>
-      ${has('sharp')?`<div class="small dim" style="padding:2px 8px 5px">📈 Fair: ${g.h.ab} ${g.fairSpread>0?'+':''}${g.fairSpread}, total ${g.fairTotal}, ${g.h.ab} win ${(g.fair.pH*100).toFixed(0)}%</div>`:''}</div>`; }
-  } else if(U.tab==='props'){
-    for(const g of sl.games){ h+=`<div class="game"><div class="gh"><span>${SPORTS[g.sp].icon} ${g.a.ab} @ ${g.h.ab}</span><span>${g.res?'FINAL':''}</span></div><div style="padding:4px 6px">`;
-      g.props.forEach((p,i)=>{ if(p.kind==='ou') h+=`<div class="row" style="justify-content:space-between"><span class="small" style="flex:1">${esc(p.pl)} (${g[p.side].ab}) ${p.stat}</span><span style="width:30%">${obtn(g,'prop','o',i,'O '+p.line)}</span><span style="width:30%">${obtn(g,'prop','u',i,'U '+p.line)}</span></div>`;
-        else h+=`<div class="row" style="justify-content:space-between"><span class="small" style="flex:1">${esc(p.pl)} (${g[p.side].ab}) ${p.stat}</span><span style="width:40%">${obtn(g,'prop','y',i,'YES')}</span></div>`; });
-      h+=`</div></div>`; }
-    h+=`<div class="small dim">Props from the same game can be combined into a Same Game Parlay (SGP). SGPs get a 20% "correlation tax" because the books are thieves.</div>`;
-  } else if(U.tab==='jefe'){
-    const j=sl.jefe; h+=`<div class="paper"><div class="mast">BARCRAWL SPORTS</div><div class="sub">El Jefe Danny Doubledown's LOCK OF THE DAY · Season record: ${S.jefe.w}-${S.jefe.l}</div>
+  if(S.tokens.length) h+=`<div class="small a">🎟️ Promos: ${S.tokens.map(t=>`${BOOKS[t.book].tag}${esc(t.label)}`).join(' · ')}</div>`;
+  if(U.tab==='slate') h+=slateHtml();
+  else if(U.tab==='props') h+=propsHtml();
+  else if(U.tab==='sched') h+=schedHtml();
+  else if(U.tab==='res') h+=resultsHtml();
+  else if(U.tab==='jefe'){
+    const j=sl.jefe; if(!j||!j.legs.length) h+=`<div class="panel dim">El Jefe is "taking a personal day" (hungover). No lock today.</div>`;
+    else { h+=`<div class="paper"><div class="mast">BARCRAWL SPORTS</div><div class="sub">El Jefe Danny Doubledown's LOCK OF THE DAY · Season record: ${S.jefe.w}-${S.jefe.l}</div>
       <p class="hl">🔒 ${j.legs.map(l=>esc(l.label)).join(' + ')}</p><p><i>"${esc(j.quip)}"</i></p>${j.settled?`<p><b>${j.won?'✅ IT HIT. Jefe is insufferable now.':'❌ LOST. Jefe blames the refs, the weather, and his barber.'}</b></p>`:''}</div>`;
-    if(!sl.done){ h+=`<div class="grid2"><button class="btn go c" onclick="jefeSlip('tail')">🐑 TAIL THE JEFE<small>Add his lock to your slip</small></button><button class="btn bad c" onclick="jefeSlip('fade')">🙃 FADE THE JEFE<small>Add the opposite side(s)</small></button></div>`; }
+      if(!sl.done){ h+=`<div class="grid2"><button class="btn go c" onclick="jefeSlip('tail')">🐑 TAIL THE JEFE<small>Add his lock to your slip</small></button><button class="btn bad c" onclick="jefeSlip('fade')">🙃 FADE THE JEFE<small>Add the opposite side(s)</small></button></div>`; } }
   } else if(U.tab==='open'){
     if(!S.bets.length) h+=`<div class="panel dim">No open bets. Your money is safe. That's boring. Fix it.</div>`;
     for(const b of S.bets) h+=betCard(b);
   } else if(U.tab==='hist'){ h+=historyHtml(); }
-  // slip
   const legs=pricedSlip();
   h+=`<div style="height:8px"></div>`;
-  if(!sl.done) h+=`<button class="btn big gold" onclick="startLive()">📺 WATCH TONIGHT'S GAMES (LIVE SWEAT)<small style="text-align:center">${S.bets.length} open bet${S.bets.length===1?'':'s'} · live betting & cash out during the sim</small></button>`;
+  if(!sl.done&&sl.games.length) h+=`<button class="btn big gold" onclick="startLive()">📺 WATCH TONIGHT'S GAMES (LIVE SWEAT)<small style="text-align:center">${S.bets.length} open bet${S.bets.length===1?'':'s'} · live betting & cash out during the sim</small></button>`;
   h+=`<button class="btn c" onclick="go('hub')">⬅ Back to the couch</button>`;
-  if(legs.length) h+=slipHtml(legs);
+  h+=slipHtml(legs);
   setMain(h);
 }
-function jefeSlip(mode){ const j=S.slate.jefe; U.jefeMode=mode; U.slip=[]; const opp={h:'a',a:'h',o:'u',u:'o'};
-  for(const l of j.legs) U.slip.push({gid:l.gid,mkt:l.mkt,side:mode==='tail'?l.side:opp[l.side],extra:null}); U.tab='slate'; renderBook(); toast(mode==='tail'?'🐑 Tailing Jefe. God help you.':'🙃 Fading the Jefe. A time-honored strategy.'); }
+function jefeSlip(mode){ const j=S.slate.jefe; U.jefeMode=mode; S.slip=[]; const opp={h:'a',a:'h',o:'u',u:'o'};
+  for(const l of j.legs){ const g=gameById(l.gid); if(!g) continue; const side=mode==='tail'?l.side:opp[l.side]; const lg=makeLeg(g,l.mkt,side,U.book,null); S.slip.push({gid:l.gid,mkt:l.mkt,side,extra:null,seen:{odds:lg.odds,line:lg.line}}); }
+  U.tab='slate'; U.slipOpen=true; save(); renderBook(); toast(mode==='tail'?'🐑 Tailing Jefe. God help you.':'🙃 Fading the Jefe. A time-honored strategy.'); }
+function slipMeta(legs){ const conflict=legs.length>1&&legs.some((a,i)=>legs.some((b,j)=>j>i&&legConflict(a,b))); const gids=new Set(legs.map(l=>l.gid)); const sameGame=legs.length>1&&gids.size===1; const sgpPlus=legs.length>1&&!sameGame&&gids.size<legs.length;
+  let cp=null; if(legs.length>1&&!conflict) cp=comboPrice(legs); return {conflict,sameGame,sgpPlus,cp,kind:sameGame?'Same Game Parlay':sgpPlus?'SGP+':'Parlay'}; }
 function slipHtml(legs){
-  const conflict = legs.length>1 && new Set(legs.map(l=>l.gid+l.mkt+(l.extra==null?'':l.extra))).size<legs.length;
-  const sameGame = legs.length>1 && legs.every(l=>l.gid===legs[0].gid);
-  const multiGameSame = legs.length>1 && !sameGame && new Set(legs.map(l=>l.gid)).size<legs.length;
+  const sl=slipArr(); const keepT=`<button class="tab ${S.slipKeep?'on':''}" style="flex:0 0 auto" onclick="S.slipKeep=!S.slipKeep;save();renderBook()">📌 Keep picks ${S.slipKeep?'ON':'OFF'}</button>`;
+  if(!legs.length){ if(sl.length&&!S.slate.done){ /* stale legs from finished games */ S.slip=sl.filter(l=>{ const g=gameById(l.gid); return g&&!g.res; }); }
+    if(S.lastSlip&&S.lastSlip.some(l=>{ const g=gameById(l.gid); return g&&!g.res; })&&!S.slate.done) return `<div class="slip"><div class="row" style="justify-content:space-between"><span class="small dim">🧾 Slip empty.</span><span><button class="tab" style="flex:0 0 auto" onclick="reloadLast()">↩️ Re-load last bet</button> ${keepT}</span></div></div>`;
+    return ''; }
+  const M=slipMeta(legs); const moved=legs.filter(l=>l.moved);
   const mode = legs.length===1?'single':(U.slipMode||'parlay');
   const toks=S.tokens.map((t,i)=>({t,i})).filter(o=>o.t.book===U.book && (o.t.type!=='boost'||(mode==='parlay'&&legs.length>=3)) && (mode!=='straights'));
   if(U.tokSel!=null && !toks.some(o=>o.i===U.tokSel)) U.tokSel=null;
   const tok=U.tokSel!=null?S.tokens[U.tokSel]:null;
   let stake = tok&&tok.type==='bonus'?tok.amt:U.stake;
-  const dec = mode==='parlay'? parlayDec(legs,sameGame) : null;
-  let toWin = mode==='parlay'? stake*(dec-1)*(tok&&tok.type==='boost'?1+tok.amt/100:1) : mode==='single'? stake*(amToDec(legs[0].odds)-1) : legs.reduce((s,l)=>s+stake*(amToDec(l.odds)-1),0);
+  const bad=mode==='parlay'&&legs.length>1&&(M.conflict||!M.cp||M.cp.err);
+  const dec = mode==='parlay'&&legs.length>1&&!bad ? M.cp.dec : null;
+  let toWin = mode==='parlay'? (dec?stake*(dec-1)*(tok&&tok.type==='boost'?1+tok.amt/100:1):0) : mode==='single'? stake*(amToDec(legs[0].odds)-1) : legs.reduce((s,l)=>s+stake*(amToDec(l.odds)-1),0);
   const tot = mode==='straights'?stake*legs.length:stake;
-  const sumOdds = mode==='parlay'?((conflict||multiGameSame)?'⛔':fmtAm(decToAm(parlayDec(legs,sameGame)))):mode==='single'?fmtAm(legs[0].odds):'×'+legs.length;
-  if(!U.slipOpen) return `<div class="slip" onclick="U.slipOpen=true;renderBook()" style="cursor:pointer"><div class="row" style="justify-content:space-between"><b class="a">🧾 SLIP (${legs.length} leg${legs.length>1?'s':''}) · ${mode==='parlay'?(sameGame?'SGP':'Parlay'):mode==='single'?'Single':'Straights'} ${sumOdds}</b><span class="tab" style="flex:0 0 auto;padding:8px 10px">▲ Open</span></div></div>`;
-  let h=`<div class="slip" style="max-height:68vh;overflow-y:auto"><div class="row" style="justify-content:space-between"><b class="a">🧾 BET SLIP · ${BOOKS[U.book].tag} ${BOOKS[U.book].name}</b><span><button class="tab" style="flex:0 0 auto" onclick="U.slipOpen=false;renderBook()">▼ Hide</button> <button class="tab" style="flex:0 0 auto" onclick="U.slip=[];renderBook()">Clear</button></span></div>`;
-  for(const l of legs){ h+=`<div class="row small" style="justify-content:space-between"><span>${esc(l.label)} <span class="a">${fmtAm(l.odds)}</span></span><button class="tab" style="flex:0 0 auto;min-height:30px" onclick="toggleLeg('${l.gid}','${l.mkt}','${l.side}','${l.extra==null?'':l.extra}')">✕</button></div>`; }
-  if(legs.length>1) h+=`<div class="tabs"><button class="tab ${mode==='parlay'?'on':''}" onclick="U.slipMode='parlay';renderBook()">${sameGame?'Same Game Parlay':'Parlay'} (${legs.length} legs) ${conflict||multiGameSame?'⛔':fmtAm(decToAm(parlayDec(legs,sameGame)))}</button><button class="tab ${mode==='straights'?'on':''}" onclick="U.slipMode='straights';renderBook()">Straights ×${legs.length}</button></div>`;
+  const sumOdds = mode==='parlay'?(bad?'⛔':fmtAm(decToAm(dec))):mode==='single'?fmtAm(legs[0].odds):'×'+legs.length;
+  if(!U.slipOpen) return `<div class="slip" onclick="U.slipOpen=true;renderBook()" style="cursor:pointer"><div class="row" style="justify-content:space-between"><b class="a">🧾 SLIP (${legs.length} leg${legs.length>1?'s':''}) · ${mode==='parlay'?M.kind:mode==='single'?'Single':'Straights'} ${sumOdds}${moved.length?' ⚠️':''}</b><span class="tab" style="flex:0 0 auto;padding:8px 10px">▲ Open</span></div></div>`;
+  let h=`<div class="slip" style="max-height:70vh;overflow-y:auto"><div class="row" style="justify-content:space-between"><b class="a">🧾 BET SLIP · ${BOOKS[U.book].tag} ${BOOKS[U.book].name}</b><span><button class="tab" style="flex:0 0 auto" onclick="U.slipOpen=false;renderBook()">▼ Hide</button> <button class="tab" style="flex:0 0 auto" onclick="clearSlip()">🗑️ Clear slip</button> ${keepT}</span></div>`;
+  const byG={}; for(const l of legs)(byG[l.gid]=byG[l.gid]||[]).push(l);
+  for(const gid in byG){ const g=gameById(gid); const G=byG[gid]; h+=`<div class="small dim" style="margin-top:3px">${SPORTS[g.sp].icon} ${esc(g.a.ab)} ${g.neutral?'vs':'@'} ${esc(g.h.ab)}${G.length>1?' · <span class="a">SGP ×'+G.length+'</span>':''}</div>`;
+    for(const l of G){ h+=`<div class="row small" style="justify-content:space-between"><span>${esc(l.label)} <span class="a">${fmtAm(l.odds)}</span>${l.moved&&l.was?` <span class="r">⚠️ was ${l.was.line!=null&&l.was.line!==l.line?(l.was.line>0&&l.mkt==='sp'?'+':'')+l.was.line+' ':''}${fmtAm(l.was.odds)}</span>`:''}</span><button class="tab" style="flex:0 0 auto;min-height:30px" onclick="toggleLeg('${l.gid}','${l.mkt}','${l.side}','${l.extra==null?'':l.extra}')">✕</button></div>`; } }
+  if(moved.length) h+=`<div class="panel" style="border-color:var(--red)"><span class="small">⚠️ ${moved.length} line${moved.length>1?'s':''} moved since you added ${moved.length>1?'them':'it'}. The book waits for no one.</span> <button class="tab" style="flex:0 0 auto" onclick="acceptMoves()">✔ Accept changes</button></div>`;
+  if(legs.length>1) h+=`<div class="tabs"><button class="tab ${mode==='parlay'?'on':''}" onclick="U.slipMode='parlay';renderBook()">${M.kind} (${legs.length}) ${bad?'⛔':fmtAm(decToAm(dec))}</button><button class="tab ${mode==='straights'?'on':''}" onclick="U.slipMode='straights';renderBook()">Straights ×${legs.length}</button></div>`;
+  if(mode==='parlay'&&(M.sameGame||M.sgpPlus)&&!bad){ const indep=parlayDec(legs,false); h+=`<div class="small dim">🎲 Same-game legs priced together by simming the game ${M.cp.dec<indep-.01?`(correlated: naive parlay would be ${fmtAm(decToAm(indep))}, book pays ${fmtAm(decToAm(dec))})`:''}.</div>`; }
   if(toks.length) h+=`<div class="tabs"><button class="tab ${U.tokSel==null?'on':''}" onclick="U.tokSel=null;renderBook()">Cash</button>${toks.map(o=>`<button class="tab ${U.tokSel===o.i?'on':''}" onclick="U.tokSel=${o.i};renderBook()">🎟️ ${esc(o.t.label)}</button>`).join('')}</div>`;
   if(!(tok&&tok.type==='bonus')) h+=`<div class="row">${[5,10,25,50,100,250].map(v=>`<button class="chip ${U.stake===v?'on':''}" onclick="U.stake=${v};renderBook()">$${v}</button>`).join('')}<button class="chip" onclick="U.stake=Math.max(1,Math.floor(Math.min(S.cash,bookMax(U.book))));renderBook()">MAX</button></div>
     <input type="number" inputmode="decimal" min="1" value="${U.stake}" onchange="U.stake=Math.max(1,+this.value||1);renderBook()" aria-label="stake">`;
-  h+=`<div class="row small" style="justify-content:space-between;margin-top:4px"><span>Risk <b>${money(tot)}</b>${tok&&tok.type==='bonus'?' (bonus bet: stake not returned)':''}</span><span>To win <b class="g">${money(r2(toWin))}</b></span></div>`;
-  if(conflict) h+=`<div class="r small">You can't parlay both sides of the same market, you absolute psycho.</div>`;
-  if(multiGameSame) h+=`<div class="r small">Mixing an SGP with other games? Not allowed here. Make it all one game, or all different games.</div>`;
-  const dis = (mode==='parlay'&&(conflict||multiGameSame));
-  h+=`<button class="btn big go" ${dis?'disabled':''} onclick="submitSlip()">PLACE BET 🙏</button></div>`;
+  h+=`<div class="row small" style="justify-content:space-between;margin-top:4px"><span>Risk <b>${money(tot)}</b>${tok&&tok.type==='bonus'?' (bonus bet: stake not returned)':''}</span><span>To win <b class="g">${money(r2(toWin))}</b></span></div><div class="small dim">${S.slipKeep?'📌 Picks stay in the slip after you bet (re-bet or tweak).':'Slip clears after you bet.'}</div>`;
+  if(M.conflict&&mode==='parlay') h+=`<div class="r small">You can't parlay both sides of the same market, you absolute psycho.</div>`;
+  else if(bad) h+=`<div class="r small">${esc((M.cp&&M.cp.err)||'Book won\'t price that combo.')}</div>`;
+  const dis = bad||moved.length>0;
+  h+=`<button class="btn big go" ${dis?'disabled':''} onclick="submitSlip()">PLACE BET 🙏${moved.length?'<small style="text-align:center">accept the line changes first</small>':''}</button></div>`;
   return h; }
 function submitSlip(){
-  const legs=pricedSlip(); if(!legs.length) return; const mode=legs.length===1?'single':(U.slipMode||'parlay');
+  const legs=pricedSlip(); if(!legs.length) return; if(legs.some(l=>l.moved)){ toast('⚠️ Lines moved. Accept the changes first.'); return; } const mode=legs.length===1?'single':(U.slipMode||'parlay');
   const msgs=[]; let ok=0;
   if(mode==='straights'){ if(U.stake*legs.length>S.cash){ toast('Not enough cash for all those straights.'); return; } for(const l of legs){ const r=placeBet([l],U.stake,{jefe:U.jefeMode}); if(r.err) msgs.push(r.err); else ok++; } }
   else { const r=placeBet(legs,U.stake,{token:U.tokSel,jefe:U.jefeMode}); if(r.err) msgs.push(r.err); else ok++; }
-  if(ok){ sfx.coin(); U.slip=[]; U.slipOpen=false; U.tokSel=null; U.jefeMode=null; toast(pick(['🧾 Bet placed. No take-backs.','🧾 Locked in. Start sweating.','🧾 The book thanks you for your service.','🧾 Bet placed. Your mom would be so disappointed.'])); pose('you','point',1500,'phone'); say('you',pick(['LOCK IT IN','Easy money','This is the one','Free money baby']),1800); }
+  if(ok){ sfx.coin(); S.lastSlip=slipArr().map(l=>Object.assign({},l)); if(!S.slipKeep){ S.slip=[]; U.slipOpen=false; } else { for(const l of slipArr()){ const g=gameById(l.gid); if(g){ const lg=makeLeg(g,l.mkt,l.side,U.book,l.extra); l.seen={odds:lg.odds,line:lg.line}; } } } U.tokSel=null; U.jefeMode=null; save();
+    toast(pick(['🧾 Bet placed. No take-backs.','🧾 Locked in. Start sweating.','🧾 The book thanks you for your service.','🧾 Bet placed. Your mom would be so disappointed.'])+(S.slipKeep?' (picks kept)':'')); pose('you','point',1500,'phone'); say('you',pick(['LOCK IT IN','Easy money','This is the one','Free money baby']),1800); }
   if(msgs.length) toast('⛔ '+esc(msgs[0]));
   renderBook(); }
-function legStatusNow(leg){ const g=gameById(leg.gid); if(!g) return ''; if(g.res){ const v=legValue(leg,g.res.sa,g.res.sh,g.res.ps); return v>0?'w':v===0?'p':'l'; } if(U.live&&U.live.cur&&U.live.cur[g.id]){ const c=U.live.cur[g.id]; const v=legValue(leg,c.sa,c.sh,c.ps); return v>0?'W':v===0?'P':'L'; } return ''; }
+function legStatusNow(leg){ const g=gameById(leg.gid); if(!g) return ''; if(g.res){ const v=legValue(leg,g.res.sa,g.res.sh,g.res.ps); return v>0?'w':v===0?'p':'l'; } if(U.live&&U.live.cur&&U.live.cur[g.id]){ const c=U.live.cur[g.id]; if(!c.fin&&leg.mkt==='ml'&&g.sp==='MMA') return ''; const v=legValue(leg,c.sa,c.sh,c.ps); return v>0?'W':v===0?'P':'L'; } return ''; }
 function betCard(b){ const legs=b.legs.map((l,i)=>{ const s=b.res?b.res[i]:legStatusNow(l); const ic={w:'✅',l:'❌',p:'↩️',W:'🟢',L:'🔴',P:'🟡'}[s]||'⏳'; return `<div class="small">${ic} ${esc(l.label)} <span class="a">${fmtAm(l.odds)}</span>${l.live?' <span class="badge o">LIVE</span>':''}</div>`; }).join('');
-  const typ=b.legs.length===1?'Single':b.sgp?`SGP ${b.legs.length}-leg`:`${b.legs.length}-leg Parlay`;
+  const typ=b.legs.length===1?'Single':b.sgp?(new Set(b.legs.map(l=>l.gid)).size>1?`SGP+ ${b.legs.length}-leg`:`SGP ${b.legs.length}-leg`):`${b.legs.length}-leg Parlay`;
   const st=b.status==='open'?'<span class="badge o">OPEN</span>':b.status==='won'?`<span class="badge w">WON +${money(b.net)}</span>`:b.status==='lost'?`<span class="badge l">LOST ${money(b.net)}</span>`:b.status==='cashed'?`<span class="badge p">CASHED ${money(b.ret)}</span>`:`<span class="badge p">PUSH</span>`;
-  return `<div class="panel"><div class="row" style="justify-content:space-between"><b>${typ} ${fmtAm(b.odds)}</b>${st}</div>${legs}<div class="small dim">Day ${b.day} · ${BOOKS[b.book].tag}${BOOKS[b.book].name} · ${b.token==='bonus'?'Bonus bet '+money(b.stake):'Risk '+money(b.stake)}${b.boost?' · '+b.boost+'% boost':''}${b.jefe?' · '+(b.jefe==='tail'?'🐑 tailed Jefe':'🙃 faded Jefe'):''}${b.saved?' · 🍀 Luck turned a hook loss into a push!':''}${b.note?' · '+esc(b.note):''}</div></div>`; }
-function historyHtml(){ const H=S.hist.filter(b=>b.status!=='open'); let w=0,l=0,p=0,stk=0,net=0; const byT={};
-  for(const b of H){ if(b.status==='won') w++; else if(b.status==='lost') l++; else p++; const s=b.token==='bonus'?0:b.stake; stk+=s; net+=b.net||0; const t=b.legs.length===1?(b.live?'Live':b.legs[0].mkt==='prop'?'Props':'Straights'):'Parlays'; byT[t]=byT[t]||{n:0,s:0,net:0}; byT[t].n++; byT[t].s+=s; byT[t].net+=b.net||0; }
-  let h=`<div class="panel"><b>📊 Record ${w}-${l}-${p}</b> · Staked ${money(stk)} · Net <b class="${net>=0?'g':'r'}">${net>=0?'+':''}${money(r2(net))}</b> · ROI <b class="${net>=0?'g':'r'}">${stk?(net/stk*100).toFixed(1):'0.0'}%</b><div class="small dim">${Object.entries(byT).map(([k,v])=>`${k}: ${v.n} bets, ROI ${v.s?(v.net/v.s*100).toFixed(1):'—'}%`).join(' · ')||'No settled bets yet.'}</div>
+  const sps=(b.sps||[]).map(s=>(SPORTS[s]||{}).icon||'').join('');
+  return `<div class="panel"><div class="row" style="justify-content:space-between"><b>${sps} ${typ} ${fmtAm(b.odds)}</b>${st}</div>${legs}${b.scores?`<div class="small dim">📋 ${b.scores.map(esc).join(' · ')}</div>`:''}<div class="small dim">${b.day!=null?fmtDate(calEd(b.day)):''} · ${BOOKS[b.book].tag}${BOOKS[b.book].name} · ${b.token==='bonus'?'Bonus bet '+money(b.stake):'Risk '+money(b.stake)}${b.boost?' · '+b.boost+'% boost':''}${b.jefe?' · '+(b.jefe==='tail'?'🐑 tailed Jefe':'🙃 faded Jefe'):''}${b.saved?' · 🍀 Luck turned a hook loss into a push!':''}${b.note?' · '+esc(b.note):''}</div></div>`; }
+function betType(b){ return b.legs.length===1?(b.live?'Live':b.legs[0].mkt==='prop'?'Props':'Straights'):b.sgp?'SGP':'Parlays'; }
+function historyHtml(){ const all=S.hist.filter(b=>b.status!=='open'); const f=U.hf||'all';
+  const stk0=b=>b.token==='bonus'?0:b.stake; const af=U.hamt||'any'; const mn=+U.hmin||0, mx=+U.hmax||0;
+  const amtOk=b=>{ const st=b.stake, n=b.net||0; if(af==='s25'&&!(st<25)) return false; if(af==='s25_99'&&!(st>=25&&st<100)) return false; if(af==='s100'&&!(st>=100)) return false; if(af==='w50'&&!(n>=50)) return false; if(af==='l50'&&!(n<=-50)) return false; if(mn&&st<mn) return false; if(mx&&st>mx) return false; return true; };
+  let H=all.filter(b=>(f==='all'||(f==='won'&&b.status==='won')||(f==='lost'&&b.status==='lost')||(f===betType(b))||((b.sps||[]).includes(f)))&&amtOk(b));
+  const so=U.hsort||'new'; if(so==='bigw') H=H.slice().sort((x,y)=>(y.net||0)-(x.net||0)); else if(so==='bigl') H=H.slice().sort((x,y)=>(x.net||0)-(y.net||0)); else if(so==='stake') H=H.slice().sort((x,y)=>y.stake-x.stake);
+  let w=0,l=0,p=0,stk=0,net=0; const byT={}, bySp={};
+  for(const b of H){ if(b.status==='won') w++; else if(b.status==='lost') l++; else p++; const s=b.token==='bonus'?0:b.stake; stk+=s; net+=b.net||0; const t=betType(b); byT[t]=byT[t]||{n:0,s:0,net:0}; byT[t].n++; byT[t].s+=s; byT[t].net+=b.net||0; for(const sp of (b.sps||[])){ bySp[sp]=bySp[sp]||{n:0,s:0,net:0}; bySp[sp].n++; bySp[sp].s+=s/(b.sps.length); bySp[sp].net+=(b.net||0)/(b.sps.length); } }
+  const sps=[...new Set(all.flatMap(b=>b.sps||[]))].filter(s=>SPORTS[s]);
+  let h=`<div class="row lgrow">${[['all','All'],['won','✅ Won'],['lost','❌ Lost'],['Straights','Straights'],['Parlays','Parlays'],['SGP','SGP'],['Props','Props'],['Live','Live']].map(([k,n])=>`<button class="lgchip ${f===k?'on':''}" onclick="U.hf='${k}';renderBook()">${n}</button>`).join('')}${sps.map(s=>`<button class="lgchip ${f===s?'on':''}" onclick="U.hf='${s}';renderBook()">${SPORTS[s].icon}</button>`).join('')}</div>`;
+  h+=`<div class="row lgrow"><span class="small dim">💵 Amount:</span>${[['any','Any'],['s25','Under $25'],['s25_99','$25–99'],['s100','$100+'],['w50','Won $50+'],['l50','Lost $50+']].map(([k,n])=>`<button class="lgchip ${af===k?'on':''}" onclick="U.hamt='${k}';renderBook()">${n}</button>`).join('')}</div>
+  <div class="row lgrow"><span class="small dim">Stake $</span><input class="hamt" type="number" min="0" inputmode="decimal" placeholder="min" value="${U.hmin||''}" onchange="U.hmin=this.value;renderBook()" aria-label="min stake" style="width:70px"><span class="small dim">to</span><input class="hamt" type="number" min="0" inputmode="decimal" placeholder="max" value="${U.hmax||''}" onchange="U.hmax=this.value;renderBook()" aria-label="max stake" style="width:70px"><select class="gsel" style="width:auto;flex:1" onchange="U.hsort=this.value;renderBook()" aria-label="sort">${[['new','Newest first'],['bigw','Biggest wins'],['bigl','Biggest losses'],['stake','Biggest stakes']].map(([k,n])=>`<option value="${k}" ${so===k?'selected':''}>${n}</option>`).join('')}</select>${(af!=='any'||mn||mx||so!=='new'||f!=='all')?`<button class="lgchip" onclick="U.hf='all';U.hamt='any';U.hmin='';U.hmax='';U.hsort='new';renderBook()">✕ reset</button>`:''}</div>`;
+  h+=`<div class="panel"><b>📊 ${H.length} bet${H.length===1?'':'s'} · Record ${w}-${l}-${p}</b> · Staked ${money(stk)} · Net <b class="${net>=0?'g':'r'}">${net>=0?'+':''}${money(r2(net))}</b> · ROI <b class="${net>=0?'g':'r'}">${stk?(net/stk*100).toFixed(1):'0.0'}%</b><div class="small dim">${Object.entries(byT).map(([k,v])=>`${k}: ${v.n} bets, ROI ${v.s?(v.net/v.s*100).toFixed(1):'—'}%`).join(' · ')||'No settled bets yet.'}</div>
+  ${Object.keys(bySp).length?`<div class="small dim">By league: ${Object.entries(bySp).map(([k,v])=>`${(SPORTS[k]||{}).icon||k} ${v.net>=0?'+':''}${money(r2(v.net))}`).join(' · ')}</div>`:''}
   <div class="small dim">Book P/L: ${Object.values(BOOKS).map(b=>`${b.tag}${b.name} ${S.books[b.id].profit>=0?'+':''}${money(r2(S.books[b.id].profit))}`).join(' · ')}</div></div>`;
-  h+=H.slice(0,40).map(betCard).join(''); return h; }
-
+  h+=H.slice(0,50).map(betCard).join(''); if(H.length>50) h+=`<div class="small dim">…and ${H.length-50} older bets the book would rather you forget.</div>`; return h; }
 // ---------- LIVE SWEAT ----------
 function startLive(){
   if(S.slate.done) return; const recs={}; let tmax=1;
@@ -1201,10 +1720,11 @@ function startLive(){
 function liveTimer(){ clearInterval(U.liveInt); U.liveInt=setInterval(()=>{ if(!U.live||U.live.paused||U.live.done) return; liveStep(); }, 220); }
 function liveStep(){ const L=U.live; L.t=Math.min(L.tmax, L.t+0.01*L.speed); liveUpdate(); if(L.poo!=null&&!L.pooDone&&L.t>=L.poo&&S.bets.length){ L.pooDone=true; L.paused=true; renderLive(); liveBathroom(); return; } if(L.t>=L.tmax) liveFinish(); else renderLiveDyn(); }
 function liveLog(s,cls){ U.live.log.unshift({s,cls}); if(U.live.log.length>80) U.live.log.length=80; }
+function liveMine(){ const m=new Set(); for(const b of S.bets) for(const l of b.legs) m.add(l.gid); if(S.slate.head) m.add(S.slate.head); return m; }
 function curSnap(rec,t){ let s=rec.snaps[0]; for(const x of rec.snaps){ if(x.t<=t+1e-9) s=x; else break; } return s; }
 function liveUpdate(){
-  const L=U.live; while(L.ei<L.events.length&&L.events[L.ei].t<=L.t){ const e=L.events[L.ei++]; const g=gameById(e.g); if(!L.missEnd) liveLog(`${SPORTS[g.sp].icon} ${esc(e.txt)}`,e.cls); }
-  for(const g of S.slate.games){ const rec=L.recs[g.id]; const fin=L.t>=Math.max(1.0, rec.events.length?rec.events[rec.events.length-1].t:1)+.001; const s=fin?{k:999,t:2,sa:rec.final.sa,sh:rec.final.sh,ps:rec.final.ps}:curSnap(rec,L.t); L.cur[g.id]=Object.assign({},s,{fin}); g.live={sa:s.sa,sh:s.sh}; }
+  const L=U.live; const mine=liveMine(); while(L.ei<L.events.length&&L.events[L.ei].t<=L.t){ const e=L.events[L.ei++]; const g=gameById(e.g); if(L.missEnd) continue; const my=mine.has(e.g); if(!my&&(e.cls!=='big'||(S.slate.games.length>8&&rnd()<.5))) continue; liveLog(`${SPORTS[g.sp].icon} ${my?'':'<span class="dim">['+esc(g.a.ab)+'@'+esc(g.h.ab)+']</span> '}${esc(e.txt)}`,my?e.cls:''); }
+  for(const g of S.slate.games){ const rec=L.recs[g.id]; const fin=L.t>=Math.max(1.0, rec.events.length?rec.events[rec.events.length-1].t:1)+.001; const s0=fin?{k:999,t:2,sa:rec.final.sa,sh:rec.final.sh,x:rec.final.x}:curSnap(rec,L.t); const s=Object.assign({},s0,{ps:fin?rec.final.ps:snapPs(g,s0)}); L.cur[g.id]=Object.assign(s,{fin}); g.live={sa:s.sa,sh:s.sh}; }
   // bet status & commentary
   for(const b of S.bets){ const st=b.legs.map(legStatusNow); const now=st.includes('L')||st.includes('l')?'L':st.every(x=>x==='W'||x==='w'||x==='p'||x==='P')?'W':'P'; const prev=L.stat[b.id];
     if(prev&&prev!==now&&L.t>.15&&!L.missEnd){ const late=L.t>.88; const lbl=b.legs.length===1?b.legs[0].label:`your ${b.legs.length}-leg parlay`;
@@ -1222,18 +1742,20 @@ function renderLive(){ if(U.screen!=='live') return; const L=U.live; let h=`<h2>
   if(L.done) h+=`<button class="btn big go" onclick="U.live=null;go('book')">📒 Back to the Sportsbook</button><button class="btn c" onclick="U.live=null;go('hub')">🛋️ Back to the couch</button>`;
   setMain(h); renderLiveDyn(); }
 function renderLiveDyn(){ const L=U.live; if(!L||U.screen!=='live') return; const sb=document.getElementById('lvsb'); if(!sb) return; const pc=document.getElementById('lvpct'); if(pc) pc.textContent=L.done?'FINAL':Math.round(Math.min(1,L.t)*100)+'% through the night';
-  sb.innerHTML=S.slate.games.map(g=>{ const c=L.cur[g.id]||{sa:0,sh:0,t:0}; const T=TICKS[g.sp]; const per=g.sp==='BS'?`Inn ${Math.min(9,Math.max(1,c.k))}`:g.sp==='HK'?`P${Math.min(3,1+Math.floor((c.k||0)/20))}`:`Q${Math.min(4,1+Math.floor((c.k||0)/(T/4)))}`;
-    return `<div class="scoreline"><span>${SPORTS[g.sp].icon} ${g.a.ab} <b>${c.sa}</b> @ ${g.h.ab} <b>${c.sh}</b></span><span class="${c.fin?'a':'dim'} small">${c.fin?'FINAL'+(L.recs[g.id].final.ot?' '+L.recs[g.id].final.ot:''):per}</span></div>`; }).join('');
+  const mine=liveMine(); const line=g=>{ const c=L.cur[g.id]||{sa:0,sh:0,t:0}; const T=ticksOf(g); const [np,pl]=PERIODS[g.sp]; const kk=c.k||0; const per=g.sp==='BS'?`Inn ${Math.min(9,Math.max(1,kk))}`:g.sp==='MMA'?`R${Math.min(g.rounds,1+Math.floor(kk/5))}`:g.sp==='SOC'?`${Math.min(90,Math.round(kk/T*90))}'`:`${pl}${Math.min(np,1+Math.floor(kk/(T/np)))}`;
+    return `<div class="scoreline ${mine.has(g.id)?'my':''}"><span>${SPORTS[g.sp].icon} ${esc(g.a.ab)} <b>${c.sa}</b> ${g.neutral?'vs':'@'} ${esc(g.h.ab)} <b>${c.sh}</b>${S.slate.head===g.id?' ⭐':''}</span><span class="${c.fin?'a':'dim'} small">${c.fin?'FINAL'+(L.recs[g.id].final.ot?' '+L.recs[g.id].final.ot:''):per}</span></div>`; };
+  const gm=S.slate.games.filter(g=>mine.has(g.id)), oth=S.slate.games.filter(g=>!mine.has(g.id));
+  sb.innerHTML=gm.map(line).join('')+(oth.length?(L.all||oth.length<=4?oth.map(line).join(''):'')+(oth.length>4?`<div class="small dim" style="padding:3px 7px;cursor:pointer" onclick="U.live.all=!U.live.all;renderLiveDyn()">${L.all?'▲ hide':'▼ show'} ${oth.length} other games</div>`:''):'');
   const bl=document.getElementById('lvbets'); if(bl) bl.innerHTML=S.bets.length?S.bets.map(b=>{ const s=L.stat[b.id]; return `<div class="row small" style="justify-content:space-between;border-bottom:1px solid #222;padding:2px 0"><span>${s==='W'?'🟢':s==='L'?'🔴':'🟡'} ${esc(b.legs.length===1?b.legs[0].label:b.legs.length+'-leg '+(b.sgp?'SGP':'parlay'))} · ${money(b.stake)}</span>${(!L.done&&L.paused&&b.legs.length===1&&!(L.cur[b.legs[0].gid]||{}).fin&&b.token!=='bonus')?`<button class="tab" style="flex:0 0 auto" onclick="cashOut('${b.id}')">🐔 ${L.co&&L.co.id===b.id?'Confirm '+money(L.co.val):'Cash out'}</button>`:''}</div>`; }).join(''):'<div class="small dim">No open bets. You\'re just watching sports like a normal person. Gross.</div>';
   const lg=document.getElementById('lvlog'); if(lg) lg.innerHTML=L.log.map(x=>`<div class="${x.cls||''}">${x.s}</div>`).join('');
   const top=document.querySelector('#top .r1'); if(top) renderTop(); }
 function liveMarkets(){ const L=U.live; let h=`<div class="panel"><b class="a">🔴 LIVE BETTING</b> <span class="small dim">(${BOOKS[U.book].name}, extra juice because you're desperate)</span>`; let any=false;
-  for(const g of S.slate.games){ const c=L.cur[g.id]; if(!c||c.fin||c.k>=TICKS[g.sp]-1) continue; any=true; const key=g.id+'@'+c.k; if(!L.mc||L.mc.key!==key){ L.mc=L.mc&&L.mc.key===key?L.mc:null; }
+  const mine=liveMine(); const lgms=[...S.slate.games.filter(g=>mine.has(g.id)),...S.slate.games.filter(g=>!mine.has(g.id)).slice(0,4)]; for(const g of lgms){ const c=L.cur[g.id]; if(!c||c.fin||c.k>=ticksOf(g)-1||(g.sp==='MMA'&&c.sa+c.sh>0)) continue; any=true; const key=g.id+'@'+c.k; if(!L.mc||L.mc.key!==key){ L.mc=L.mc&&L.mc.key===key?L.mc:null; }
     const mc=(L.mcs=L.mcs||{})[key]||(L.mcs[key]=liveMC(g,c,160)); const sorted=mc.tot.slice().sort((a,b)=>a-b); let line=Math.floor(sorted[sorted.length>>1])+.5; if(line<=c.sa+c.sh) line=c.sa+c.sh+.5;
     const pO=sorted.filter(v=>v>line).length/sorted.length; const vig=1.07;
     const mk=(mkt,side,odds,ln,lbl)=>`<button class="ob" onclick="liveBet('${g.id}','${mkt}','${side}',${odds},${ln==null?'null':ln})">${lbl}<span class="o">${fmtAm(odds)}</span></button>`;
-    const oH=tiltJuice(probToAm(clamp(mc.pH,.02,.98),vig)), oA=tiltJuice(probToAm(clamp(1-mc.pH,.02,.98),vig)), oO=tiltJuice(probToAm(clamp(pO,.02,.98),vig)), oU=tiltJuice(probToAm(clamp(1-pO,.02,.98),vig));
-    h+=`<div class="small" style="margin-top:6px">${SPORTS[g.sp].icon} ${g.a.ab} ${c.sa} @ ${g.h.ab} ${c.sh}</div><div class="grid4">${mk('ml','a',oA,null,g.a.ab+' ML')}${mk('ml','h',oH,null,g.h.ab+' ML')}${mk('tot','o',oO,line,'O '+line)}${mk('tot','u',oU,line,'U '+line)}</div>`; }
+    const pD=g.sp==='SOC'?mc.mar.filter(m=>m===0).length/mc.mar.length:0; const oH=tiltJuice(probToAm(clamp(mc.pH,.02,.98),vig)), oA=tiltJuice(probToAm(clamp(1-mc.pH-pD,.02,.98),vig)), oD=tiltJuice(probToAm(clamp(pD,.02,.98),vig)), oO=tiltJuice(probToAm(clamp(pO,.02,.98),vig)), oU=tiltJuice(probToAm(clamp(1-pO,.02,.98),vig));
+    h+=`<div class="small" style="margin-top:6px">${SPORTS[g.sp].icon} ${g.a.ab} ${c.sa} @ ${g.h.ab} ${c.sh}</div><div class="grid4">${mk('ml','a',oA,null,g.a.ab+' ML')}${mk('ml','h',oH,null,g.h.ab+' ML')}${g.sp==='MMA'?'':g.sp==='SOC'?mk('ml','d',oD,null,'Draw')+mk('tot','o',oO,line,'O '+line):mk('tot','o',oO,line,'O '+line)+mk('tot','u',oU,line,'U '+line)}</div>`; }
   if(!any) h+=`<div class="small dim">No games available for live betting right now.</div>`;
   h+=`<div class="small dim">Live stake uses your slip stake: <b>${money(U.stake)}</b>. <span class="row">${[10,25,50,100].map(v=>`<button class="chip ${U.stake===v?'on':''}" onclick="U.stake=${v};renderLive()">$${v}</button>`).join('')}</span></div></div>`; return h; }
 function liveBet(gid,mkt,side,odds,line){ const g=gameById(gid); const leg={gid,mkt,side,line,odds,book:U.book,extra:null,live:true}; leg.label=legLabel(g,leg)+' (LIVE)'; const r=placeBet([leg],U.stake,{live:true}); if(r.err){ toast('⛔ '+esc(r.err)); return; } unlock('live'); sfx.coin(); liveLog(`🧾 LIVE BET: ${esc(leg.label)} ${fmtAm(odds)} for ${money(U.stake)}. ${pick(['Chasing? Never heard of her.','The definition of insanity is this exact bet.','A true degenerate bets in-game.'])}`,'big'); U.live.stat[r.bet.id]=null; liveUpdate(); renderLive(); }
@@ -1254,12 +1776,12 @@ function pooChoice(c){ const L=U.live; if(!L) return;
   else { if(roll('liver',5)){ liveLog('😤 You clench through it like a Navy SEAL. Respect. Pure sweat-mode.','big'); gainXp(15); } else { S.flags.pants=1; unlock('pants'); addTilt(15); liveLog('🟤 ...You did not hold it. Dirty Mike moved to the other end of the couch. Charisma −2 until you shower (tomorrow).','roast'); sfx.fart(); fx.poop(12); const a=actor('you'); if(a) a.stink=true; } }
   L.paused=false; renderLive(); }
 function liveFinish(){ const L=U.live; if(L.done) return; L.done=true; clearInterval(U.liveInt);
-  for(const g of S.slate.games) finalizeGame(g,L.recs[g.id].final); S.slate.done=true; jefeSettle();
+  for(const g of S.slate.games) finalizeGame(g,L.recs[g.id].final,L.recs[g.id]); S.slate.done=true; jefeSettle();
   if(L.missEnd) liveLog('🚽 You return from the bathroom a changed person. Let\'s see the damage...','big');
   const res=settleBets(); let won=0,lost=0,netT=0;
   for(const r of res){ if(r.limit){ liveLog(`🚫 <b>${BOOKS[r.limit].name} has LIMITED your account.</b> Max bet is now ${money(S.books[r.limit].max)}. Congrats, you're too good for them.`,'big'); continue; } const b=r.bet; netT+=b.net; if(b.status==='won') won++; if(b.status==='lost') lost++;
     const lbl=b.legs.length===1?b.legs[0].label:`${b.legs.length}-leg ${b.sgp?'SGP':'parlay'}`;
-    let extra=''; if(b.legs.length===1&&b.legs[0].mkt==='sp'){ const rec=L.recs[b.legs[0].gid]; const pre=curSnap(rec,.9); const v0=legValue(b.legs[0],pre.sa,pre.sh,pre.ps); if(b.status==='won'&&v0<=0){ extra=' '+pick(ROASTS.backdoorWin); unlock('backdoor'); } if(b.status==='lost'&&v0>0) extra=' '+pick(ROASTS.backdoorLoss); }
+    let extra=''; if(b.legs.length===1&&b.legs[0].mkt==='sp'){ const rec=L.recs[b.legs[0].gid]; const pre=curSnap(rec,.9); const v0=legValue(b.legs[0],pre.sa,pre.sh,snapPs(gameById(b.legs[0].gid),pre)); if(b.status==='won'&&v0<=0){ extra=' '+pick(ROASTS.backdoorWin); unlock('backdoor'); } if(b.status==='lost'&&v0>0) extra=' '+pick(ROASTS.backdoorLoss); }
     if(b.status==='lost'&&b.legs.length===1&&Math.abs(b.vals[0])<=.5) extra=' '+pick(ROASTS.badBeat);
     if(b.status==='lost'&&b.legs.length>=3&&b.res.filter(x=>x==='l').length===1) extra=' Lost by ONE LEG. Every parlay loses by one leg. That\'s the business model.';
     liveLog(`${b.status==='won'?'✅':b.status==='lost'?'❌':'↩️'} <b>${esc(lbl)}</b>: ${b.status.toUpperCase()} ${b.status==='won'?'+'+money(b.net):b.status==='lost'?money(b.net):''}.${b.status==='won'?' '+pick(ROASTS.winBet):b.status==='lost'?' '+pick(ROASTS.loseBet):''}${extra}${b.saved?' 🍀 (Luck saved you: hook loss → push!)':''}`, b.status==='won'?'big':'roast'); }
@@ -2307,7 +2829,7 @@ function mpHostCreate(io){ // io: {send(cid,msg), now(), room, sess}
   function rlTick(t){ if(rl.phase==='bet'&&rl.deadline){ const b=Object.keys(rl.bets); if(b.length&&b.every(c=>rl.ready[c])) rl.deadline=Math.min(rl.deadline,t+1200); if(t>=rl.deadline){ if(b.length) rlSpin(); else rl.deadline=0; } }
     else if(rl.phase==='spin'&&t>=rl.spinAt) rlFinish(); else if(rl.phase==='done'&&t>=rl.doneAt){ rl.phase='bet'; rl.bets={}; rl.ready={}; rl.deadline=0; dirty(); } }
   // ---------------- SPORTSBOOK (shared slate, shared sweat) ----------------
-  function sbNewSlate(){ sb.day++; mpWithS(H.rs,()=>{ H.rs.day=sb.day; if(!H.rs.league) H.rs.league=genLeague(); genSlate(); }); sb.games=H.rs.slate.games; sb.phase='bet'; sb.bets=[]; sb.ready={}; sb.deadline=0; sb.recs={}; sb.events=[]; sb.ei=0; sb.t=0;
+  function sbNewSlate(){ sb.day++; mpWithS(H.rs,()=>{ H.rs.day=sb.day; if(!H.rs.league||H.rs.league.v!==2) H.rs.league=genLeague(); genSlate({max:8,kinds:['fb','bb','hk','bs','soc'],noProps:true}); }); sb.games=H.rs.slate.games; sb.phase='bet'; sb.bets=[]; sb.ready={}; sb.deadline=0; sb.recs={}; sb.events=[]; sb.ei=0; sb.t=0;
     sb.ticker=[{txt:`📋 Day ${sb.day} slate is up. ${sb.games.length} games. Bet 'em, then sweat 'em together.`}]; dirty(); }
   function sbBet(p,legs,stake){ if(sb.phase!=='bet') return rej(p,'Betting is closed. Games are live!'); if(!Array.isArray(legs)||legs.length<1||legs.length>4) return rej(p,'1 to 4 legs per bet.');
     if(stake==null) return rej(p,`Stake must be $1–${money(MPC.TMAX)}.`); if(stake>p.bal+1e-9) return rej(p,'Not enough cash, champ.'); if(sb.bets.filter(b=>b.cid===p.cid).length>=MPC.SB_MAXBETS) return rej(p,'That\'s enough bets for one slate, degenerate.');
@@ -2614,7 +3136,7 @@ function mpLoadPeer(){ if(window.Peer) return Promise.resolve(); if(_peerLoad) r
     const sc=document.createElement('script'); sc.src=srcs[i++]; sc.async=true; sc.crossOrigin='anonymous'; sc.onload=()=>{ if(window.Peer) res(); else next(); }; sc.onerror=()=>{ sc.remove(); next(); }; document.head.appendChild(sc); }; next(); });
   return _peerLoad; }
 // ---------- save handling: the online bankroll IS the single-player save ----------
-function mpEnsureSave(){ if(!S){ S=load(); if(S){ if(S.craps&&crapsTotalOnTable(S.craps)>0){ const t=crapsRefundAll(); toast(`Your ${money(t)} of craps chips were returned.`); } if(!S.slate||S.slate.day!==S.day) genSlate(); } }
+function mpEnsureSave(){ if(!S){ S=load(); if(S){ if(S.craps&&crapsTotalOnTable(S.craps)>0){ const t=crapsRefundAll(); toast(`Your ${money(t)} of craps chips were returned.`); } bookMigrate(); if(!S.slate||S.slate.day!==S.day) genSlate(); } }
   if(!S||S.ended){ const st=mpStore(); S=newState((st.name||'Degen').slice(0,14),ARCHETYPES[0].id); S.league=genLeague(); genSlate(); META.runs++; saveMeta(); S.hp=maxHp();
     S.lastLog=['🌐 You started a fresh run from the online casino. You have $50. You owe Big Sal $10,000. Your friends are watching.']; toast('🆕 Fresh run started: $50 in your pocket, $10,000 owed to Big Sal.'); }
   S.mp=S.mp||{sess:'',room:'',lastSeq:0,open:{}}; S.mp.open=S.mp.open||{}; save(); }
@@ -3142,9 +3664,20 @@ function mpSlopNo(){ U.mpSlop=null; toast('🥴 You put the chips down and prete
 // Every update since the game was created, rebuilt from the crow99999/arcade git history, the build/test notes and the
 // bugs fixed during testing. Returning players get a pop-up card on the title screen with only the entries newer than
 // the version they last saw (META.wnSeen); brand-new players aren't spammed. The full log lives on a scrollable screen.
-const GAME_VER='1.12.0';
+const GAME_VER='1.13.0';
 const WN_BEFORE_LOG='1.4.1'; // what returning players had before this log existed (last deploy before v1.5.0)
 const CHANGELOG=[
+ {v:'1.13.0',d:'Oct 18, 2026 · night',t:'📱 The Sportsbook gets REAL',items:[
+  'Real gambling calendar: every in-game day is now an actual date (new runs start at a random point in the season: September kickoff, late October, December, January playoffs, March Sadness or April). Monday = Monday Night Fumble + NBBA/NHHL. Thursday = Thursday Night Snoozer. Saturday = a giant 28-game college football slate in every window (11am hangover kickoffs, noon, 3:30/4:00, the 7:00–8:00 primetime block with Saturday Night Lights, and 10:30 Left Coast After Dark). Sunday = the 1:00 Sweat, the 4:25 window and Sunday Night Heartbreak. MLBB runs spring to October, hoops and hockey run winter into spring playoffs, and college hoops ends in March Sadness.',
+  'New leagues (all parody, all fake): NCFF college football and NCBB college hoops (64 schools, with a Top 25 degen poll), the Premier Pub League (soccer, with 3-way moneylines and draws), and UFFC fight cards on Saturday nights (pay-per-view every other week). Plus 20 NFFL teams and 16 each in NBBA, NHHL and MLBB. Teams keep standings. Postseasons run as real brackets: NFFL playoffs, CFP, March Sadness, best-of-7 series and October baseball.',
+  'Big daily prop menus for every game, on real rosters with lines priced from the sim: passing/rushing/receiving yards, completions, INTs, anytime TD, kicker points; points/rebounds/assists/threes/PRA; goals, points, shots on goal, goalie saves; hits, total bases, HRs, RBIs, pitcher Ks and hits allowed; soccer goalscorers, shots, corners and cards; fight method, rounds and goes-the-distance. Plus 🤡 novelty props: streakers, thrown headsets, Kiss Cam breakups, a fan catching a foul ball in his beer, VAR taking 4+ minutes, and more.',
+  'Persistent bet slip: picks stay in your slip after you bet (toggle 📌 Keep picks), so you can re-bet or tweak without re-adding everything. 🗑️ Clear slip empties it, and ↩️ Re-load last bet brings the last one back. The slip is saved across screens and reloads.',
+  'Real SGP builder: stack legs from one game into a Same Game Parlay. Then mix SGPs with other games (SGP+). SGPs are now priced by actually simming the game, so correlated legs (fav ML + fav −1.5, QB over + his WR over) pay what they\'re worth, minus a fat hold. The old "20% tax" loophole is closed.',
+  'Lines move: sharp and public money push numbers and juice (−110 → −115 → −120 → the number moves) as the day goes on, and your own $100+ bets nudge the line too. Arrows show moves from the open. If a line in your slip moves, you have to accept the new price before you can bet.',
+  'Headline game and primetime hype banners up top. A 📅 Schedule tab previews the next 8 days. A Results tab has box scores (line scores, top performers, a crude recap). The sportsbook History tab now has filters for won/lost, bet type and league, amount filters (under $25, $25–99, $100+, won $50+, lost $50+, or a custom stake range), sorting (newest, biggest wins, biggest losses, biggest stakes) and P/L by league.',
+  '📜 New Player History on the 📊 Stats screen: a log of your last 300 decided bets across every game and every run. Filter it by game, win/loss and amount (stake brackets, $100+ wins or losses, custom min/max), sort it, and see the totals for whatever you filtered.',
+  'Balance: more games means more chances to find a soft line, but books still juice everything, SGP holds are heavy, and limits still hit winners. The sportsbook is still the main way up, not an ATM. Online rooms use a trimmed 8-game slate (no fights, no props) so live rooms stay snappy. Old saves upgrade automatically: any open bets from before the update are refunded, and the league is rebuilt with the new calendar.'
+ ]},
  {v:'1.12.0',d:'Oct 8, 2026 · morning',t:'🧢 Arcade anti-grind patch',items:[
   'The DegenClip Arcade was too easy to farm (especially bowling). You could grind a few thousand in a couple of in-game days. It\'s for fun now, not rent. The sportsbook and casino are the main way up again.',
   'Daily cap: your NET arcade winnings across Home Run Derby, Mini Putt and Bowling are capped at +$150 per in-game day. Losses count toward it. Once you hit it, the attendant cuts you off: "You\'re too good, pal. Come back tomorrow." No more tickets, props or hustles until the next day. A game that would push you past the cap pays out only up to it, and the attendant keeps the rest. A meter on the arcade screens shows where you are today.',
@@ -4152,7 +4685,7 @@ function bar(v,max,col){ return `<div class="bar"><i style="width:${clamp(v/max*
 function renderTop(){ const t=document.getElementById('top'); if(!t) return; if(!S||U.screen==='title'||U.screen==='create'||(U.screen==='mp'&&MP.st!=='in'&&MP.st!=='reconnecting')){ t.innerHTML=`<div class="r1"><b>DEGEN: The Road to Whale</b><span class="dim">a crude gambling RPG</span></div>`; return; }
   const dl=S.whaleMode?`🐋 Goal ${money(WHALE_GOAL)} by day ${WHALE_DAY}`:`🦈 Debt <span class="debt">${money(S.debt)}</span>`;
   const due=S.whaleMode?`Tax Sun: ${money(dueLeft())}`:`Due ${dueDay()>=fdy()?'<b class="r">FINAL</b>':DOW[(dueDay()-1)%7]} d${dueDay()}: <b class="${dueLeft()>S.cash?'r':'g'}">${money(dueLeft())}</b>`;
-  t.innerHTML=`<div class="r1"><span>📅 <b>Day ${S.day}</b> ${DOW[(S.day-1)%7]}</span><span class="cash">💵 ${money(S.cash)}</span><span>${dl}</span><span>${due}</span><span>${'⚡'.repeat(S.energy)}<span class="dim">${'·'.repeat(Math.max(0,energyMax()-S.energy))}</span></span><span class="dim small">Lv${S.lvl}</span></div>
+  t.innerHTML=`<div class="r1"><span>📅 <b>Day ${S.day}</b> ${dayLabel(S.day)}</span><span class="cash">💵 ${money(S.cash)}</span><span>${dl}</span><span>${due}</span><span>${'⚡'.repeat(S.energy)}<span class="dim">${'·'.repeat(Math.max(0,energyMax()-S.energy))}</span></span><span class="dim small">Lv${S.lvl}</span></div>
   <div class="meters"><div class="meter">😤 Tilt ${S.tilt}${bar(S.tilt,100,S.tilt>=85?'#ff3030':S.tilt>=60?'#ff9030':'#d0a030')}</div><div class="meter">❤️ HP ${S.hp}/${maxHp()}${bar(S.hp,maxHp(),'#3ad070')}</div><div class="meter">🍺 Buzz ${S.buzz}${bar(S.buzz,100,S.buzz>75?'#c050ff':'#e0b040')}</div></div>${U.screen==='mp'?mpTopRow():''}`; }
 function go(s){ U.screen=s; window.scrollTo(0,0); render(); }
 function render(){ const s=U.screen; { const sc=document.getElementById('scene'); if(sc) sc.style.display=''; } if(s!=='arcade'&&typeof arcStop==='function') arcStop(); mpCanvasTall(s==='mp'); if(s!=='mp') document.body.classList.remove('lbside'); renderTop(); try{
@@ -4177,7 +4710,7 @@ function renderTitle(){ scene('title',[{id:'a',x:.2,pose:'celebrate',hat:'cap',h
   <div class="grid2"><button class="btn c" onclick="go('help')">📖 How to play</button><button class="btn c" onclick="U.achMeta=true;go('ach')">🏆 Achievements (${Object.keys(META.ach).length}/${Object.keys(ACHS).length})</button></div>
   <div class="grid2"><button class="btn c" onclick="U.wnFrom='title';go('news')">📰 What's New <small style="text-align:center">v${GAME_VER}</small></button><button class="btn c" onclick="U.setFrom='title';U.statsFrom='title';go('settings')">⚙️ Settings<small style="text-align:center">sound · reset stats</small></button></div>
   <div class="small dim" style="text-align:center;margin-top:8px">Runs: ${META.runs} · Best score: ${META.best.toLocaleString()} · Endings found: ${Object.keys(META.endings).length}/6<br>All teams, books, people and gambling are fictional. Please don't actually do this.</div>${lifeBarHtml('title')}`); }
-function continueGame(){ S=load(); if(!S) return go('title'); if(S.craps&&crapsTotalOnTable(S.craps)>0){ const t=crapsRefundAll(); toast(`Your ${money(t)} of craps chips were returned.`); } if(!S.slate||S.slate.day!==S.day) genSlate(); go('hub'); }
+function continueGame(){ S=load(); if(!S) return go('title'); if(S.craps&&crapsTotalOnTable(S.craps)>0){ const t=crapsRefundAll(); toast(`Your ${money(t)} of craps chips were returned.`); } const mig=bookMigrate(); if(!S.slate||S.slate.day!==S.day) genSlate(); if(mig&&S.bookMigrated&&S.bookMigrated.day===S.day){ toast(S.bookMigrated.ref>0?`📱 The sportsbook got a glow-up. ${money(S.bookMigrated.ref)} in open bets refunded.`:'📱 The sportsbook got a glow-up. New leagues, props & calendar!'); } save(); go('hub'); }
 function renderCreate(){ U.arch=U.arch||'sharp'; scene('apt',[youActor({x:.5,pose:'idle',label:'YOU'})],{});
   setMain(`<h2>🆕 CREATE YOUR DEGENERATE</h2><label class="small dim">Name</label><input type="text" id="nm" maxlength="14" value="${esc(U.nm||'Jon')}" oninput="U.nm=this.value">
   <h3 style="margin-top:10px">Pick your archetype</h3>${ARCHETYPES.map(a=>`<button class="btn ${U.arch===a.id?'gold':''}" onclick="U.arch='${a.id}';U.nm=document.getElementById('nm').value;renderCreate()">${a.ic} <b>${a.n}</b><small>${a.d}<br>${Object.entries(a.st).map(([k,v])=>STATS[k].ic+v).join(' ')} · Perk: ${PERKS[a.perk].ic} ${PERKS[a.perk].n}</small></button>`).join('')}
@@ -4216,14 +4749,14 @@ function renderHub(){
   const night=S.dayPhase==='night'||S.energy===0;
   scene('apt',[youActor({x:.45,pose:S.tilt>=70?'sweat':S.cash>S.debt*.5?'dance':'sit',held:'phone'}), ...(S.flags.dog?[{id:'dog',x:.7,s:.5,pose:'idle',label:'PARLAY 🐕',color:'#c8a070'}]:[])],{caption:night?'🌙 NIGHT':'☀️ DAY'});
   const ll=S.lastLog||[];
-  let h=`<div class="paper"><div class="mast">THE DAILY DEGEN</div><div class="sub">Vol. ${S.day} · ${DOW[(S.day-1)%7]}day · Cincinnati, OH · Price: your dignity</div><div class="hl">${headline()}</div>
+  let h=`<div class="paper"><div class="mast">THE DAILY DEGEN</div><div class="sub">Vol. ${S.day} · ${fmtDate(calEd(S.day),true)} · Cincinnati, OH · Price: your dignity</div><div class="hl">${headline()}</div>
    <p>🦈 <b>Sal's Corner:</b> ${S.whaleMode?`Debt paid. Sal's "street tax" this week: ${money(dueAmt())}. Whale goal: ${money(WHALE_GOAL)} by day ${WHALE_DAY}.`:`You owe ${money(S.debt)}. ${dueDay()>=fdy()?`<b>EVERYTHING is due day ${fdy()} (${fdy()-S.day} days).</b>`:`Due ${DOW[(dueDay()-1)%7]} (day ${dueDay()}): ${money(dueLeft())} more.`} Strikes: ${'🩸'.repeat(S.strikes)||'none'}.`}</p>
    <p>🔒 <b>Jefe's Lock:</b> ${S.slate.jefe.legs.map(l=>esc(l.label)).join(' + ')} <i>(${S.jefe.w}-${S.jefe.l})</i></p></div>`;
   if(ll.length) h+=`<div class="log" style="max-height:130px">${ll.map(s=>`<div>${s}</div>`).join('')}</div>`;
   if(S.statPts||S.perkPts) h+=`<button class="btn gold" onclick="go('char')">⭐ You have ${S.statPts} stat / ${S.perkPts} perk point${S.perkPts===1?'':'s'} to spend!</button>`;
   const e=S.energy>0; const E1=e?'':'disabled';
   h+=`<div class="grid2">
-   <button class="btn go" onclick="U.tab='slate';go('book')">📱 Sportsbook<small>Free · ${S.slate.games.length} games tonight${S.bets.length?' · '+S.bets.length+' open':''}${S.slate.done?' · FINAL':''}</small></button>
+   <button class="btn go" onclick="U.tab='slate';go('book')">📱 Sportsbook<small>${(()=>{ const hg=S.slate.head&&gameById(S.slate.head); return hg?`${S.slate.prime||hg.prime?'🔥 ':'⭐ '}${SPORTS[hg.sp].icon} ${esc(hg.a.ab)} ${hg.neutral?'vs':'@'} ${esc(hg.h.ab)} · ${esc(hg.slot)}<br>`:''; })()}${S.slate.games.length} games tonight${S.bets.length?' · '+S.bets.length+' open':''}${S.slate.done?' · FINAL':''}</small></button>
    <button class="btn" ${E1} onclick="enterCasino()">🎰 Casino<small>⚡1 · BJ, craps, slots, roulette, scratchers</small></button>
    <button class="btn" ${E1} onclick="alleyEnter()">🗑️ Back Alley<small>⚡1 · Poker, monte, cheating</small></button>
    <button class="btn" ${E1} onclick="go('jobs')">💼 Side Hustle<small>⚡1 · Safe-ish money</small></button>
@@ -4241,7 +4774,7 @@ function renderHub(){
 function doSleep(){ sfx.click(); const out=sleep(); S.lastLog=[]; U.morning=out; go('morning'); }
 function renderMorning(){ scene('apt',[youActor({x:.5,pose:'idle',held:null}),{id:'sun',x:.12,y:.3,s:.01}],{caption:'☀️ GOOD MORNING'}); pose('you','idle');
   setMain(`<div class="paper"><div class="mast">OVERNIGHT REPORT</div><div class="sub">Day ${S.day} · ${DOW[(S.day-1)%7]}day</div>${(U.morning||[]).map(s=>`<p>${s}</p>`).join('')||'<p>You slept like a baby (woke up crying every 2 hours).</p>'}
-  <p>New slate: ${S.slate.games.map(g=>SPORTS[g.sp].icon+' '+g.a.ab+'@'+g.h.ab).join(', ')}</p>${S.tokens.length?`<p>🎟️ Promos available: ${S.tokens.map(t=>esc(t.label)).join(', ')}</p>`:''}</div>
+  <p>New slate (${fmtDate(calEd(S.day),true)}): ${S.slate.games.length?leagueCounts(S.slate.games):'nothing. Dead day.'}${S.slate.hype?' · <b>'+esc(S.slate.hype)+'</b>':''}</p>${S.tokens.length?`<p>🎟️ Promos available: ${S.tokens.map(t=>esc(t.label)).join(', ')}</p>`:''}</div>
   <button class="btn big go" onclick="go('hub')">☕ Get up ➜</button>`); }
 // ---------- jobs ----------
 const JOBS = {
@@ -4351,7 +4884,7 @@ function renderHelp(){ scene('title',[{id:'a',x:.5,pose:'point',hat:'cap',hatc:'
   setMain(`<h2>📖 HOW TO PLAY</h2><div class="panel small">
   <p><b>Goal:</b> You start with $50 and owe Big Sal $10,000. Sal wants a weekly payment every Sunday (it grows as your bankroll grows) and EVERYTHING by day 28. Miss a payment = penalty + collectors at your door. 3 knockouts = river. Pay it all off to win, then optionally go for <b>Whale</b> ($50k).</p>
   <p><b>Each day</b> you get ⚡ energy (3, +1 at Hustle 6 and 9). Casino, Back Alley, Side Hustles, the Bar and Touch Grass cost ⚡1. The <b>Sportsbook</b>, Sal, the shop and your character sheet are free. Sleep to end the day.</p>
-  <p><b>Sportsbook:</b> Two books (DraftQueens 👑 & FanDoodle 🌀) with slightly different lines, so <b>line shop!</b> Spreads/totals are −110 (the vig). Tap odds to build a slip; 2+ legs = parlay (or straights). Same-game legs = SGP (20% juice tax). Use promo tokens: bonus bets (stake not returned), no-sweat bets, profit boosts. Watch games in the <b>Live Sweat</b> to live-bet and cash out. Win too much and the books LIMIT you.</p>
+  <p><b>Sportsbook:</b> Two books (DraftQueens 👑 & FanDoodle 🌀) with slightly different lines, so <b>line shop!</b> Spreads/totals are −110 (the vig). Tap odds to build a slip; 2+ legs = parlay (or straights). Same-game legs = SGP, priced by simming the actual game (correlated legs pay less); SGPs mixed with other games = SGP+. Your slip sticks around between screens; toggle <b>Keep picks</b> to re-bet fast, or <b>Clear slip</b>. Every in-game day is a real calendar date: MNF on Mondays, TNF Thursdays, college football Saturdays, Sunday NFFL windows, MLBB in summer, March Sadness, playoffs. Lines move during the day (sharps + public money; arrows show moves from the open), so lock in early or wait for a better number. Each game has a big player-prop menu plus 🤡 novelty props. Results tab has box scores; Schedule tab previews the week. Use promo tokens: bonus bets (stake not returned), no-sweat bets, profit boosts. Watch games in the <b>Live Sweat</b> to live-bet and cash out. Win too much and the books LIMIT you.</p>
   <p><b>Tilt:</b> Losing raises tilt. At 60+ you're forced to bet at least 10% of your roll; 85+ is 20% plus worse odds. At 100 you do something stupid. Beer, wins, sleep and touching grass lower it.</p>
   <p><b>Edges:</b> the house always has one, but you can beat it with perks: Sharp (see +EV bets), Rain Man (count cards), Vig Killer, Promo Abuser, Eagle Eye (monte), Bottom Dealer (cheat at poker). Fading El Jefe has historically... worked.</p>
   <p><b>Flip 7 (Tony's back room):</b> buy in against 2–3 degenerates. Each round hit or stay; draw a number you already have and you BUST (0). 7 different numbers ends the round (+15). Freeze banks someone out, Flip Three forces 3 cards, Second Chance saves one bust. First to 200 wins the pot (5% rake).</p>
@@ -4394,7 +4927,7 @@ function monkey(opts){ opts=opts||{}; window.__mute=true; const M=window.__mk={c
     M.clicks++; el.click();
   }catch(e){ window.__errs.push('monkey: '+e.message+' '+e.stack); } }, tick); }
 // Engine-level balance simulator (no UI): simple "reasonable player" policy
-function balanceSim(n, policy){ U.silent=true; U.noSave=true; SND.on=false; const out=[];
+function balanceSim(n, policy){ U.silent=true; U.noSave=true; U.fastBook=true; SND.on=false; const out=[];
   for(let run=0;run<n;run++){ S=newState('Bot',pick(['sharp','barfly','hustler','lucky'])); S.league=genLeague(); genSlate(); let fights=0, lost=0;
     while(!S.ended&&S.day<=fdy()+0&&S.day<70){
       // spend points
@@ -4404,9 +4937,9 @@ function balanceSim(n, policy){ U.silent=true; U.noSave=true; SND.on=false; cons
       // sportsbook
       const games=S.slate.games; const bank=S.cash;
       for(let ti=S.tokens.length-1;ti>=0;ti--){ const t=S.tokens[ti]; if(t.type==='bonus'){ const g=pick(games); const leg=makeLeg(g,'ml',g.fair.pH<.5?'h':'a',t.book); placeBet([leg],t.amt,{token:ti}); } }
-      if(policy==='sharp'||policy==='degen'){ let cands=[]; for(const g of games) for(const b of ['DQ','FD']) for(const [m,s] of [['sp','h'],['sp','a'],['tot','o'],['tot','u'],['ml','h'],['ml','a']]){ const l=makeLeg(g,m,s,b); const ev=l.fp*amToDec(l.odds)-1; if(ev>(has('sharp')?0.01:-0.03)) cands.push([l,ev]); }
+      if(policy==='sharp'||policy==='degen'){ let cands=[]; for(const g of games) for(const b of ['DQ','FD']) for(const [m,s] of [['sp','h'],['sp','a'],['tot','o'],['tot','u'],['ml','h'],['ml','a']]){ if(!gameHas(g,m)) continue; const l=makeLeg(g,m,s,b); if(l.odds==null) continue; const ev=l.fp*amToDec(l.odds)-1; if(ev>(has('sharp')?0.01:-0.03)) cands.push([l,ev]); }
         cands.sort((a,b)=>b[1]-a[1]); const used=new Set(); for(const [l,ev] of cands.slice(0,4)){ if(used.has(l.gid)) continue; used.add(l.gid); const st=Math.max(minBet(),Math.min(S.books[l.book].max,Math.floor(bank*(policy==='degen'?.12:.05)))); if(st>=1&&st<=S.cash) placeBet([l],st); } }
-      if(policy==='rand'){ for(let k=0;k<3;k++){ const g=pick(games); const [m,sd]=pick([['sp','h'],['sp','a'],['tot','o'],['tot','u'],['ml','h'],['ml','a']]); const l=makeLeg(g,m,sd,pick(['DQ','FD'])); const st=Math.max(minBet(),Math.floor(bank*.05)); if(st<=S.cash) placeBet([l],st); } }
+      if(policy==='rand'){ for(let k=0;k<3;k++){ const g=pick(games); let [m,sd]=pick([['sp','h'],['sp','a'],['tot','o'],['tot','u'],['ml','h'],['ml','a']]); if(!gameHas(g,m)){ m='ml'; sd=rnd()<.5?'h':'a'; } const l=makeLeg(g,m,sd,pick(['DQ','FD'])); const st=Math.max(minBet(),Math.floor(bank*.05)); if(st<=S.cash) placeBet([l],st); } }
       if(policy==='degen'&&games.length>=3&&S.cash>10){ const legs=shuffle(games.slice()).slice(0,3).map(g=>makeLeg(g,'ml',rnd()<.5?'h':'a','DQ')); placeBet(legs,Math.max(minBet(),Math.floor(S.cash*.05))); }
       simAllInstant();
       // blackjack session for the degen
