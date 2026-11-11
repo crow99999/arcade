@@ -88,6 +88,18 @@ h3{font-size:15px;color:var(--blue)}
 table.box{width:100%;border-collapse:collapse;font-size:12px;margin:3px 0}table.box th,table.box td{text-align:center;padding:2px 3px;border-bottom:1px solid #222}table.box th{color:var(--dim);font-weight:normal}table.box td:first-child{text-align:left;padding-left:8px}
 .sched.today{border-color:var(--amber)}
 .scoreline.my{background:#1b2a14}
+.hchart{width:100%;height:168px;display:block;background:#0a0c09;border:1px solid var(--line);border-radius:6px;margin:6px 0}
+.hchart.empty{height:auto;min-height:88px;padding:16px 12px;text-align:center;display:flex;align-items:center;justify-content:center;font-size:12.5px}
+.hstats{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;margin:6px 0}
+.hstat{background:#0a0c09;border:1px solid var(--line);border-radius:5px;padding:5px 6px;text-align:center}
+.hstat b{display:block;font-size:13.5px;line-height:1.2}
+.hstat span{font-size:10.5px;color:var(--dim)}
+.hbar{margin:4px 0}
+.hbar .hlbl{display:flex;justify-content:space-between;gap:8px;font-size:12px}
+.hbar .htrack{height:9px;background:#1a1f16;border-radius:4px;overflow:hidden;margin-top:2px}
+.hbar .htrack i{display:block;height:100%;border-radius:4px;background:#445}
+.hbar .htrack i.g{background:var(--green)}
+.hbar .htrack i.r{background:var(--red)}
 .tabs{display:flex;gap:4px;flex-wrap:wrap;margin:5px 0}
 .tab{flex:1;min-height:38px;border:1px solid var(--line);background:#181d15;border-radius:5px;cursor:pointer;font-size:13px;padding:4px}
 .tab.on{background:var(--amber);color:#111;font-weight:bold}
@@ -1474,10 +1486,24 @@ function settleBets(gidFilter){
     const bk=S.books[bet.book]; bk.profit+=net; if(bk.profit>2500&&bk.limited<1){ bk.limited=1; bk.max=250; unlock('limited'); out.push({limit:bet.book}); } if(bk.profit>7000&&bk.limited<2){ bk.limited=2; bk.max=50; out.push({limit:bet.book}); }
     if(bet.status==='won'){ unlock('first'); addTilt(-6-Math.min(15,net/Math.max(20,S.cash)*30)); gainXp(5+Math.min(40,net/20)); if(bet.legs.length>=4) unlock('parlay4'); if(bet.legs.length>=6) unlock('parlay6'); if(bet.jefe==='fade') unlock('fade'); }
     if(bet.status==='lost'){ addTilt(5+Math.min(18,bet.stake/Math.max(20,S.cash+bet.stake)*40)+(Math.abs(vals[0])<=.5&&bet.legs.length===1?12:0)); if(bet.jefe==='tail') unlock('tailloss'); }
-    S.hist.unshift(bet); out.push({bet});
+    stampBookBet(bet); S.hist.unshift(bet); out.push({bet});
   }
   S.bets=S.bets.filter(b=>b.status==='open'); if(S.hist.length>200) S.hist.length=200;
   return out; }
+// ---------- sportsbook sessions (one sitting; rolls after a few hours away) ----------
+const SB_SESS_GAP=3*60*60*1000;
+function touchBookSess(force){
+  if(!S) return null; const now=Date.now();
+  if(!S.sbSess){ S.sbSess={id:'s'+now.toString(36)+ri(0,999),t0:now,at:now}; return S.sbSess; }
+  const idle=now-(S.sbSess.at||S.sbSess.t0||0);
+  if(force||idle>SB_SESS_GAP){
+    const ids=(S.hist||[]).filter(b=>b.sess===S.sbSess.id&&b.status!=='open').map(b=>b.id);
+    if(ids.length) S.sbLast={id:S.sbSess.id,t0:S.sbSess.t0,t1:S.sbSess.at||now,ids};
+    S.sbSess={id:'s'+now.toString(36)+ri(0,999),t0:now,at:now};
+  } else S.sbSess.at=now;
+  return S.sbSess;
+}
+function stampBookBet(bet){ if(!bet) return; touchBookSess(); bet.at=Date.now(); bet.sess=S.sbSess.id; }
 // ---------- results, box scores, standings ----------
 function boxScore(g,r,rec){ const [np,pl]=PERIODS[g.sp]; const T=ticksOf(g); const box={lab:[],a:[],h:[]};
   if(rec&&rec.snaps&&rec.snaps.length&&g.sp!=='MMA'){ const at=k=>{ let s=rec.snaps[0]; for(const z of rec.snaps){ if(z.k<=k) s=z; else break; } return s; }; let pa=0,ph=0;
@@ -1696,19 +1722,120 @@ function betCard(b){ const legs=b.legs.map((l,i)=>{ const s=b.res?b.res[i]:legSt
   const sps=(b.sps||[]).map(s=>(SPORTS[s]||{}).icon||'').join('');
   return `<div class="panel"><div class="row" style="justify-content:space-between"><b>${sps} ${typ} ${fmtAm(b.odds)}</b>${st}</div>${legs}${b.scores?`<div class="small dim">📋 ${b.scores.map(esc).join(' · ')}</div>`:''}<div class="small dim">${b.day!=null?fmtDate(calEd(b.day)):''} · ${BOOKS[b.book].tag}${BOOKS[b.book].name} · ${b.token==='bonus'?'Bonus bet '+money(b.stake):'Risk '+money(b.stake)}${b.boost?' · '+b.boost+'% boost':''}${b.jefe?' · '+(b.jefe==='tail'?'🐑 tailed Jefe':'🙃 faded Jefe'):''}${b.saved?' · 🍀 Luck turned a hook loss into a push!':''}${b.note?' · '+esc(b.note):''}</div></div>`; }
 function betType(b){ return b.legs.length===1?(b.live?'Live':b.legs[0].mkt==='prop'?'Props':'Straights'):b.sgp?'SGP':'Parlays'; }
-function historyHtml(){ const all=S.hist.filter(b=>b.status!=='open'); const f=U.hf||'all';
-  const stk0=b=>b.token==='bonus'?0:b.stake; const af=U.hamt||'any'; const mn=+U.hmin||0, mx=+U.hmax||0;
+function histScopeBets(scope){
+  const all=(S.hist||[]).filter(b=>b.status&&b.status!=='open');
+  if(scope==='cur'){ const id=S.sbSess&&S.sbSess.id; return id?all.filter(b=>b.sess===id):[]; }
+  if(scope==='last'){ const last=S.sbLast; if(!last) return []; const ids=new Set(last.ids||[]); return all.filter(b=>b.sess===last.id||ids.has(b.id)); }
+  return all;
+}
+function histChrono(bets){
+  const idx=new Map((S.hist||[]).map((b,i)=>[b.id,i]));
+  return bets.slice().sort((a,b)=>{
+    const ta=a.at||0,tb=b.at||0; if(ta&&tb&&ta!==tb) return ta-tb;
+    const da=a.day||0,db=b.day||0; if(da!==db) return da-db;
+    return (idx.get(b.id)||0)-(idx.get(a.id)||0);
+  });
+}
+function histStreak(bets){
+  let n=0,k=null;
+  for(const b of bets){ if(b.status!=='won'&&b.status!=='lost') continue; const s=b.status==='won'?'W':'L'; if(!k) k=s; if(s!==k) break; n++; }
+  return n&&k?{n,k}:null;
+}
+function histStats(bets){
+  let w=0,l=0,p=0,stk=0,won=0,net=0,bigW=null,bigL=null; const byT={}, bySp={};
+  for(const b of bets){
+    if(b.status==='won') w++; else if(b.status==='lost') l++; else p++;
+    const s=b.token==='bonus'?0:b.stake; stk+=s; won+=(b.ret||0); const n=b.net||0; net+=n;
+    if(bigW==null||n>bigW) bigW=n; if(bigL==null||n<bigL) bigL=n;
+    const t=betType(b); byT[t]=byT[t]||{n:0,s:0,net:0}; byT[t].n++; byT[t].s+=s; byT[t].net+=n;
+    const sps=b.sps||[]; for(const sp of sps){ bySp[sp]=bySp[sp]||{n:0,s:0,net:0}; bySp[sp].n++; bySp[sp].s+=s/(sps.length||1); bySp[sp].net+=n/(sps.length||1); }
+  }
+  const decided=w+l;
+  return {w,l,p,stk,won,net:r2(net),roi:stk?(net/stk*100):0,winPct:decided?(w/decided*100):null,bigW,bigL,streak:histStreak(bets),byT,bySp,n:bets.length};
+}
+function mAxis(v){ const a=Math.abs(v); if(a>=10000) return (v<0?'-':'')+'$'+(a/1000).toFixed(a>=100000?0:1).replace(/\.0$/,'')+'k'; return money(Math.abs(v-Math.round(v))<0.005?Math.round(v):r2(v)); }
+function histPnlSvg(bets){
+  const chr=histChrono(bets);
+  if(!chr.length) return `<div class="hchart empty dim">No settled bets in this window yet. Go put something on the board so the chart has a story to tell.</div>`;
+  const W=360,H=168,L=42,R=8,T=12,B=22, iw=W-L-R, ih=H-T-B;
+  const pts=[{run:0}]; let run=0; for(const b of chr){ run=r2(run+(b.net||0)); pts.push({run}); }
+  let lo=0,hi=0; for(const p of pts){ if(p.run<lo) lo=p.run; if(p.run>hi) hi=p.run; }
+  const span=hi-lo||20; const pad=span*.1; lo-=pad; hi+=pad;
+  const x=i=>L+iw*(i/(pts.length-1)); const y=v=>T+ih*(1-(v-lo)/(hi-lo)); const y0=y(0);
+  let line=`M${x(0).toFixed(1)},${y(pts[0].run).toFixed(1)}`;
+  for(let i=1;i<pts.length;i++) line+=`L${x(i).toFixed(1)},${y(pts[i].run).toFixed(1)}`;
+  const dens=[{x:x(0),run:pts[0].run}];
+  for(let i=0;i<pts.length-1;i++){ const a=pts[i].run,b=pts[i+1].run; if((a>0&&b<0)||(a<0&&b>0)){ const t=a/(a-b); dens.push({x:x(i)+t*(x(i+1)-x(i)),run:0}); } dens.push({x:x(i+1),run:b}); }
+  let up='',dn='',chunk=[dens[0]];
+  for(let i=1;i<dens.length;i++){ chunk.push(dens[i]); if(dens[i].run===0||i===dens.length-1){ const sign=chunk.some(p=>p.run>0)?1:chunk.some(p=>p.run<0)?-1:0;
+    if(sign){ let d=`M${chunk[0].x.toFixed(1)},${y0.toFixed(1)}`; for(const p of chunk) d+=`L${p.x.toFixed(1)},${y(p.run).toFixed(1)}`; d+=`L${chunk[chunk.length-1].x.toFixed(1)},${y0.toFixed(1)}Z`; if(sign>0) up+=d; else dn+=d; }
+    chunk=[dens[i]]; } }
+  const last=pts[pts.length-1].run;
+  const col=last>0?'#5dff8a':last<0?'#ff5d5d':'#ffc24a';
+  const ticks=[0]; if(Math.abs(hi-pad)>1) ticks.push(pts.reduce((m,p)=>Math.max(m,p.run),0)); if(Math.abs(lo+pad)>1) ticks.push(pts.reduce((m,p)=>Math.min(m,p.run),0));
+  const yt=[...new Set(ticks.map(v=>+v.toFixed(2)))].filter(v=>v>=lo&&v<=hi);
+  let yg=''; for(const v of yt){ const yy=y(v).toFixed(1); yg+=`<line x1="${L}" y1="${yy}" x2="${W-R}" y2="${yy}" stroke="${v===0?'#4a5340':'#222'}" stroke-width="${v===0?1.2:.5}"/>`; yg+=`<text x="${L-3}" y="${(+yy+3.5).toFixed(1)}" text-anchor="end" fill="#9b9886" font-size="9" font-family="ui-monospace,Menlo,Consolas,monospace">${mAxis(v)}</text>`; }
+  let dots=''; if(pts.length<=48) for(let i=1;i<pts.length;i++) dots+=`<circle cx="${x(i).toFixed(1)}" cy="${y(pts[i].run).toFixed(1)}" r="2.3" fill="${col}" stroke="#0a0c09" stroke-width=".8"/>`;
+  const firstB=chr[0], lastB=chr[chr.length-1];
+  let xl=firstB&&firstB.day!=null?fmtDate(calEd(firstB.day)):'start'; let xr=lastB&&lastB.day!=null?fmtDate(calEd(lastB.day)):(chr.length+' bets');
+  if(xl===xr) xr=chr.length+' bet'+(chr.length===1?'':'s');
+  return `<svg class="hchart" id="hpl" viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Cumulative sportsbook profit and loss">${yg}
+    ${up?`<path d="${up}" fill="#5dff8a" fill-opacity=".22"/>`:''}${dn?`<path d="${dn}" fill="#ff5d5d" fill-opacity=".22"/>`:''}
+    <path d="${line}" fill="none" stroke="${col}" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"/>
+    ${dots}
+    <text x="${L}" y="${H-6}" fill="#9b9886" font-size="9" font-family="ui-monospace,Menlo,Consolas,monospace">${esc(xl)}</text>
+    <text x="${W-R}" y="${H-6}" text-anchor="end" fill="#9b9886" font-size="9" font-family="ui-monospace,Menlo,Consolas,monospace">${esc(xr)}</text>
+  </svg>`;
+}
+function histBars(map, labFn){
+  const rows=Object.entries(map).map(([k,v])=>({k,n:v.n,s:v.s,net:v.net,lab:labFn(k,v)}));
+  if(!rows.length) return `<div class="small dim">Nothing to break down yet.</div>`;
+  rows.sort((a,b)=>Math.abs(b.net)-Math.abs(a.net)||b.n-a.n);
+  const mx=Math.max(1,...rows.map(r=>Math.abs(r.net)||r.n));
+  return rows.map(r=>{ const w=Math.max(6,Math.round((Math.abs(r.net)||r.n)/mx*100)); const roi=r.s?(r.net/r.s*100):0;
+    return `<div class="hbar"><div class="hlbl"><span>${r.lab} <span class="dim">· ${r.n}</span></span><span class="${r.net>0?'g':r.net<0?'r':'dim'}">${r.net>=0?'+':''}${money(r2(r.net))}${r.s?` <span class="dim">${roi>=0?'+':''}${roi.toFixed(0)}%</span>`:''}</span></div><div class="htrack"><i class="${r.net>0?'g':r.net<0?'r':''}" style="width:${w}%"></i></div></div>`; }).join('');
+}
+function historyHtml(){ touchBookSess();
+  const sc=U.hscope||'all'; const scoped=histScopeBets(sc);
+  const f=U.hf||'all';
+  const af=U.hamt||'any'; const mn=+U.hmin||0, mx=+U.hmax||0;
   const amtOk=b=>{ const st=b.stake, n=b.net||0; if(af==='s25'&&!(st<25)) return false; if(af==='s25_99'&&!(st>=25&&st<100)) return false; if(af==='s100'&&!(st>=100)) return false; if(af==='w50'&&!(n>=50)) return false; if(af==='l50'&&!(n<=-50)) return false; if(mn&&st<mn) return false; if(mx&&st>mx) return false; return true; };
-  let H=all.filter(b=>(f==='all'||(f==='won'&&b.status==='won')||(f==='lost'&&b.status==='lost')||(f===betType(b))||((b.sps||[]).includes(f)))&&amtOk(b));
+  let H=scoped.filter(b=>(f==='all'||(f==='won'&&b.status==='won')||(f==='lost'&&b.status==='lost')||(f===betType(b))||((b.sps||[]).includes(f)))&&amtOk(b));
   const so=U.hsort||'new'; if(so==='bigw') H=H.slice().sort((x,y)=>(y.net||0)-(x.net||0)); else if(so==='bigl') H=H.slice().sort((x,y)=>(x.net||0)-(y.net||0)); else if(so==='stake') H=H.slice().sort((x,y)=>y.stake-x.stake);
-  let w=0,l=0,p=0,stk=0,net=0; const byT={}, bySp={};
-  for(const b of H){ if(b.status==='won') w++; else if(b.status==='lost') l++; else p++; const s=b.token==='bonus'?0:b.stake; stk+=s; net+=b.net||0; const t=betType(b); byT[t]=byT[t]||{n:0,s:0,net:0}; byT[t].n++; byT[t].s+=s; byT[t].net+=b.net||0; for(const sp of (b.sps||[])){ bySp[sp]=bySp[sp]||{n:0,s:0,net:0}; bySp[sp].n++; bySp[sp].s+=s/(b.sps.length); bySp[sp].net+=(b.net||0)/(b.sps.length); } }
-  const sps=[...new Set(all.flatMap(b=>b.sps||[]))].filter(s=>SPORTS[s]);
-  let h=`<div class="row lgrow">${[['all','All'],['won','✅ Won'],['lost','❌ Lost'],['Straights','Straights'],['Parlays','Parlays'],['SGP','SGP'],['Props','Props'],['Live','Live']].map(([k,n])=>`<button class="lgchip ${f===k?'on':''}" onclick="U.hf='${k}';renderBook()">${n}</button>`).join('')}${sps.map(s=>`<button class="lgchip ${f===s?'on':''}" onclick="U.hf='${s}';renderBook()">${SPORTS[s].icon}</button>`).join('')}</div>`;
+  const st=histStats(scoped); const sps=[...new Set((S.hist||[]).filter(b=>b.status!=='open').flatMap(b=>b.sps||[]))].filter(s=>SPORTS[s]);
+  const emptyLast=sc==='last'&&!S.sbLast; const emptyCur=sc==='cur'&&!scoped.length;
+  let h=`<div class="tabs">${[['all','All-Time'],['cur','This Session'],['last','Last Session']].map(([k,n])=>`<button class="tab ${sc===k?'on':''}" onclick="U.hscope='${k}';renderBook()">${n}</button>`).join('')}</div>`;
+  h+=`<div class="small dim">${sc==='all'?'Every settled sportsbook bet on this run (older bets without a session stamp still count here).':sc==='cur'?'This sitting. Stays put if you refresh; rolls to Last Session after a few hours away.':'Your previous sitting. Older bets with no session stamp stay on All-Time only.'}</div>`;
+  if(emptyLast) h+=`<div class="hchart empty dim">No last session yet. Play a bit, leave, and come back — then this tab has something to show.</div>`;
+  else if(emptyCur) h+=`<div class="hchart empty dim">No settled bets this sitting yet. Anything you close tonight lands here. Older tickets still live under All-Time.</div>`;
+  else h+=histPnlSvg(scoped);
+  const rec=`${st.w}-${st.l}-${st.p}`;
+  const stkTxt=money(r2(st.stk)), wonTxt=money(r2(st.won)), netTxt=(st.net>=0?'+':'')+money(r2(st.net)), roiTxt=(st.stk?(st.net>=0?'+':'')+st.roi.toFixed(1):'0.0')+'%';
+  const winTxt=st.winPct==null?'—':st.winPct.toFixed(1)+'%';
+  const bw=st.bigW==null?'—':((st.bigW>=0?'+':'')+money(r2(st.bigW)));
+  const bl=st.bigL==null?'—':((st.bigL>=0?'+':'')+money(r2(st.bigL)));
+  const sk=st.streak?((st.streak.k==='W'?'🔥 ':'💀 ')+st.streak.n+st.streak.k):'—';
+  h+=`<div class="hstats" id="hstats">
+    <div class="hstat"><b>Record ${rec}</b><span>W-L-P</span></div>
+    <div class="hstat"><b>${winTxt}</b><span>Win %</span></div>
+    <div class="hstat"><b>${stkTxt}</b><span>Total wagered</span></div>
+    <div class="hstat"><b>${wonTxt}</b><span>Total won</span></div>
+    <div class="hstat"><b class="${st.net>0?'g':st.net<0?'r':''}">${netTxt}</b><span>Net</span></div>
+    <div class="hstat"><b class="${st.net>0?'g':st.net<0?'r':''}">${roiTxt}</b><span>ROI</span></div>
+    <div class="hstat"><b class="g">${bw}</b><span>Biggest win</span></div>
+    <div class="hstat"><b class="r">${bl}</b><span>Biggest loss</span></div>
+    <div class="hstat"><b>${sk}</b><span>Current streak</span></div>
+  </div>`;
+  h+=`<div class="panel"><b>By sport</b>${histBars(st.bySp,(k,v)=>`${(SPORTS[k]||{}).icon||''} ${esc((SPORTS[k]||{}).short||(SPORTS[k]||{}).league||k)}`)}</div>`;
+  h+=`<div class="panel"><b>By bet type</b>${histBars(st.byT,(k)=>esc(k))}</div>`;
+  h+=`<div class="row lgrow">${[['all','All'],['won','✅ Won'],['lost','❌ Lost'],['Straights','Straights'],['Parlays','Parlays'],['SGP','SGP'],['Props','Props'],['Live','Live']].map(([k,n])=>`<button class="lgchip ${f===k?'on':''}" onclick="U.hf='${k}';renderBook()">${n}</button>`).join('')}${sps.map(s=>`<button class="lgchip ${f===s?'on':''}" onclick="U.hf='${s}';renderBook()">${SPORTS[s].icon}</button>`).join('')}</div>`;
   h+=`<div class="row lgrow"><span class="small dim">💵 Amount:</span>${[['any','Any'],['s25','Under $25'],['s25_99','$25–99'],['s100','$100+'],['w50','Won $50+'],['l50','Lost $50+']].map(([k,n])=>`<button class="lgchip ${af===k?'on':''}" onclick="U.hamt='${k}';renderBook()">${n}</button>`).join('')}</div>
-  <div class="row lgrow"><span class="small dim">Stake $</span><input class="hamt" type="number" min="0" inputmode="decimal" placeholder="min" value="${U.hmin||''}" onchange="U.hmin=this.value;renderBook()" aria-label="min stake" style="width:70px"><span class="small dim">to</span><input class="hamt" type="number" min="0" inputmode="decimal" placeholder="max" value="${U.hmax||''}" onchange="U.hmax=this.value;renderBook()" aria-label="max stake" style="width:70px"><select class="gsel" style="width:auto;flex:1" onchange="U.hsort=this.value;renderBook()" aria-label="sort">${[['new','Newest first'],['bigw','Biggest wins'],['bigl','Biggest losses'],['stake','Biggest stakes']].map(([k,n])=>`<option value="${k}" ${so===k?'selected':''}>${n}</option>`).join('')}</select>${(af!=='any'||mn||mx||so!=='new'||f!=='all')?`<button class="lgchip" onclick="U.hf='all';U.hamt='any';U.hmin='';U.hmax='';U.hsort='new';renderBook()">✕ reset</button>`:''}</div>`;
-  h+=`<div class="panel"><b>📊 ${H.length} bet${H.length===1?'':'s'} · Record ${w}-${l}-${p}</b> · Staked ${money(stk)} · Net <b class="${net>=0?'g':'r'}">${net>=0?'+':''}${money(r2(net))}</b> · ROI <b class="${net>=0?'g':'r'}">${stk?(net/stk*100).toFixed(1):'0.0'}%</b><div class="small dim">${Object.entries(byT).map(([k,v])=>`${k}: ${v.n} bets, ROI ${v.s?(v.net/v.s*100).toFixed(1):'—'}%`).join(' · ')||'No settled bets yet.'}</div>
-  ${Object.keys(bySp).length?`<div class="small dim">By league: ${Object.entries(bySp).map(([k,v])=>`${(SPORTS[k]||{}).icon||k} ${v.net>=0?'+':''}${money(r2(v.net))}`).join(' · ')}</div>`:''}
+  <div class="row lgrow"><span class="small dim">Stake $</span><input class="hamt" type="number" min="0" inputmode="decimal" placeholder="min" value="${U.hmin||''}" onchange="U.hmin=this.value;renderBook()" aria-label="min stake" style="width:70px"><span class="small dim">to</span><input class="hamt" type="number" min="0" inputmode="decimal" placeholder="max" value="${U.hmax||''}" onchange="U.hmax=this.value;renderBook()" aria-label="max stake" style="width:70px"><select class="gsel" style="width:auto;flex:1" onchange="U.hsort=this.value;renderBook()" aria-label="sort">${[['new','Newest first'],['bigw','Biggest wins'],['bigl','Biggest losses'],['stake','Biggest stakes']].map(([k,n])=>`<option value="${k}" ${so===k?'selected':''}>${n}</option>`).join('')}</select>${(af!=='any'||mn||mx||so!=='new'||f!=='all'||sc!=='all')?`<button class="lgchip" onclick="U.hf='all';U.hamt='any';U.hmin='';U.hmax='';U.hsort='new';U.hscope='all';renderBook()">✕ reset</button>`:''}</div>`;
+  const fstk=H.reduce((s,b)=>s+(b.token==='bonus'?0:b.stake),0), fnet=H.reduce((s,b)=>s+(b.net||0),0);
+  let fw=0,fl=0,fp=0; for(const b of H){ if(b.status==='won') fw++; else if(b.status==='lost') fl++; else fp++; }
+  const bySp=st.bySp;
+  h+=`<div class="panel"><b>📊 ${H.length} bet${H.length===1?'':'s'} · Record ${fw}-${fl}-${fp}</b> · Staked ${money(fstk)} · Net <b class="${fnet>=0?'g':'r'}">${fnet>=0?'+':''}${money(r2(fnet))}</b> · ROI <b class="${fnet>=0?'g':'r'}">${fstk?(fnet/fstk*100).toFixed(1):'0.0'}%</b>
+  ${Object.keys(bySp).length&&sc==='all'&&f==='all'&&af==='any'&&!mn&&!mx?`<div class="small dim">By league: ${Object.entries(bySp).map(([k,v])=>`${(SPORTS[k]||{}).icon||k} ${v.net>=0?'+':''}${money(r2(v.net))}`).join(' · ')}</div>`:Object.keys(histStats(H).bySp).length?`<div class="small dim">By league: ${Object.entries(histStats(H).bySp).map(([k,v])=>`${(SPORTS[k]||{}).icon||k} ${v.net>=0?'+':''}${money(r2(v.net))}`).join(' · ')}</div>`:''}
   <div class="small dim">Book P/L: ${Object.values(BOOKS).map(b=>`${b.tag}${b.name} ${S.books[b.id].profit>=0?'+':''}${money(r2(S.books[b.id].profit))}`).join(' · ')}</div></div>`;
   h+=H.slice(0,50).map(betCard).join(''); if(H.length>50) h+=`<div class="small dim">…and ${H.length-50} older bets the book would rather you forget.</div>`; return h; }
 // ---------- LIVE SWEAT ----------
@@ -1765,7 +1892,7 @@ function liveBet(gid,mkt,side,odds,line){ const g=gameById(gid); const leg={gid,
 function cashOut(id){ const L=U.live; const b=S.bets.find(x=>x.id===id); if(!b) return; const leg=b.legs[0]; const g=gameById(leg.gid); const c=L.cur[g.id]; if(L.co&&L.co.id===id){ var val=L.co.val; } else { const mc=liveMC(g,c,200); const pr=legLiveProb(leg,g,mc); var val=null; val=r2((pr.w*b.stake*amToDec(b.odds)+pr.p*b.stake)*(has('hedge')?.96:.9)); }
   if(!L.co||L.co.id!==id){ L.co={id,val}; liveLog(`🐔 Cash-out offer for ${esc(leg.label)}: <b>${money(val)}</b> (risked ${money(b.stake)}). Tap Cash out again to confirm.`,'big'); renderLive(); return; }
   const v0=L.co.val; L.co=null; if(Math.abs(v0-val)>0.01){ /* use offered price */ }
-  b.status='cashed'; b.ret=val; b.net=r2(val-b.stake); addCash(val); lifeRec('sb',b.token==='bonus'?0:b.stake,val,'Cash out: '+leg.label); S.books[b.book].profit+=b.net; S.hist.unshift(b); S.bets=S.bets.filter(x=>x.id!==id); unlock('cashout'); liveLog(`🐔 You cashed out ${esc(leg.label)} for ${money(val)}. Coward. (Smart coward, maybe.)`,'roast'); save(); renderLive(); }
+  b.status='cashed'; b.ret=val; b.net=r2(val-b.stake); addCash(val); lifeRec('sb',b.token==='bonus'?0:b.stake,val,'Cash out: '+leg.label); S.books[b.book].profit+=b.net; stampBookBet(b); S.hist.unshift(b); S.bets=S.bets.filter(x=>x.id!==id); unlock('cashout'); liveLog(`🐔 You cashed out ${esc(leg.label)} for ${money(val)}. Coward. (Smart coward, maybe.)`,'roast'); save(); renderLive(); }
 function liveBathroom(){ const L=U.live; pose('you','sweat'); say('you','oh no. OH NO.',3000); sfx.fart();
   const hold=chk('liver',5); const has_p=(S.inv.pepto||0)>0;
   const lg=document.getElementById('lvlog'); const box=document.createElement('div'); box.className='panel'; box.innerHTML=`<b class="r">🚽 BATHROOM EMERGENCY MID-SWEAT!</b><p>Those three cheese coneys are filing for an emergency exit. Your bets are still live. The fourth quarter is about to start. What do you do?</p>
@@ -3902,9 +4029,15 @@ function mpPkLock(id){ const P=U.mpPk; if(!P||P.id!==id) return; const el=docume
 // Every update since the game was created, rebuilt from the crow99999/arcade git history, the build/test notes and the
 // bugs fixed during testing. Returning players get a pop-up card on the title screen with only the entries newer than
 // the version they last saw (META.wnSeen); brand-new players aren't spammed. The full log lives on a scrollable screen.
-const GAME_VER='1.14.0';
+const GAME_VER='1.15.0';
 const WN_BEFORE_LOG='1.4.1'; // what returning players had before this log existed (last deploy before v1.5.0)
 const CHANGELOG=[
+ {v:'1.15.0',d:'Nov 11, 2026 · afternoon',t:'📈 Sportsbook history graphs',items:[
+  'The Sportsbook History tab now opens on a running profit/loss graph — a bankroll-style line of your cumulative net over every settled bet, with a zero line, green above and red below.',
+  'Toggle All-Time / This Session / Last Session. A session is one sitting: it stays put if you refresh mid-play, and it rolls to Last Session when you come back after a few hours away. New settled bets (including cash-outs) get stamped to the current sitting.',
+  'Under the chart: record (W-L-P), win %, total wagered, total won, net, ROI, biggest win, biggest loss, and your current streak. Bar charts break the same window down by sport and by bet type (straights, parlays, SGP, props, live).',
+  'The old won/lost, league, amount and sort filters are still there — they only change the ticket list underneath, not the graph. Empty windows get a straight answer instead of a blank chart.',
+  'Old saves keep working. Bets placed before this update have no session stamp, so they still show under All-Time and stay off This Session / Last Session.']},
  {v:'1.14.0',d:'Oct 18, 2026 · late night',t:'🏆 The Pick-Off Challenge',items:[
   'New 🏆 Pick-Off tab in the Sportsbook: a daily pick\'em sheet of the 10 best games on the slate (against the spread, lines frozen when the sheet posts, no fighting). Pick every side, guess the total points in the 🎯 tiebreaker game, lock it, sweat it.',
   'Bracket Challenge: pay in ($10 Corner Bar Bracket, $25 Strip Mall Open, $50 High Roller Invitational) against 7 NPC handicappers like Lock City Larry, Grandma Parlay, Sweaty Steve the Tout and The Guy From The Gas Station. One round per day: best record advances, ties go to the tiebreaker. Champ gets 4.5× the entry, runner-up 1.5×, semifinal losers 0.5×. The house keeps the rest, because of course it does.',
@@ -4956,14 +5089,14 @@ function renderTitle(){ scene('title',[{id:'a',x:.2,pose:'celebrate',hat:'cap',h
   <div class="grid2"><button class="btn c" onclick="go('help')">📖 How to play</button><button class="btn c" onclick="U.achMeta=true;go('ach')">🏆 Achievements (${Object.keys(META.ach).length}/${Object.keys(ACHS).length})</button></div>
   <div class="grid2"><button class="btn c" onclick="U.wnFrom='title';go('news')">📰 What's New <small style="text-align:center">v${GAME_VER}</small></button><button class="btn c" onclick="U.setFrom='title';U.statsFrom='title';go('settings')">⚙️ Settings<small style="text-align:center">sound · reset stats</small></button></div>
   <div class="small dim" style="text-align:center;margin-top:8px">Runs: ${META.runs} · Best score: ${META.best.toLocaleString()} · Endings found: ${Object.keys(META.endings).length}/6<br>All teams, books, people and gambling are fictional. Please don't actually do this.</div>${lifeBarHtml('title')}`); }
-function continueGame(){ S=load(); if(!S) return go('title'); if(S.craps&&crapsTotalOnTable(S.craps)>0){ const t=crapsRefundAll(); toast(`Your ${money(t)} of craps chips were returned.`); } const mig=bookMigrate(); if(!S.slate||S.slate.day!==S.day) genSlate(); if(mig&&S.bookMigrated&&S.bookMigrated.day===S.day){ toast(S.bookMigrated.ref>0?`📱 The sportsbook got a glow-up. ${money(S.bookMigrated.ref)} in open bets refunded.`:'📱 The sportsbook got a glow-up. New leagues, props & calendar!'); } save(); go('hub'); }
+function continueGame(){ S=load(); if(!S) return go('title'); if(S.craps&&crapsTotalOnTable(S.craps)>0){ const t=crapsRefundAll(); toast(`Your ${money(t)} of craps chips were returned.`); } const mig=bookMigrate(); if(!S.slate||S.slate.day!==S.day) genSlate(); if(mig&&S.bookMigrated&&S.bookMigrated.day===S.day){ toast(S.bookMigrated.ref>0?`📱 The sportsbook got a glow-up. ${money(S.bookMigrated.ref)} in open bets refunded.`:'📱 The sportsbook got a glow-up. New leagues, props & calendar!'); } touchBookSess(); save(); go('hub'); }
 function renderCreate(){ U.arch=U.arch||'sharp'; scene('apt',[youActor({x:.5,pose:'idle',label:'YOU'})],{});
   setMain(`<h2>🆕 CREATE YOUR DEGENERATE</h2><label class="small dim">Name</label><input type="text" id="nm" maxlength="14" value="${esc(U.nm||'Jon')}" oninput="U.nm=this.value">
   <h3 style="margin-top:10px">Pick your archetype</h3>${ARCHETYPES.map(a=>`<button class="btn ${U.arch===a.id?'gold':''}" onclick="U.arch='${a.id}';U.nm=document.getElementById('nm').value;renderCreate()">${a.ic} <b>${a.n}</b><small>${a.d}<br>${Object.entries(a.st).map(([k,v])=>STATS[k].ic+v).join(' ')} · Perk: ${PERKS[a.perk].ic} ${PERKS[a.perk].n}</small></button>`).join('')}
   <button class="btn big go" onclick="startNew()">🎲 START THE DEGENERACY</button><button class="btn c" onclick="go('title')">⬅ Back</button>`); }
 function startNew(){ const nm=(document.getElementById('nm')||{}).value||U.nm||'Jon'; S=newState(nm.trim().slice(0,14)||'Jon',U.arch); S.league=genLeague(); genSlate(); META.runs++; saveMeta(); U.slip=[]; U.tab='slate';
   S.hp=maxHp(); S.lastLog=[`🦈 Big Sal: "Ten grand, ${esc(S.name)}. Four weeks. I want $250 by Sunday as a show of good faith. Don't make me send Kevin."`,'🎟️ Both sportsbooks gave you new-user promos. Free money! (It\'s never free money.)','💡 Tip: side hustles are safe money. The sportsbook is where legends (and bankruptcies) are made.'];
-  save(); go('hub'); }
+  touchBookSess(); save(); go('hub'); }
 // ---------- hub ----------
 function headline(){ const last=S.hist.filter(b=>b.day===S.day-1); const net=last.reduce((s,b)=>s+(b.net||0),0);
   if(last.length&&net>200) return `LOCAL DEGEN ${esc(S.name.toUpperCase())} HITS BIG, WON'T SHUT UP ABOUT IT`; if(last.length&&net<-100) return `AREA MAN LOSES ${money(-net)}, BLAMES REFS, WEATHER, "THE ALGORITHM"`;
@@ -5130,7 +5263,7 @@ function renderHelp(){ scene('title',[{id:'a',x:.5,pose:'point',hat:'cap',hatc:'
   setMain(`<h2>📖 HOW TO PLAY</h2><div class="panel small">
   <p><b>Goal:</b> You start with $50 and owe Big Sal $10,000. Sal wants a weekly payment every Sunday (it grows as your bankroll grows) and EVERYTHING by day 28. Miss a payment = penalty + collectors at your door. 3 knockouts = river. Pay it all off to win, then optionally go for <b>Whale</b> ($50k).</p>
   <p><b>Each day</b> you get ⚡ energy (3, +1 at Hustle 6 and 9). Casino, Back Alley, Side Hustles, the Bar and Touch Grass cost ⚡1. The <b>Sportsbook</b>, Sal, the shop and your character sheet are free. Sleep to end the day.</p>
-  <p><b>Sportsbook:</b> Two books (DraftQueens 👑 & FanDoodle 🌀) with slightly different lines, so <b>line shop!</b> Spreads/totals are −110 (the vig). Tap odds to build a slip; 2+ legs = parlay (or straights). Same-game legs = SGP, priced by simming the actual game (correlated legs pay less); SGPs mixed with other games = SGP+. Your slip sticks around between screens; toggle <b>Keep picks</b> to re-bet fast, or <b>Clear slip</b>. Every in-game day is a real calendar date: MNF on Mondays, TNF Thursdays, college football Saturdays, Sunday NFFL windows, MLBB in summer, March Sadness, playoffs. Lines move during the day (sharps + public money; arrows show moves from the open), so lock in early or wait for a better number. Each game has a big player-prop menu plus 🤡 novelty props. Results tab has box scores; Schedule tab previews the week. Use promo tokens: bonus bets (stake not returned), no-sweat bets, profit boosts. Watch games in the <b>Live Sweat</b> to live-bet and cash out. Win too much and the books LIMIT you.</p>
+  <p><b>Sportsbook:</b> Two books (DraftQueens 👑 & FanDoodle 🌀) with slightly different lines, so <b>line shop!</b> Spreads/totals are −110 (the vig). Tap odds to build a slip; 2+ legs = parlay (or straights). Same-game legs = SGP, priced by simming the actual game (correlated legs pay less); SGPs mixed with other games = SGP+. Your slip sticks around between screens; toggle <b>Keep picks</b> to re-bet fast, or <b>Clear slip</b>. Every in-game day is a real calendar date: MNF on Mondays, TNF Thursdays, college football Saturdays, Sunday NFFL windows, MLBB in summer, March Sadness, playoffs. Lines move during the day (sharps + public money; arrows show moves from the open), so lock in early or wait for a better number. Each game has a big player-prop menu plus 🤡 novelty props. Results tab has box scores; Schedule tab previews the week. The History tab has a running profit/loss graph plus record, ROI and breakdowns for all-time, this sitting, or your last sitting. Use promo tokens: bonus bets (stake not returned), no-sweat bets, profit boosts. Watch games in the <b>Live Sweat</b> to live-bet and cash out. Win too much and the books LIMIT you.</p>
   <p><b>Tilt:</b> Losing raises tilt. At 60+ you're forced to bet at least 10% of your roll; 85+ is 20% plus worse odds. At 100 you do something stupid. Beer, wins, sleep and touching grass lower it.</p>
   <p><b>Edges:</b> the house always has one, but you can beat it with perks: Sharp (see +EV bets), Rain Man (count cards), Vig Killer, Promo Abuser, Eagle Eye (monte), Bottom Dealer (cheat at poker). Fading El Jefe has historically... worked.</p>
   <p><b>Flip 7 (Tony's back room):</b> buy in against 2–3 degenerates. Each round hit or stay; draw a number you already have and you BUST (0). 7 different numbers ends the round (+15). Freeze banks someone out, Flip Three forces 3 cards, Second Chance saves one bust. First to 200 wins the pot (5% rake).</p>
