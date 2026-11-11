@@ -282,6 +282,32 @@ pre.ascii{color:var(--green);font-size:11px;line-height:1.1;overflow-x:auto;marg
 .eusuits .redt{color:#ff8a8a}
 .eutbl.sm{height:240px}
 @media (max-width:420px){.eupips{display:none}.eumk{font-size:0;padding:0 2px}.eumk::after{content:'★';font-size:10px}.euscore{font-size:10px;padding:2px 4px}.eutbl{height:250px}.eus{max-width:104px;font-size:10.5px}.eut.lft{left:-44px}.eut.rgt{left:44px}}
+.atsbox{border:1px solid #c9b77a88;background:#0b3a1e;border-radius:6px;padding:5px;margin:4px 0}
+.atsrow{display:flex;gap:3px;align-items:center;justify-content:center;flex-wrap:wrap;margin:4px 0}
+.atsn{display:inline-block;width:26px;height:26px;line-height:26px;text-align:center;border-radius:50%;border:2px solid #c9b77a;color:#c9b77a;font-weight:bold;font-size:12px}
+.atsn.hit{background:#ffd84a;color:#111;border-color:#fff;box-shadow:0 0 8px #ffd84a}
+.atsn.seven{border-color:#ff5d5d;color:#ff5d5d}
+.bactable{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:6px 0}
+.bside{border-radius:8px;padding:6px;text-align:center;min-height:96px;background:#0f3d24;border:2px solid #6fb3ff}
+.bside.B{border-color:#ff6b6b}
+.btot{display:inline-block;min-width:26px;padding:1px 6px;border-radius:12px;background:#000;color:#ffd84a;font-weight:bold}
+.bcard{display:inline-flex;flex-direction:column;align-items:center;justify-content:center;width:38px;height:54px;margin:4px 2px;border-radius:5px;background:#fffbe8;color:#111;font-weight:bold;font-size:16px;border:2px solid #333;line-height:1}
+.bcard small{font-size:14px}
+.bcard.red{color:#d0021b}
+.bcard.back{background:repeating-linear-gradient(45deg,#7a1020,#7a1020 5px,#a01830 5px,#a01830 10px);border-color:#fff}
+.bcard.flip{animation:tflip .45s ease-out}
+.bacspots{display:grid;grid-template-columns:1fr 1fr 1fr;gap:4px;margin:6px 0}
+.bspot{min-height:56px;border-radius:8px;border:2px solid #c9b77a88;background:#0f4a26;color:#fff;cursor:pointer;font-family:inherit;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:11px}
+.bspot b{font-size:14px}.bspot .amt{color:var(--amber);font-weight:bold;font-size:13px}
+.bspot.P{border-color:#6fb3ff}.bspot.B{border-color:#ff6b6b}.bspot.T{border-color:#5dff8a}
+.bspot.P,.bspot.B{grid-column:span 1}.bspot.T{grid-column:span 1}
+.bspot.D,.bspot.PA{background:#3a2a0a;border-color:#ffb020}
+.bspot[disabled]{opacity:.5}
+.beadroad{display:grid;grid-auto-flow:column;grid-template-rows:repeat(6,18px);grid-auto-columns:18px;gap:2px;overflow-x:auto;background:#fff;padding:3px;border-radius:5px;margin:3px 0}
+.bead{width:18px;height:18px;border-radius:50%;font-size:10px;font-weight:bold;color:#fff;display:flex;align-items:center;justify-content:center;position:relative}
+.bead.P{background:#2e6fd8}.bead.B{background:#d63031}.bead.T{background:#20a050}.bead.e{background:#eee}
+.bead i{position:absolute;right:-4px;top:-5px;font-size:9px;font-style:normal}
+@keyframes tflip{0%{transform:rotateY(90deg) scale(.8)}60%{transform:rotateY(-12deg) scale(1.08)}100%{transform:rotateY(0) scale(1)}}
 </style>
 </head>
 <body>
@@ -459,6 +485,11 @@ const ITEMS = {
 const SHOP_ITEMS = ['beer','energy','sushi','coney','pepto','tums','vape','airhorn','burner','rabbit','chain','brass','jersey'];
 
 const ACHS = {
+  bacc:{ n:'Punto Banco Bro', ic:'🀄', d:'Play a hand of EZ Baccarat.' },
+  dragon:{ n:'Enter the Dragon', ic:'🐉', d:'Hit the Dragon 7 side bet (40:1).' },
+  panda:{ n:'Panda Express', ic:'🐼', d:'Hit the Panda 8 side bet (25:1).' },
+  ats:{ n:'Small Talk, Tall Tales', ic:'🎯', d:'Hit an All Small or All Tall bet at craps.' },
+  atsall:{ n:'Make \'Em All', ic:'🌈', d:'Hit Make \'Em All at craps: all ten numbers before a seven (175:1).' },
   pkchamp:{ n:'Certified Tout', ic:'🏆', d:'Win a Pick-Off bracket (beat 3 NPC handicappers in a row).' },
   moonshot:{ n:'Moonshot', ic:'🚀', d:'Hit a 480+ ft home run in the arcade Home Run Derby.' },
   holeinone:{ n:'Ace of Degens', ic:'⛳', d:'Make a hole-in-one at DegenClip Mini Putt.' },
@@ -541,7 +572,7 @@ const ROASTS = {
 //    the client records exactly those, once (ledger entries are de-duplicated by sequence number).
 //  * Biggest win / loss = largest net profit / loss on a single decided bet (a blackjack hand, a spin spot, a ticket...).
 const LIFE_KEY='degenRPG_life_v1';
-const LIFE_GAMES={sb:'📱 Sportsbook',pk:'🏆 Pick-Off',bj:'🂡 Blackjack',craps:'🎲 Craps',roul:'🎡 Roulette',slots:'🎰 Slots',scr:'🎟️ Scratchers',keno:'🎱 Keno',f7:'7️⃣ Flip 7',eu:'🃏 Euchre',poker:'♠️ Poker',monte:'👸 Monte',online:'🌐 Online tables',arc:'🕹️ Arcade'};
+const LIFE_GAMES={sb:'📱 Sportsbook',pk:'🏆 Pick-Off',bj:'🂡 Blackjack',craps:'🎲 Craps',bacc:'🀄 Baccarat',roul:'🎡 Roulette',slots:'🎰 Slots',scr:'🎟️ Scratchers',keno:'🎱 Keno',f7:'7️⃣ Flip 7',eu:'🃏 Euchre',poker:'♠️ Poker',monte:'👸 Monte',online:'🌐 Online tables',arc:'🕹️ Arcade'};
 const LIFE_SUB={bj:'Blackjack',cr:'Craps',rl:'Roulette',sb:'Sportsbook',f7:'Flip 7',kn:'Keno',eu:'Euchre',hrd:'HR Derby',putt:'Mini Putt',bowl:'Bowling'};
 function lifeBlank(){ return {v:1,wag:0,won:0,n:0,big:null,bigL:null,since:null,g:{}}; }
 function lifeLoad(){ let L=null; try{ L=JSON.parse(localStorage.getItem(LIFE_KEY)||'null'); }catch(e){} if(!L||typeof L!=='object'||L.v!==1) L=lifeBlank(); L.g=L.g||{}; return L; }
@@ -2129,18 +2160,28 @@ function rlWins(key, n){ // returns payout multiple (profit:1) or -1
 function rlSettle(bets, n){ let ret=0; for(const k in bets){ const m=rlWins(k,n); if(m>0) ret+=bets[k]*(m+1); } return r2(ret); }
 // ---------- CRAPS ----------
 // Bets: pass, dp, passOdds, dpOdds, come (pending), dc (pending), comes:[{n,amt,odds}], dcs:[{n,amt,odds}], place{4..10}, field, any7, anyCraps, hard{4,6,8,10}
-function newCraps(){ return {point:null, bets:{pass:0,dp:0,passOdds:0,dpOdds:0,come:0,dc:0,field:0,any7:0,anyCraps:0,place:{4:0,5:0,6:0,8:0,9:0,10:0},hard:{4:0,6:0,8:0,10:0}}, comes:[], dcs:[], rolls:0, shooterRolls:0, hist:[]}; }
+function newCraps(){ return {point:null, bets:{pass:0,dp:0,passOdds:0,dpOdds:0,come:0,dc:0,field:0,any7:0,anyCraps:0,place:{4:0,5:0,6:0,8:0,9:0,10:0},hard:{4:0,6:0,8:0,10:0},small:0,tall:0,all:0}, ats:{hit:[],rolls:0}, comes:[], dcs:[], rolls:0, shooterRolls:0, hist:[]}; }
+// All Tall / All Small / Make 'Em All (ATS): contract bets made before the first roll of a new ATS cycle; any 7 ends the cycle.
+const ATS_SMALL=[2,3,4,5,6], ATS_TALL=[8,9,10,11,12], ATS_PAY={small:34,tall:34,all:175};
+function crapsEnsure(C){ const b=C.bets; if(b.small==null){ b.small=0; b.tall=0; b.all=0; } if(!C.ats) C.ats={hit:[],rolls:0}; return C; }
 const TRUE_ODDS={4:2,10:2,5:1.5,9:1.5,6:1.2,8:1.2}; // pass/come odds profit per $1
 const LAY_ODDS={4:.5,10:.5,5:2/3,9:2/3,6:5/6,8:5/6};   // don't odds profit per $1
 const PLACE_PAY={4:9/5,10:9/5,5:7/5,9:7/5,6:7/6,8:7/6};
 const HARD_PAY={4:7,10:7,6:9,8:9};
 const MAX_ODDS={4:3,10:3,5:4,9:4,6:5,8:5};
-function crapsTotalOnTable(C){ const b=C.bets; let t=b.pass+b.dp+b.passOdds+b.dpOdds+b.come+b.dc+b.field+b.any7+b.anyCraps; for(const k in b.place) t+=b.place[k]; for(const k in b.hard) t+=b.hard[k]; for(const c of C.comes) t+=c.amt+c.odds; for(const c of C.dcs) t+=c.amt+c.odds; return t; }
+function crapsTotalOnTable(C){ crapsEnsure(C); const b=C.bets; let t=b.pass+b.dp+b.passOdds+b.dpOdds+b.come+b.dc+b.field+b.any7+b.anyCraps+b.small+b.tall+b.all; for(const k in b.place) t+=b.place[k]; for(const k in b.hard) t+=b.hard[k]; for(const c of C.comes) t+=c.amt+c.odds; for(const c of C.dcs) t+=c.amt+c.odds; return t; }
 function crapsRoll(C, d1, d2){ // resolves all bets; returns {sum, ret (cash back to player), lines:[], net}
   const b=C.bets; const s=d1+d2; const hard=d1===d2; const out=[]; let ret=0; const pay=(amt,mult,what)=>{ const r=r2(amt+amt*mult); ret+=r; out.push({w:1,what,amt,win:r2(amt*mult)}); };
   const lose=(amt,what)=>{ if(amt>0) out.push({w:0,what,amt}); };
   const push=(amt,what)=>{ ret+=amt; out.push({w:2,what,amt}); };
   const comeOut=C.point===null; C.rolls++; C.shooterRolls++; S&&S.stats2&&S.stats2.rolls++;
+  // ATS
+  crapsEnsure(C); const A=C.ats; let atsEv=null;
+  if(s===7){ lose(b.small,'All Small'); lose(b.tall,'All Tall'); lose(b.all,"Make 'Em All"); b.small=b.tall=b.all=0; if(A.rolls>0||A.hit.length) atsEv='reset'; A.hit=[]; A.rolls=0; }
+  else { A.rolls++; if(!A.hit.includes(s)) A.hit.push(s); const has_=L=>L.every(n=>A.hit.includes(n));
+    if(b.small&&has_(ATS_SMALL)){ pay(b.small,ATS_PAY.small,'All Small'); b.small=0; atsEv='small'; }
+    if(b.tall&&has_(ATS_TALL)){ pay(b.tall,ATS_PAY.tall,'All Tall'); b.tall=0; atsEv='tall'; }
+    if(b.all&&has_(ATS_SMALL)&&has_(ATS_TALL)){ pay(b.all,ATS_PAY.all,"Make 'Em All"); b.all=0; atsEv='all'; } }
   // one-roll bets
   if(b.field){ if(s===2) pay(b.field,2,'Field (2 pays double)'); else if(s===12) pay(b.field,3,'Field (12 pays triple)'); else if([3,4,9,10,11].includes(s)) pay(b.field,1,'Field'); else lose(b.field,'Field'); b.field=0; }
   if(b.any7){ if(s===7) pay(b.any7,4,'Any 7'); else lose(b.any7,'Any 7'); b.any7=0; }
@@ -2169,7 +2210,7 @@ function crapsRoll(C, d1, d2){ // resolves all bets; returns {sum, ret (cash bac
   }
   if(event==='sevenout'){ C.lastShooter=C.shooterRolls; C.shooterRolls=0; }
   C.hist.unshift(s); if(C.hist.length>14) C.hist.length=14;
-  return {sum:s, d1, d2, hard, ret:r2(ret), lines:out, event, comeOut}; }
+  return {sum:s, d1, d2, hard, ret:r2(ret), lines:out, event, comeOut, atsEv}; }
 // ---------- SCRATCH-OFFS ----------
 const SCRATCHERS = {
   deuce:{ n:'Lucky Deuce 🚽', price:2, prizes:[[2,.12],[4,.06],[10,.025],[20,.01],[100,.002],[500,.0003]], d:'Toilet-themed. Match 3 amounts. 1 in 4.6 "wins" (mostly your $2 back).' },
@@ -2187,7 +2228,7 @@ function cBet(a){ addCash(-a); if(U.cs) U.cs.net=r2(U.cs.net-a); }
 function cPay(a){ if(a>0){ addCash(a); if(U.cs) U.cs.net=r2(U.cs.net+a); } }
 function chips(vals, cur, fn){ return `<div class="row">${vals.map(v=>`<button class="chip ${cur===v?'on':''}" onclick="${fn}(${v})">$${v>=1000?(v/1000)+'k':v}</button>`).join('')}</div>`; }
 function enterCasino(){ if(!useEnergy(1)){ toast('Too tired. Sleep it off, degenerate.'); return; } U.cs={net:0}; S.dayPhase='night'; U.cgame=null; go('casino'); }
-function leaveCasino(){ if(U.busy) return; if(U.scr&&!U.scr.paid) scratchFinish(true); let msg=''; if(U.f7&&U.f7.G.phase!=='over'){ clearTimeout(U.f7.tm); f7Forfeit(U.f7); msg+=` You walked out of Flip 7 (buy-in forfeited).`; addTilt(4); } U.f7=null; if(U.eu&&U.eu.G.phase!=='over'){ clearTimeout(U.eu.tm); euForfeit(U.eu); msg+=` You walked out of the euchre match (ante forfeited).`; addTilt(4); } U.eu=null; if(S.craps&&crapsTotalOnTable(S.craps)>0){ const t=crapsRefundAll(); msg+=` Craps chips returned: ${money(t)}.`; }
+function leaveCasino(){ if(U.busy) return; if(U.bacB){ let t=0; for(const k in U.bacB) t+=U.bacB[k]; if(t) cPay(t); U.bacB={}; } if(U.scr&&!U.scr.paid) scratchFinish(true); let msg=''; if(U.f7&&U.f7.G.phase!=='over'){ clearTimeout(U.f7.tm); f7Forfeit(U.f7); msg+=` You walked out of Flip 7 (buy-in forfeited).`; addTilt(4); } U.f7=null; if(U.eu&&U.eu.G.phase!=='over'){ clearTimeout(U.eu.tm); euForfeit(U.eu); msg+=` You walked out of the euchre match (ante forfeited).`; addTilt(4); } U.eu=null; if(S.craps&&crapsTotalOnTable(S.craps)>0){ const t=crapsRefundAll(); msg+=` Craps chips returned: ${money(t)}.`; }
   if(has('comped')&&U.cs&&U.cs.net<0){ const rb=r2(-U.cs.net*.1); addCash(rb); addHp(10); msg=` 🍤 Comped: ${money(rb)} loss rebate + free shrimp cocktail.`; }
   if(U.cs){ const n=U.cs.net; toast(`🎰 Session: ${n>=0?'+':''}${money(n)}.${msg}`); if(n<-100) addTilt(8); news(`Casino session: ${n>=0?'+':''}${money(n)}`); }
   U.cs=null; U.cgame=null; U.bj=null; U.scr=null; save(); go('hub'); }
@@ -2197,15 +2238,17 @@ function renderCasino(){
     setMain(`<h2>🎰 QUEEN CITY CASH PALACE</h2><div class="small dim">Smells like menthols and broken dreams. Table max: ${money(casinoMax())}. Session: <b class="${U.cs.net>=0?'g':'r'}">${U.cs.net>=0?'+':''}${money(U.cs.net)}</b></div>${tiltNote()}
       <div class="grid2"><button class="btn" onclick="cgo('bj')">🂡 Blackjack<small>6-deck, 3:2, dealer stands soft 17</small></button><button class="btn" onclick="cgo('craps')">🎲 Craps<small>Full table: line, come, odds, place, props</small></button>
       <button class="btn" onclick="cgo('slots')">🎰 Slots<small>"Turd Jackpot" edition</small></button><button class="btn" onclick="cgo('roul')">🎡 Roulette<small>American wheel. 0 and 00, baby.</small></button>
+      <button class="btn" onclick="cgo('bacc')">🀄 EZ Baccarat<small>No commission · 🐉 Dragon 7 (40:1) · 🐼 Panda 8 (25:1)</small></button>
       <button class="btn" onclick="cgo('f7')">7️⃣ Flip 7<small>Back-room card game vs. degenerates. Winner takes the pot.</small></button><button class="btn" onclick="cgo('keno')">🎱 Keno<small>80 balls, pick 1–10, multi-race. Lounge vibes.</small></button>
       <button class="btn" onclick="cgo('eu')">🃏 Euchre Hall<small>VFW basement. You + a bot partner vs. 2 bots for stakes.</small></button>
       <button class="btn" onclick="cgo('scr')">🎫 Scratch-offs<small>From the gift shop. Sad but legal.</small></button><button class="btn" onclick="casinoDrink()">🍸 Free Drink<small>Tip the waitress $2. +buzz, −tilt</small></button></div>
       <button class="btn c" onclick="arcEnter('casino')">🕹️ Upstairs: DegenClip Arcade<small>HR Derby · Mini Putt · Bowling — skill games, real bets</small></button>
       <button class="btn gold c" data-nomk="1" onclick="mpOpen('casino')">🌐 Multiplayer tables (play with friends)</button>
       <button class="btn c" onclick="leaveCasino()">🚪 Leave the casino</button>`); return; }
+  if(g==='bacc') return renderBac();
   if(g==='bj') return renderBJ(); if(g==='slots') return renderSlots(); if(g==='roul') return renderRoul(); if(g==='craps') return renderCraps(); if(g==='scr') return renderScratch(); if(g==='f7') return renderF7(); if(g==='keno') return renderKeno(); if(g==='eu') return renderEu();
 }
-function cgo(g){ sfx.click(); U.cgame=g; if(g==='craps'&&!S.craps) S.craps=newCraps(); if(g==='craps') crapsScene(); if(g==='bj') scene('casino',[youActor({x:.25,pose:'idle',held:null}),{id:'d',x:.72,hat:'visor',label:'DEALER DEB',pose:'deal',color:'#ffd9a0'}],{caption:'BLACKJACK'});
+function cgo(g){ if(U.busy) return; sfx.click(); U.cgame=g; if(g==='bacc'){ U.bac=null; bacScene(); } if(g==='craps'&&!S.craps) S.craps=newCraps(); if(g==='craps') crapsScene(); if(g==='bj') scene('casino',[youActor({x:.25,pose:'idle',held:null}),{id:'d',x:.72,hat:'visor',label:'DEALER DEB',pose:'deal',color:'#ffd9a0'}],{caption:'BLACKJACK'});
   if(g==='slots') scene('casino',[youActor({x:.5,pose:'idle',held:'beer'})],{caption:'SLOTS'}); if(g==='roul') scene('casino',[youActor({x:.3,pose:'idle'}),{id:'d',x:.72,hat:'visor',label:'CROUPIER CLAUDE',pose:'deal',color:'#c8e0ff'}],{caption:'ROULETTE'}); if(g==='scr') scene('casino',[youActor({x:.5,pose:'phone',held:'slip'})],{caption:'SCRATCHERS'});
   if(g==='f7') f7Scene(); if(g==='keno') kenoScene(); if(g==='eu') euScene();
   renderCasino(); if(g==='f7'&&U.f7) f7Loop(); if(g==='eu'&&U.eu) euLoop(); }
@@ -2288,7 +2331,7 @@ function crapsScene(){ scene('craps',[ youActor({x:.1,pose:'idle',held:null,s:1}
 function crowd(p,ms){ for(const id of ['c1','c2','c3','c4']) pose(id,p,ms||1600,'idle'); }
 function crChip(v){ U.crChip=v; renderCraps(); }
 function crAmt(v){ return v?`<span class="amt">$${v}</span>`:''; }
-function renderCraps(){ const C=S.craps; const b=C.bets; U.crChip=U.crChip||5; const on=C.point!==null;
+function renderCraps(){ const C=crapsEnsure(S.craps); const b=C.bets; U.crChip=U.crChip||5; const on=C.point!==null;
   const btn=(k,n,label,sub,cls,dis)=>`<button class="cb ${cls||''}" ${dis?'disabled':''} onclick="crAdd('${k}',${n==null?'null':n})"><b>${label}</b>${sub?`<span style="font-size:10px">${sub}</span>`:''}${crAmt(k==='place'?b.place[n]:k==='hard'?b.hard[n]:b[k])}</button>`;
   let h=`<h2>🎲 CRAPS <span class="small dim">Point: ${on?`<b class="a">${C.point}</b> (puck ON)`:'OFF (come-out roll)'}</span></h2>${tiltNote()}
   <div class="small dim">Shooter: you. Rolls this hand: ${C.shooterRolls}. Recent: ${C.hist.slice(0,10).join(' · ')||'—'}</div><div class="craps">`;
@@ -2300,13 +2343,17 @@ function renderCraps(){ const C=S.craps; const b=C.bets; U.crChip=U.crChip||5; c
   h+=btn('pass',null,'PASS LINE','1:1 · 7/11 win','wide3',on)+btn('dp',null,"DON'T PASS",'1:1 · 2/3 win · bar 12','wide3',on);
   h+=btn('passOdds',null,'PASS ODDS',on?`true odds ${({4:'2:1',10:'2:1',5:'3:2',9:'3:2',6:'6:5',8:'6:5'})[C.point]} · max ${MAX_ODDS[C.point]}x`:'after point','wide3',!on||!b.pass)+btn('dpOdds',null,"LAY ODDS",on?`pays ${({4:'1:2',10:'1:2',5:'2:3',9:'2:3',6:'5:6',8:'5:6'})[C.point]}`:'after point','wide3',!on||!b.dp);
   h+=`</div>`;
+  { const A=C.ats, open=A.rolls===0; const cell=n=>`<span class="atsn ${A.hit.includes(n)?'hit':''}">${n}</span>`;
+    h+=`<div class="atsbox"><div class="row" style="justify-content:space-between;align-items:center"><b class="small">ALL SMALL · ALL TALL · MAKE 'EM ALL</b><span class="small dim">${open?'Bets open (before the first roll)':`Locked · roll ${A.rolls} of this cycle`}</span></div>
+     <div class="atsrow"><span class="small dim">SMALL</span>${ATS_SMALL.map(cell).join('')}<span class="atsn seven">7</span>${ATS_TALL.map(cell).join('')}<span class="small dim">TALL</span></div>
+     <div class="craps" style="margin:4px 0 0">${btn('small',null,'ALL SMALL','2·3·4·5·6 before 7 · 34:1','wide2',!open)}${btn('tall',null,'ALL TALL','8·9·10·11·12 before 7 · 34:1','wide2',!open)}${btn('all',null,"MAKE 'EM ALL",'all 10 numbers · 175:1','wide2',!open)}</div></div>`; }
   if(C.comes.length||C.dcs.length){ h+=`<div class="panel small">`; C.comes.forEach((c,i)=>{ h+=`<div class="row" style="justify-content:space-between"><span>🟢 Come on <b>${c.n}</b>: $${c.amt}${c.odds?` + odds $${c.odds}`:''}</span><button class="tab" style="flex:0 0 auto" onclick="crAdd('comeOdds',${i})">+ odds (${({4:'2:1',10:'2:1',5:'3:2',9:'3:2',6:'6:5',8:'6:5'})[c.n]})</button></div>`; });
     C.dcs.forEach((c,i)=>{ h+=`<div class="row" style="justify-content:space-between"><span>⚫ Don't Come on <b>${c.n}</b>: $${c.amt}${c.odds?` + lay $${c.odds}`:''}</span><button class="tab" style="flex:0 0 auto" onclick="crAdd('dcOdds',${i})">+ lay odds</button></div>`; }); h+=`</div>`; }
   h+=chips([1,5,25,100,500].filter(v=>v<=casinoMax()),U.crChip,'crChip');
   h+=`<div class="small">On the felt: <b class="a">${money(crapsTotalOnTable(C))}</b> · Cash: ${money(S.cash)}</div>`;
   h+=`<div class="grid2"><button class="btn big go" id="rollbtn" onclick="crRoll()">🎲 ROLL 'EM</button><button class="btn c" onclick="crDown()">↩ Take down bets<small>(not Pass/Come flats)</small></button></div>`;
   h+=`<div class="log" id="crlog">${(U.crLog||[]).map(x=>`<div class="${x.c||''}">${x.s}</div>`).join('')||'<div class="dim">Stickman: "New shooter coming out! Get your line bets down, you cowards."</div>'}</div>`;
-  h+=`<details class="small dim"><summary>How craps works (for the uninitiated)</summary>Come-out roll: Pass wins on 7/11, loses on 2/3/12; anything else sets the POINT. Then Pass wins if the point repeats before a 7. Don't Pass is the opposite (12 on come-out pushes). Come/Don't Come work like Pass/Don't Pass but start on the next roll. Odds behind the line pay TRUE odds (no house edge!). Place bets win when their number hits before a 7 (off on the come-out). Hardways win if the number rolls as doubles before a 7 or the "easy" way. Field/Any 7/Any Craps are one-roll bets.</details>`;
+  h+=`<details class="small dim"><summary>How craps works (for the uninitiated)</summary>Come-out roll: Pass wins on 7/11, loses on 2/3/12; anything else sets the POINT. Then Pass wins if the point repeats before a 7. Don't Pass is the opposite (12 on come-out pushes). Come/Don't Come work like Pass/Don't Pass but start on the next roll. Odds behind the line pay TRUE odds (no house edge!). Place bets win when their number hits before a 7 (off on the come-out). Hardways win if the number rolls as doubles before a 7 or the "easy" way. Field/Any 7/Any Craps are one-roll bets. <b>All Small / All Tall / Make 'Em All</b>: bet before the first roll of a new cycle; every number in the set (2-3-4-5-6, 8-9-10-11-12, or all ten) must roll, in any order, before ANY 7 (even a come-out 7). Pays 34:1, 34:1 and 175:1; once placed they can't come down. House edge ≈7.7%.</details>`;
   h+=backBtn; setMain(h); }
 function crLog(s,c){ U.crLog=U.crLog||[]; U.crLog.unshift({s,c}); if(U.crLog.length>40) U.crLog.length=40; }
 // Pure bet validation / application (shared by single-player and the multiplayer host)
@@ -2323,11 +2370,12 @@ function crapsBetCheck(C,k,n,v,mx){ const b=C.bets, on=C.point!==null; let cur;
     case 'place': if(!PLACE_PAY[n]) return 'Not a place number.'; cur=b.place[n]; break;
     case 'hard': if(!HARD_PAY[n]) return 'Not a hardway.'; cur=b.hard[n]; break;
     case 'field': case 'any7': case 'anyCraps': cur=b[k]; break;
+    case 'small': case 'tall': case 'all': crapsEnsure(C); if(C.ats.rolls>0) return 'ATS bets only go down before the first roll of a new cycle (right after a 7, or a fresh table).'; cur=b[k]; if(cur+v>Math.max(5,Math.round(mx/10))) return `ATS max is ${money(Math.max(5,Math.round(mx/10)))}.`; return null;
     default: return 'Unknown bet.'; }
   if(cur+v>mx) return `Table max is ${money(mx)} per bet.`;
   return null; }
 function crapsBetApply(C,k,n,v){ const b=C.bets; if(k==='comeOdds') C.comes[n].odds+=v; else if(k==='dcOdds') C.dcs[n].odds+=v; else if(k==='place') b.place[n]+=v; else if(k==='hard') b.hard[n]+=v; else b[k]+=v; }
-function crapsTakeDown(C){ const b=C.bets; let back=b.passOdds+b.dp+b.dpOdds+b.come+b.dc+b.field+b.any7+b.anyCraps; b.passOdds=b.dp=b.dpOdds=b.come=b.dc=b.field=b.any7=b.anyCraps=0;
+function crapsTakeDown(C){ crapsEnsure(C); const b=C.bets; let back=b.passOdds+b.dp+b.dpOdds+b.come+b.dc+b.field+b.any7+b.anyCraps; b.passOdds=b.dp=b.dpOdds=b.come=b.dc=b.field=b.any7=b.anyCraps=0; if(C.ats.rolls===0){ back+=b.small+b.tall+b.all; b.small=b.tall=b.all=0; }
   for(const n in b.place){ back+=b.place[n]; b.place[n]=0; } for(const n in b.hard){ back+=b.hard[n]; b.hard[n]=0; } for(const c of C.comes){ back+=c.odds; c.odds=0; } for(const c of C.dcs){ back+=c.amt+c.odds; } C.dcs=[]; return back; }
 function crAdd(k,n){ if(U.busy) return; const C=S.craps, v=U.crChip;
   if(v>S.cash){ toast('Not enough cash for that chip.'); return; }
@@ -2361,6 +2409,9 @@ function crResolve(d1,d2){ const C=S.craps; const pt=C.point; const res=crapsRol
   if(rnd()<.35) crLog(`🗣️ ${pick(CR_TALK.crowd)}`,'roast');
   const net=r2(won-lost); gainXp(1+Math.abs(net)/50);
   if(res.lines.some(l=>l.w===1&&l.what.startsWith('Hard'))) unlock('hardway');
+  if(res.atsEv==='small'||res.atsEv==='tall'){ unlock('ats'); crLog(`🎯 Stickman: "ALL ${res.atsEv==='small'?'SMALL':'TALL'}! Every ${res.atsEv} number before a seven! Pay that degenerate!"`,'big'); fx.money(25); }
+  if(res.atsEv==='all'){ unlock('atsall'); crLog(`🌈 Stickman: "MAKE 'EM ALL! ALL TEN NUMBERS! Somebody call the pit boss, call his mom, call a priest!"`,'big'); fx.money(60); fx.confetti(60); sfx.big(); }
+  if(res.atsEv==='reset') crLog('🎯 Seven clears the All Small/All Tall board. ATS bets are open again.','dim');
   if(res.event!=='sevenout'&&C.shooterRolls>=8) unlock('heater');
   if(net>0){ crowd('cheer'); pose('you','celebrate',1500,'idle'); sfx.win(); fx.text('+'+money(net),'#5dff8a'); if(net>=200) fx.money(20); addTilt(-2); }
   else if(net<0){ crowd(res.event==='sevenout'?'groan':'shrug',1800); pose('you',res.event==='sevenout'?'facepalm':'shrug',1500,'idle'); sfx.lose(); fx.text('−'+money(-net),'#ff5d5d'); addTilt(Math.min(8,1+(-net)/Math.max(20,S.cash)*15)); }
@@ -2894,7 +2945,7 @@ function mpHostCreate(io){ // io: {send(cid,msg), now(), room, sess}
   const now=()=>io.now();
   const H={ room:io.room, sess:io.sess, P:{}, order:[], ghost:{}, chat:[], chatN:0, pn:0, dirty:true, rig:{}, closed:false, rs:mpRoomS(), rt:{w:0,r:0,n:0}, lbv:0, lbLead:null, fin:null, t0:io.now() };
   const bj=H.bj={ phase:'bet', seats:Array(MPC.SEATS).fill(null), shoe:newShoe(), dealer:[], hole:true, hands:{}, bets:{}, last:{}, order:[], turn:null, deadline:0, handNo:0, msg:'Place your bets.', doneAt:0, nextDraw:0, needDraw:false };
-  const cr=H.cr={ point:null, shooter:null, C:{}, phase:'bet', rollAt:0, deadline:0, last:null, rollNo:0, hist:[], dice:null, thrower:'', sRolls:0 };
+  const cr=H.cr={ point:null, ats:{hit:[],rolls:0}, shooter:null, C:{}, phase:'bet', rollAt:0, deadline:0, last:null, rollNo:0, hist:[], dice:null, thrower:'', sRolls:0 };
   const rl=H.rl={ phase:'bet', bets:{}, ready:{}, deadline:0, n:null, spinAt:0, doneAt:0, spinNo:0, hist:[], res:{} };
   const sb=H.sb={ day:0, phase:'bet', bets:[], ready:{}, deadline:0, games:[], recs:{}, events:[], ei:0, ticker:[], t:0, liveStart:0, finalAt:0, betN:0, stats:{} };
   const pl=c=>H.P[c]||H.ghost[c]||null;
@@ -3125,22 +3176,23 @@ function mpHostCreate(io){ // io: {send(cid,msg), now(), room, sess}
     else if(bj.phase==='done'&&t>=bj.doneAt) bjReset(); }
   // ---------------- CRAPS (one shared shooter, everyone's bets ride the same dice) ----------------
   const crC=c=>cr.C[c]||(cr.C[c]=newCraps());
+  const crAts=()=>({hit:cr.ats.hit.slice(),rolls:cr.ats.rolls}); // the table owns the All Small/Tall cycle; every player's book mirrors it
   const crTableTotal=()=>{ let t=0; for(const c in cr.C) t+=crapsTotalOnTable(cr.C[c]); return t; };
   function crBet(p,k,n,v){ if(cr.phase!=='bet') return rej(p,'Dice are in the air. Hands off the felt!'); if(p.table!=='cr') return rej(p,'Walk over to the craps table first.');
-    if(v==null) return rej(p,'Bad chip.'); if(v>p.bal+1e-9) return rej(p,'Not enough cash for that chip.'); const C=crC(p.cid); C.point=cr.point;
+    if(v==null) return rej(p,'Bad chip.'); if(v>p.bal+1e-9) return rej(p,'Not enough cash for that chip.'); const C=crC(p.cid); C.point=cr.point; C.ats=crAts();
     const err=crapsBetCheck(C,k,n,v,MPC.TMAX); if(err) return rej(p,'🎲 '+err); crapsBetApply(C,k,n,v); led(p,'cr',-v,crapsTotalOnTable(C),'Craps bet');
     if(!cr.shooter) crNextShooter(false); if(!cr.deadline) cr.deadline=now()+MPC.CR_MS; dirty(); }
-  function crDown(p){ if(cr.phase!=='bet') return rej(p,'Wait for the dice to land.'); const C=cr.C[p.cid]; if(!C) return; const back=crapsTakeDown(C); if(back>0) led(p,'cr',back,crapsTotalOnTable(C),'Craps bets taken down'); dirty(); }
+  function crDown(p){ if(cr.phase!=='bet') return rej(p,'Wait for the dice to land.'); const C=cr.C[p.cid]; if(!C) return; C.ats=crAts(); const back=crapsTakeDown(C); if(back>0) led(p,'cr',back,crapsTotalOnTable(C),'Craps bets taken down'); dirty(); }
   function crRefundAll(p,why){ const C=cr.C[p.cid]; if(!C) return; const t=crapsTotalOnTable(C); delete cr.C[p.cid]; if(t>0) led(p,'cr',t,0,why); }
   function crNextShooter(advance){ const cand=H.order.filter(c=>H.P[c].table==='cr'&&H.P[c].conn); if(!cand.length){ if(cr.shooter){ cr.shooter=null; dirty(); } return; }
     const i=cand.indexOf(cr.shooter); const nx=(i<0)?cand[0]:cand[(i+(advance?1:0))%cand.length]; if(nx!==cr.shooter||advance){ cr.shooter=nx; cr.sRolls=0; dirty(); } }
   function crRoll(p){ if(cr.phase!=='bet') return rej(p,'Dice are already rolling.'); if(cr.shooter!==p.cid) return rej(p,`You're not the shooter. ${nm(cr.shooter)} has the dice.`); if(crTableTotal()<=0) return rej(p,'Nobody has money on the felt yet.'); crThrow(p.name); }
   function crThrow(by){ const d=H.rig.dice&&H.rig.dice.length?H.rig.dice.shift():[ri(1,6),ri(1,6)]; cr.dice=d; cr.phase='roll'; cr.rollAt=now()+MPC.CR_ROLL_MS; cr.thrower=by; cr.deadline=0; dirty(); }
-  function crResolve(){ const [d1,d2]=cr.dice, pt=cr.point, res={}; let tres;
-    mpWithS(H.rs,()=>{ const dummy=newCraps(); dummy.point=pt; tres=crapsRoll(dummy,d1,d2); cr.point=dummy.point;
-      for(const c in cr.C){ const C=cr.C[c]; C.point=pt; const before=crapsTotalOnTable(C); if(before<=0){ C.point=cr.point; continue; } const r=crapsRoll(C,d1,d2); const after=crapsTotalOnTable(C); const net=r2(r.ret-(before-after));
+  function crResolve(){ const [d1,d2]=cr.dice, pt=cr.point, res={}; let tres; const dummy_ats_holder={a:cr.ats};
+    mpWithS(H.rs,()=>{ const ats0=crAts(); const dummy=newCraps(); dummy.point=pt; dummy.ats=crAts(); tres=crapsRoll(dummy,d1,d2); cr.point=dummy.point; dummy_ats_holder.a=dummy.ats;
+      for(const c in cr.C){ const C=cr.C[c]; C.point=pt; C.ats={hit:ats0.hit.slice(),rolls:ats0.rolls}; const before=crapsTotalOnTable(C); if(before<=0){ C.point=cr.point; continue; } const r=crapsRoll(C,d1,d2); const after=crapsTotalOnTable(C); const net=r2(r.ret-(before-after));
         const p=pl(c); if(p){ res[p.id]={net,ret:r.ret,lines:r.lines.map(l=>({w:l.w,what:l.what,amt:l.amt,win:l.win||0}))}; if(r.ret>0||before!==after) led(p,'cr',r.ret,after,`Craps ${d1}+${d2}=${d1+d2}`,net,LF(r.lines.filter(l=>l.w!==2).map(l=>l.w===1?[l.amt,l.amt+l.win]:[l.amt,0]))); } } });
-    const s=d1+d2; cr.rollNo++; cr.sRolls++; cr.hist.unshift(s); if(cr.hist.length>14) cr.hist.length=14;
+    cr.ats=dummy_ats_holder.a; const s=d1+d2; cr.rollNo++; cr.sRolls++; cr.hist.unshift(s); if(cr.hist.length>14) cr.hist.length=14;
     cr.last={d1,d2,sum:s,event:tres.event,hard:tres.hard,talk:crTalk(tres,pt),by:cr.thrower,res,n:cr.rollNo};
     if(tres.event==='sevenout'){ const old=cr.shooter, n=cr.sRolls; crNextShooter(true); sys(`🎲 Seven out after ${n} roll${n===1?'':'s'}! ${old?nm(old):'The stickman'} passes the dice${cr.shooter?' to '+nm(cr.shooter):''}.`); }
     cr.phase='bet'; cr.dice=null; cr.deadline=crTableTotal()>0?now()+MPC.CR_MS:0; dirty(); }
@@ -3427,7 +3479,7 @@ function mpHostCreate(io){ // io: {send(cid,msg), now(), room, sess}
     return { v:MPC.VER, room:H.room, players, chat:H.chat.slice(-30), rt:{w:H.rt.w,r:H.rt.r,n:H.rt.n,gone}, lb:H.lb(), vfx:H.vfx||null,
       bj:{phase:bj.phase,seats:bj.seats.map(c=>c?idOf(c):null),dealer:bj.dealer.map((c,i)=>bj.hole&&i===1?{h:1}:c),dv:bj.dealer.length?(bj.hole?cval(bj.dealer[0]):handVal(bj.dealer).t):0,
         turn:idOf(bj.turn),rem:rem(bj.deadline),hands,bets:byId(bj.bets),last:byId(bj.last),handNo:bj.handNo,msg:bj.msg,left:bj.shoe.cards.length},
-      cr:{point:cr.point,shooter:idOf(cr.shooter),phase:cr.phase,rem:rem(cr.deadline),last:cr.last,rollNo:cr.rollNo,hist:cr.hist,bets:crb,thrower:cr.phase==='roll'?cr.thrower:'',sRolls:cr.sRolls},
+      cr:{point:cr.point,shooter:idOf(cr.shooter),phase:cr.phase,rem:rem(cr.deadline),last:cr.last,rollNo:cr.rollNo,hist:cr.hist,ats:cr.ats,bets:crb,thrower:cr.phase==='roll'?cr.thrower:'',sRolls:cr.sRolls},
       rl:{phase:rl.phase,rem:rem(rl.deadline),bets:byId(rl.bets),ready:Object.keys(rl.ready).map(idOf),n:rl.phase==='spin'?null:rl.n,spinNo:rl.spinNo,spinRem:rl.phase==='spin'?rem(rl.spinAt):0,hist:rl.hist,res:rl.res},
       sb:{day:sb.day,phase:sb.phase,rem:rem(sb.phase==='final'?sb.finalAt:sb.deadline),t:sb.t,ready:Object.keys(sb.ready).map(idOf),ticker:sb.ticker.slice(-16),stats:byId(sb.stats),
         games:sb.games.map(g=>{ const L=g.lines.DQ; return {id:g.id,sp:g.sp,slot:g.slot,a:{ab:g.a.ab,nm:g.a.nm},h:{ab:g.h.ab,nm:g.h.nm},L:{spread:L.spread,spH:L.spH,spA:L.spA,total:L.total,tO:L.tO,tU:L.tU,mlH:L.mlH,mlA:L.mlA},live:g.live||null,fin:sb.phase==='final'&&g.res?{sa:g.res.sa,sh:g.res.sh,ot:g.res.ot}:null}; }),
@@ -3776,6 +3828,10 @@ function mpCrHtml(R){ const T=R.cr, me=MP.me, myP=mpP(me)||{bal:0}; const mine=T
   h+=btn('come',null,'COME','1:1','wide3',!on)+btn('dc',null,"DON'T COME",'1:1 · bar 12','wide3',!on)+btn('field',null,'FIELD  2·3·4·9·10·11·12','1:1 · 2 pays 2:1 · 12 pays 3:1','wide6');
   for(const n of [4,6,8,10]) h+=btn('hard',n,`HARD ${n}`,`${HARD_PAY[n]}:1`); h+=btn('any7',null,'ANY 7','4:1')+btn('anyCraps',null,'ANY CRAPS','7:1');
   h+=btn('pass',null,'PASS LINE','1:1','wide3',on)+btn('dp',null,"DON'T PASS",'1:1 · bar 12','wide3',on)+btn('passOdds',null,'PASS ODDS',on?`${OD[T.point]} · max ${MAX_ODDS[T.point]}x`:'after point','wide3',!on||!b.pass)+btn('dpOdds',null,'LAY ODDS',on?'true odds':'after point','wide3',!on||!b.dp)+`</div>`;
+  if(T.ats){ const A=T.ats, open=A.rolls===0; const cell=n=>`<span class="atsn ${A.hit.includes(n)?'hit':''}">${n}</span>`;
+    h+=`<div class="atsbox"><div class="row" style="justify-content:space-between;align-items:center"><b class="small">ALL SMALL · ALL TALL · MAKE 'EM ALL</b><span class="small dim">${open?'Bets open (before the first roll)':`Locked · roll ${A.rolls} of this cycle`}</span></div>
+     <div class="atsrow"><span class="small dim">SMALL</span>${ATS_SMALL.map(cell).join('')}<span class="atsn seven">7</span>${ATS_TALL.map(cell).join('')}<span class="small dim">TALL</span></div>
+     <div class="craps" style="margin:4px 0 0">${btn('small',null,'ALL SMALL','34:1','wide2',!open)}${btn('tall',null,'ALL TALL','34:1','wide2',!open)}${btn('all',null,"MAKE 'EM ALL",'175:1','wide2',!open)}</div></div>`; }
   if(mine.comes.length||mine.dcs.length){ h+=`<div class="panel small">`; mine.comes.forEach((c,i)=>{ h+=`<div class="row" style="justify-content:space-between"><span>🟢 Come on <b>${c.n}</b>: $${c.amt}${c.odds?` + odds $${c.odds}`:''}</span><button class="tab" style="flex:0 0 auto" ${lock?'disabled':''} onclick="mpCrBet('comeOdds',${i})">+ odds</button></div>`; });
     mine.dcs.forEach((c,i)=>{ h+=`<div class="row" style="justify-content:space-between"><span>⚫ Don't Come on <b>${c.n}</b>: $${c.amt}${c.odds?` + lay $${c.odds}`:''}</span><button class="tab" style="flex:0 0 auto" ${lock?'disabled':''} onclick="mpCrBet('dcOdds',${i})">+ lay</button></div>`; }); h+=`</div>`; }
   h+=chips([1,5,25,100,500],U.mpCrChip,'mpCrChip')+`<div class="small">On the felt: <b class="a">${money(mine.on)}</b> · Bankroll ${money(myP.bal)}</div>`;
@@ -4029,9 +4085,15 @@ function mpPkLock(id){ const P=U.mpPk; if(!P||P.id!==id) return; const el=docume
 // Every update since the game was created, rebuilt from the crow99999/arcade git history, the build/test notes and the
 // bugs fixed during testing. Returning players get a pop-up card on the title screen with only the entries newer than
 // the version they last saw (META.wnSeen); brand-new players aren't spammed. The full log lives on a scrollable screen.
-const GAME_VER='1.15.0';
+const GAME_VER='1.16.0';
 const WN_BEFORE_LOG='1.4.1'; // what returning players had before this log existed (last deploy before v1.5.0)
 const CHANGELOG=[
+ {v:'1.16.0',d:'Nov 11, 2026 · evening',t:'🀄 Baccarat (Dragon & Panda) + 🎯 All Tall / All Small / Make \'Em All',items:[
+  'Community request: the Queen City Cash Palace has an EZ Baccarat table. 8-deck shoe with a real burn and cut card, standard third-card tableau, no commission (a Banker win with a three-card 7 pushes), Tie 8:1 (Player/Banker push), animated card reveal with a squeeze on third cards, and a bead road for the shoe. Table limits follow the rest of the casino ($500 max, $2,000 once you have $10k, $5,000 in Whale Mode).',
+  'Baccarat side bets: 🐉 Dragon 7 pays 40:1 when Banker wins with a three-card 7, and 🐼 Panda 8 pays 25:1 when Player wins with a three-card 8. Side bets max out at 10% of the table max.',
+  'Community request: craps now has All Small (2-3-4-5-6 before a 7, 34:1), All Tall (8-9-10-11-12 before a 7, 34:1) and Make \'Em All (all ten, 175:1). Bets go down only before the first roll of a new cycle, any 7 ends the cycle (even a come-out 7), and a tracker on the table lights up every number hit. Also live at the online multiplayer craps table, where the whole table shares one tracker.',
+  'House edges match the real games: Banker ≈1.02%, Player ≈1.24%, Tie ≈14.4%, Dragon ≈7.6%, Panda ≈10.2%, All Small/Tall ≈7.7%, Make \'Em All ≈7.5% (checked with a simulation of millions of hands and shooters).',
+  'Hands count toward tilt, lifetime stats and the session tracker. Too drunk at the baccarat table and a chip might "fall" onto the Tie. New achievements: Punto Banco Bro, Enter the Dragon, Panda Express, Small Talk Tall Tales, Make \'Em All.']},
  {v:'1.15.0',d:'Nov 11, 2026 · afternoon',t:'📈 Sportsbook history graphs',items:[
   'The Sportsbook History tab now opens on a running profit/loss graph — a bankroll-style line of your cumulative net over every settled bet, with a zero line, green above and red below.',
   'Toggle All-Time / This Session / Last Session. A session is one sitting: it stays put if you refresh mid-play, and it rolls to Last Session when you come back after a few hours away. New settled bets (including cash-outs) get stamped to the current sitting.',
@@ -4892,6 +4954,83 @@ function renderPoker(){ const A=U.al, H=A.h, N=NPCS[A.npc]; let h=`<h2>♠️ vs
     if(canPlay) h+=`<button class="btn" onclick="pokerCheat('bottom')">🃏 Cheat: deal yourself a pocket pair from the bottom<small>Street check ${pct(clamp(chk('street',6+(A.npc==='margo'?2:0))+(has('bottomdeal')?.25:0),.05,.95))}. Caught = fight.</small></button>`;
     h+=`<button class="btn c" onclick="U.al={};renderAlley()">⬅ Leave the table</button>`; }
   setMain(h); }
+// ===================== EZ BACCARAT (no commission) + DRAGON 7 + PANDA 8 =====================
+// 8-deck shoe. Player/Banker pay 1:1; Banker winning with a 3-card 7 PUSHES (that's the "EZ" in EZ Baccarat). Tie 8:1 (P/B push on a tie).
+// Dragon 7: Banker wins with a 3-card 7 → 40:1. Panda 8: Player wins with a 3-card 8 → 25:1.
+const BAC_PAY={P:1,B:1,T:8,D:40,PA:25};
+const BAC_SPOTS=[['P','PLAYER','1:1'],['B','BANKER','1:1 · 3-card 7 push'],['T','TIE','8:1'],['D','🐉 DRAGON 7','40:1'],['PA','🐼 PANDA 8','25:1']];
+function bacVal(c){ const r=c%13; return r>=9?0:r+1; } // c: 0..51; rank index 0=A..12=K
+function bacTot(h){ return h.reduce((a,c)=>a+bacVal(c),0)%10; }
+function bacNewShoe(rr){ rr=rr||rnd; const a=[]; for(let d=0;d<8;d++) for(let c=0;c<52;c++) a.push(c); for(let i=a.length-1;i>0;i--){ const j=Math.floor(rr()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; }
+  const burnN=bacVal(a[0])||10; const burn=a.splice(0,1+burnN); return {cards:a, cut:ri(14,20), dealt:0, burn:burn.length, road:[], n:0}; }
+function bacDraw(sh){ sh.dealt++; return sh.cards.pop(); }
+// standard tableau
+function bacPlay(sh){ const P=[bacDraw(sh)], B=[bacDraw(sh)]; P.push(bacDraw(sh)); B.push(bacDraw(sh)); let p=bacTot(P), b=bacTot(B); let p3=null;
+  if(!(p>=8||b>=8)){
+    if(p<=5){ p3=bacDraw(sh); P.push(p3); p=bacTot(P); }
+    const v3=p3==null?null:bacVal(p3);
+    let bd=false; if(v3==null) bd=b<=5; else if(b<=2) bd=true; else if(b===3) bd=v3!==8; else if(b===4) bd=v3>=2&&v3<=7; else if(b===5) bd=v3>=4&&v3<=7; else if(b===6) bd=v3===6||v3===7;
+    if(bd){ B.push(bacDraw(sh)); b=bacTot(B); } }
+  const w=p>b?'P':b>p?'B':'T'; return {P,B,p,b,w,dragon:w==='B'&&B.length===3&&b===7,panda:w==='P'&&P.length===3&&p===8,natural:P.length===2&&B.length===2&&(p>=8||b>=8)}; }
+// returns total cash back (stake incl.) for a bet object {P,B,T,D,PA}
+function bacSettle(bets,r){ let ret=0; const L=[];
+  const add=(k,mult,what,push)=>{ const a=bets[k]||0; if(!a) return; if(push){ ret+=a; L.push({w:2,k,what,amt:a}); } else if(mult>0){ ret+=a*(1+mult); L.push({w:1,k,what,amt:a,win:a*mult}); } else L.push({w:0,k,what,amt:a}); };
+  if(r.w==='T'){ add('P',0,'Player',true); add('B',0,'Banker',true); add('T',BAC_PAY.T,'Tie'); }
+  else if(r.w==='P'){ add('P',1,'Player'); add('B',0,'Banker'); add('T',0,'Tie'); }
+  else { add('P',0,'Player'); if(r.dragon) add('B',0,'Banker (3-card 7 push)',true); else add('B',1,'Banker'); add('T',0,'Tie'); }
+  add('D',r.dragon?BAC_PAY.D:0,'Dragon 7'); add('PA',r.panda?BAC_PAY.PA:0,'Panda 8');
+  return {ret:r2(ret),lines:L}; }
+// ---------- UI ----------
+const BAC_SUIT=['♠','♥','♦','♣'], BAC_RANK=['A','2','3','4','5','6','7','8','9','10','J','Q','K'];
+function bacCardHtml(c,i,hidden){ if(hidden) return `<span class="bcard back"></span>`; const s=Math.floor(c/13)%4, red=s===1||s===2; return `<span class="bcard flip ${red?'red':''}" style="animation-delay:0s">${BAC_RANK[c%13]}<small>${BAC_SUIT[s]}</small></span>`; }
+function bacChips(){ return [1,5,25,100,500,1000,2500,5000].filter(v=>v<=casinoMax()); }
+function bacMax(k){ const mx=casinoMax(); return (k==='D'||k==='PA')?Math.max(5,Math.round(mx/10)):mx; }
+function bacEnsure(){ if(!S.bac||!S.bac.cards||S.bac.cards.length<=S.bac.cut) { const old=S.bac&&S.bac.road||[]; S.bac=bacNewShoe(); S.bac.road=old.slice(-60); U.bacMsg=(U.bacMsg||'')+' 🔀 New 8-deck shoe. Burned '+S.bac.burn+' cards.'; } return S.bac; }
+function bacScene(){ scene('casino',[youActor({x:.25,pose:'idle',held:'beer'}),{id:'d',x:.55,pose:'deal',hat:'visor',color:'#ffd9a0',label:'DEALER MEI'},{id:'w',x:.82,flip:true,pose:'idle',label:'SUPERSTITIOUS UNCLE',hat:'cap',hatc:'#c0392b',color:'#fff0d0'}],{caption:'EZ BACCARAT'}); }
+function bacChip(v){ U.bacChip=v; renderBac(); }
+function bacAdd(k){ if(U.busy) return; U.bacB=U.bacB||{}; const v=U.bacChip; const cur=U.bacB[k]||0; if(v>S.cash){ toast('Not enough cash for that chip.'); return; } if(cur+v>bacMax(k)){ toast(`Max on ${k==='D'?'Dragon':k==='PA'?'Panda':'that spot'} is ${money(bacMax(k))}.`); return; }
+  cBet(v); U.bacB[k]=cur+v; sfx.click(); renderBac(); }
+function bacClear(){ if(U.busy||!U.bacB) return; let t=0; for(const k in U.bacB) t+=U.bacB[k]; if(t) cPay(t); U.bacB={}; renderBac(); }
+function bacRebet(){ if(U.busy||!U.bacLast) return; let t=0; for(const k in U.bacLast) t+=U.bacLast[k]; let have=0; for(const k in (U.bacB||{})) have+=U.bacB[k]; if(have) return toast('Clear the felt first.'); if(t>S.cash) return toast('Not enough cash to rebet.'); for(const k in U.bacLast) if(U.bacLast[k]>bacMax(k)) return toast('Table limits changed. Rebuild your bet.'); cBet(t); U.bacB=Object.assign({},U.bacLast); renderBac(); }
+function bacDeal(){ if(U.busy) return; const B=U.bacB||{}; let tot=0; for(const k in B) tot+=B[k]; if(!tot) return toast('Bet Player, Banker or Tie. (Or the panda. Everyone loves the panda.)'); if(tot<minBet()&&minBet()<=S.cash+tot) return toast(`Tilt says you need ${money(minBet())}+ on the felt.`);
+  if(!(B.P||B.B||B.T)) return toast('Side bets need a main bet (Player, Banker or Tie) too.');
+  // too drunk? sometimes a chip "falls" onto the Tie
+  if(S.buzz>75&&rnd()<.15&&S.cash>=U.bacChip&&(B.T||0)+U.bacChip<=bacMax('T')){ cBet(U.bacChip); B.T=(B.T||0)+U.bacChip; toast(`🍸 You knock a ${money(U.bacChip)} chip onto the TIE. Dealer Mei: "Bet stands, sir."`); }
+  const sh=bacEnsure(); const r=bacPlay(sh); U.bacLast=Object.assign({},B); U.bac={r,shown:0,bets:B}; U.bacB={}; U.busy=true; if(S.stats2) S.stats2.bacc=(S.stats2.bacc||0)+1;
+  const order=[['P',0],['B',0],['P',1],['B',1]]; if(r.P[2]!=null) order.push(['P',2]); if(r.B[2]!=null) order.push(['B',2]); U.bac.order=order;
+  let i=0; const step=()=>{ i++; U.bac.shown=i; sfx.click(); if(i>=5&&U.bac.order.length>=5) say('w',pick(['SQUEEZE IT!','PUH! PUH! PUH!','NO FACE CARD!','MONKEY! MONKEY!']),700); renderBac(); if(i<order.length) setTimeout(step,i>=4?1000:450); else setTimeout(bacFinish,700); };
+  pose('d','deal',1500); renderBac(); setTimeout(step,350); }
+function bacFinish(){ const X=U.bac; const r=X.r; const st=bacSettle(X.bets,r); U.busy=false; cPay(st.ret); let stake=0; for(const k in X.bets) stake+=X.bets[k];
+  for(const l of st.lines){ lifeRec('bacc',l.amt,l.w===1?l.amt+l.win:l.w===2?l.amt:0,'Baccarat '+l.what); }
+  S.bac.road.push(r.w+(r.dragon?'d':r.panda?'p':'')); if(S.bac.road.length>72) S.bac.road.splice(0,S.bac.road.length-72); S.bac.n++;
+  const net=r2(st.ret-stake); X.net=net; X.lines=st.lines;
+  const title=r.w==='T'?`TIE ${r.p}-${r.b}`:`${r.w==='P'?'PLAYER':'BANKER'} WINS ${Math.max(r.p,r.b)} over ${Math.min(r.p,r.b)}`;
+  X.title=title+(r.dragon?' — 🐉 DRAGON 7!':r.panda?' — 🐼 PANDA 8!':r.natural?' — natural':'');
+  if(r.dragon){ fx.confetti(40); if(X.bets.D) { unlock('dragon'); fx.money(40); sfx.big(); } }
+  if(r.panda){ fx.confetti(40); if(X.bets.PA){ unlock('panda'); fx.money(40); sfx.big(); } }
+  gainXp(1+Math.abs(net)/60); unlock('bacc');
+  if(net>0){ pose('you','celebrate',1500,'idle'); sfx.win(); fx.text('+'+money(net),'#5dff8a'); addTilt(-3); pose('w','cheer',1200,'idle'); }
+  else if(net<0){ pose('you','facepalm',1500,'idle'); sfx.lose(); fx.text('−'+money(-net),'#ff5d5d'); addTilt(Math.min(8,1+(-net)/Math.max(20,S.cash)*15)); pose('w','facepalm',1200,'idle'); }
+  else pose('you','shrug',1000,'idle');
+  const rd=S.bac.road.slice(-6).map(x=>x[0]); if(rd.length===6&&rd.every(x=>x===rd[0]&&x!=='T')) X.streak=`${rd[0]==='P'?'Player':'Banker'} has hit 6 straight. The superstitious uncle is now shouting at the ceiling.`; else X.streak='';
+  save(); if(U.screen==='casino'&&U.cgame==='bacc') renderBac(); }
+function bacRoad(){ const R=(S.bac&&S.bac.road)||[]; const rows=6, cols=Math.max(12,Math.ceil(R.length/rows)); let h='<div class="beadroad">';
+  for(let c=0;c<cols;c++){ for(let r=0;r<rows;r++){ const x=R[c*rows+r]; h+=x?`<span class="bead ${x[0]}" title="${x}">${x[0]==='P'?'P':x[0]==='B'?'B':'T'}${x[1]==='d'?'<i>🐉</i>':x[1]==='p'?'<i>🐼</i>':''}</span>`:'<span class="bead e"></span>'; } }
+  const n=k=>R.filter(x=>x[0]===k).length; return h+`</div><div class="small dim">This shoe: <b style="color:#6fb3ff">P ${n('P')}</b> · <b style="color:#ff6b6b">B ${n('B')}</b> · <b style="color:#5dff8a">T ${n('T')}</b> · 🐉 ${R.filter(x=>x[1]==='d').length} · 🐼 ${R.filter(x=>x[1]==='p').length} · cards left ${S.bac?S.bac.cards.length:416}. (The road predicts nothing. Every hand is independent. Tell that to the uncle.)</div>`; }
+function renderBac(){ bacEnsure(); const tc=bacChips(); if(!U.bacChip||!tc.includes(U.bacChip)) U.bacChip=tc[0]; const B=U.bacB||{}; const X=U.bac;
+  let h=`<h2>🀄 EZ BACCARAT <span class="small dim">min $1 · max ${money(casinoMax())} · sides max ${money(bacMax('D'))}</span></h2>${tiltNote()}<div class="small dim">No commission. Banker winning with a three-card 7 pushes. Player/Banker push on a tie.</div>`;
+  if(X){ const sh=X.shown, ord=X.order; const vis=(side,idx)=>ord.findIndex(o=>o[0]===side&&o[1]===idx)<sh; const hand=(side,cards)=>cards.map((c,i)=>bacCardHtml(c,i,!vis(side,i))).join('');
+    const pv=bacTot(X.r.P.filter((c,i)=>vis('P',i))), bv=bacTot(X.r.B.filter((c,i)=>vis('B',i)));
+    h+=`<div class="bactable"><div class="bside P"><b>PLAYER</b> <span class="btot">${pv}</span><div>${hand('P',X.r.P)}</div></div><div class="bside B"><b>BANKER</b> <span class="btot">${bv}</span><div>${hand('B',X.r.B)}</div></div></div>`;
+    if(!U.busy&&X.title) h+=`<div class="panel ${X.net>0?'g':X.net<0?'r':''}"><b>${X.title}</b><div class="small">${X.lines.map(l=>l.w===1?`✔ ${l.what} +${money(l.win)}`:l.w===2?`↩ ${l.what} push`:`✘ ${l.what} −${money(l.amt)}`).join(' · ')}</div>${X.streak?`<div class="small a">${X.streak}</div>`:''}</div>`; }
+  h+=`<div class="bacspots">${BAC_SPOTS.map(([k,n,p])=>`<button class="bspot ${k}" ${U.busy?'disabled':''} onclick="bacAdd('${k}')"><b>${n}</b><span>${p}</span>${B[k]?`<span class="amt">${money(B[k])}</span>`:''}</button>`).join('')}</div>`;
+  h+=chips(tc,U.bacChip,'bacChip');
+  let tot=0; for(const k in B) tot+=B[k];
+  h+=`<div class="grid3"><button class="btn big go" ${U.busy?'disabled':''} onclick="bacDeal()">🃏 DEAL${tot?` (${money(tot)})`:''}</button><button class="btn" ${U.busy||!tot?'disabled':''} onclick="bacClear()">↩ Clear</button><button class="btn" ${U.busy||tot||!U.bacLast?'disabled':''} onclick="bacRebet()">🔁 Rebet</button></div>`;
+  if(U.bacMsg){ h+=`<div class="small dim">${U.bacMsg}</div>`; U.bacMsg=''; }
+  h+=`<h3 style="margin:6px 0 2px">Bead road</h3>${bacRoad()}`;
+  h+=`<details class="small dim"><summary>How baccarat works</summary>Bet on which hand ends closer to 9: Player or Banker (or a Tie). Cards: A=1, 2–9 face value, 10/J/Q/K=0; only the last digit counts (7+8=5). Two cards each; an 8 or 9 is a natural and everyone stands. Otherwise Player draws on 0–5 and stands on 6–7. Banker follows the fixed tableau (draws on 0–2; on 3 unless the Player's third card was an 8; on 4 vs 2–7; on 5 vs 4–7; on 6 vs 6–7; stands on 7). You never make decisions. That's the appeal. <b>EZ rules</b>: no 5% commission, but a Banker win with a three-card 7 pushes. <b>Dragon 7</b> (40:1) wins on exactly that hand; <b>Panda 8</b> (25:1) wins when the Player wins with a three-card 8. House edge: Banker ≈1.02%, Player ≈1.24%, Tie ≈14.4%, Dragon ≈7.6%, Panda ≈10.2%.</details>`;
+  setMain(h+(U.busy?'':backBtn)); }
 // ===================== COMBAT =====================
 const ENEMIES = {
   runner:{ n:'Kevin, the Bookie\'s Runner', hp:32, atk:[4,8], tier:1, loot:[20,60], color:'#cfe8ff', hat:'cap', hatc:'#16a085', moves:['Wet Willy','Noogie of Doom','Snaps Your Lucky Pencil','Flicks Your Ear'], taunt:'"Sal says hi. And also OW."' },
@@ -5270,6 +5409,8 @@ function renderHelp(){ scene('title',[{id:'a',x:.5,pose:'point',hat:'cap',hatc:'
   <p><b>🕹️ DegenClip Arcade:</b> skill games with real bets. <b>Home Run Derby</b>: move/tap to set your bat height, tap/click (or Space) to swing; early = pull, late = oppo; 10 outs (non-HR swings and taken strikes). <b>Mini Putt</b>: drag back from anywhere like a slingshot, release to putt; water is +1 stroke; max 6 a hole. <b>Bowling</b>: drag sideways at the bottom to move, swipe up to bowl: swipe direction aims, a curved swipe hooks, a fast swipe throws harder. Tickets ($2/$5/$10) pay by score, props ($2/$5) pay fixed odds, hustles ($5/$10/$25) pay 2× (ties push). <b>Anti-grind rules:</b> the arcade pays out at most <b>$40 a game</b>, your <b>net</b> arcade winnings are capped at <b>+$150 per in-game day</b> across all three games (losses count, so a bad game lowers your net), and once you hit it the attendant cuts you off until tomorrow. The hustlers stop taking your bets after you beat them twice in a day. An average player loses money here and a near-perfect one barely wins. Free practice is always open. The sportsbook and casino are how you actually move up.</p>
   <p><b>🃏 Euchre Hall:</b> 24 cards (9–A), two teams of two, and partners sit across from each other. Each player gets 5 cards and one card from the kitty is turned up. <b>Round 1:</b> going around from the dealer's left, each player either orders it up (that suit is trump and the dealer picks up the card and buries one) or passes. <b>Round 2:</b> if everyone passed, players can name any other suit or pass. With <i>stick the dealer</i> on, the dealer can't pass. With it off, four more passes throw the hand in. Whoever names trump can go <b>alone</b>, and their partner sits out the hand. Card ranking: <b>right bower</b> (J of trump) &gt; <b>left bower</b> (the other J of the same color, which counts as trump, including when you follow suit) &gt; A K Q 10 9 of trump &gt; everything else. You must follow the suit that was led if you can. Scoring: makers who take 3–4 tricks get 1, all 5 (a march) gets 2, a march while alone gets 4, and makers held to 2 or fewer tricks are <b>euchred</b>, which gives the defenders 2. First team to 10 (or 11) wins the pot. Farmer's hand (optional rule): a hand of all 9s and 10s can trade its 3 lowest cards for the kitty.</p>
   <p><b>🌐 Online casino leaderboard:</b> every online room keeps a live leaderboard ranked by session net (what you've actually won or lost on settled bets). Money still riding doesn't count against you yet, and 🥪 loans from Sal are listed separately because borrowing isn't winning. The leader gets a 👑 and last place is Sal's favorite customer. When the host closes the table, everyone gets final standings.</p><p><b>🍺 Tilt relief online:</b> tap <b>Cocktail Waitress / Smoke</b> in the top bar at any online table. Drinks and smokes lower your tilt, cost cash from your free bankroll and are allowed mid-hand. They follow the bar rules: booze adds Buzz and liquor costs HP. Nicotine has a cooldown and works less each time. Too much Buzz turns off strategy hints and can trigger a SLOPPY confirmation before you act.</p><p><b>Keno:</b> pick 1–10 numbers of 80, 20 get drawn, payout depends on how many you catch. RTP is ~75–87%. It's a lottery with a cocktail menu.</p>
+  <p><b>🀄 EZ Baccarat:</b> bet Player, Banker or Tie (8:1); the cards play themselves by the standard tableau. No commission, but a Banker win with a three-card 7 pushes. Side bets: 🐉 Dragon 7 (Banker wins with a three-card 7, 40:1) and 🐼 Panda 8 (Player wins with a three-card 8, 25:1). The bead road shows the shoe's history (it predicts nothing).</p>
+  <p><b>🎯 Craps ATS:</b> All Small (2-3-4-5-6) and All Tall (8-9-10-11-12) pay 34:1, Make 'Em All (all ten) pays 175:1, if every number in the set rolls before any 7. Bet only before the first roll of a new cycle; the table shows which numbers have hit.</p>
   <p><b>Craps quick guide:</b> Pass Line on the come-out, add Odds once a point is set (true odds, no house edge). Place 6/8 pay 7:6. Hardways and Any 7 are fun sucker bets.</p>
   <p><b>Safety net:</b> new-user promos, Mom's emergency Venmo, plasma, and side jobs mean you can always claw back.</p></div>
   <button class="btn c" onclick="go(S&&!S.ended?'hub':'title')">⬅ Back</button>`); }
